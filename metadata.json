@@ -1,0 +1,8 @@
+{
+  "name": " Casillas Oficial",
+  "description": "App profissional para usinagem com IA, tabelas técnicas e laboratório de mídia.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

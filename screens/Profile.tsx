@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { AVATAR_URL, APP_LOGO_URL } from '../constants';
+import { AVATAR_URL } from '../constants';
 import { User, Language } from '../types';
 
 interface ProfileProps {
@@ -8,8 +8,6 @@ interface ProfileProps {
   language: Language;
   setLanguage: (lang: Language) => void;
   t: any;
-  appLogo: string;
-  onUpdateLogo: (logo: string) => void;
   onUpdateUser: (updatedUser: User) => void;
   onLogout: () => void;
   isAdmin: boolean;
@@ -18,9 +16,8 @@ interface ProfileProps {
   onInstallApp?: () => void;
 }
 
-const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, appLogo, onUpdateLogo, onUpdateUser, onLogout, isAdmin, onToggleAdmin, canInstall, onInstallApp }) => {
+const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, onUpdateUser, onLogout, isAdmin, onToggleAdmin, canInstall, onInstallApp }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const logoInputRef = useRef<HTMLInputElement>(null);
   
   const [formData, setFormData] = useState<Partial<User>>({
     name: user?.name || '',
@@ -70,27 +67,18 @@ const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, appLo
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'avatar' | 'logo') => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setIsUploading(true);
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result as string;
-        if (type === 'avatar') {
-          setFormData(prev => ({ ...prev, photo: base64String }));
-        } else {
-          onUpdateLogo(base64String);
-        }
+        setFormData(prev => ({ ...prev, photo: base64String }));
         setIsUploading(false);
       };
       reader.readAsDataURL(file);
     }
-  };
-
-  const resetLogo = () => {
-    onUpdateLogo(APP_LOGO_URL);
-    if (navigator.vibrate) navigator.vibrate(20);
   };
 
   const formatDate = (dateStr?: string) => {
@@ -100,8 +88,7 @@ const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, appLo
 
   return (
     <div className="flex flex-col h-full bg-rust-dark text-white overflow-y-auto custom-scrollbar pb-32">
-      <input type="file" ref={fileInputRef} onChange={(e) => handleFileChange(e, 'avatar')} accept="image/*" className="hidden" />
-      <input type="file" ref={logoInputRef} onChange={(e) => handleFileChange(e, 'logo')} accept="image/*" className="hidden" />
+      <input type="file" ref={fileInputRef} onChange={(e) => handleFileChange(e)} accept="image/*" className="hidden" />
 
       {showToast && (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[100] bg-[#eab308] text-black px-8 py-4 rounded-[20px] font-black text-xs uppercase shadow-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-10 duration-500">
@@ -143,38 +130,6 @@ const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, appLo
       </div>
 
       <div className="px-6 space-y-8">
-        {/* Branding Section */}
-        <section className="space-y-4">
-           <p className="text-gray-800 text-[9px] font-black uppercase tracking-[0.4em] ml-2">Identidade Visual (Logo)</p>
-           <div className="bg-[#1c1816]/60 rounded-[32px] border border-white/5 p-6 space-y-5 shadow-xl">
-              <div className="flex items-center gap-6">
-                 <div className="size-20 rounded-lg bg-[#0a0908] border border-white/5 flex items-center justify-center overflow-hidden shadow-inner">
-                    <img src={appLogo} className="w-full h-full object-cover scale-150" alt="App Logo" />
-                 </div>
-                 <div className="flex-1 space-y-2">
-                    <p className="text-[10px] text-gray-500 font-bold leading-tight uppercase">Customizar Marca do Projeto</p>
-                    <div className="flex gap-2">
-                       <button 
-                         onClick={() => logoInputRef.current?.click()}
-                         className="flex-1 bg-[#eab308]/10 text-[#eab308] text-[8px] font-black py-2 rounded-lg border border-[#eab308]/20 uppercase tracking-widest"
-                       >
-                         Alterar
-                       </button>
-                       <button 
-                         onClick={resetLogo}
-                         className="px-3 bg-red-500/10 text-red-500 text-[8px] font-black py-2 rounded-lg border border-red-500/20 uppercase tracking-widest"
-                       >
-                         Reset
-                       </button>
-                    </div>
-                 </div>
-              </div>
-              <p className="text-[8px] text-gray-700 font-medium uppercase tracking-widest text-center italic">
-                A logo alterada aparecerá na splash screen, home e menus.
-              </p>
-           </div>
-        </section>
-
         {/* Corporate Data */}
         <section className="space-y-4">
            <p className="text-gray-800 text-[9px] font-black uppercase tracking-[0.4em] ml-2">Dados Corporativos</p>

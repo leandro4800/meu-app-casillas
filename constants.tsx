@@ -11,8 +11,6 @@ export const COLORS = {
   TEXT_MAIN: '#f3f4f6'
 };
 
-export const APP_LOGO_URL = "/generated_logo.png"; 
-
 export const CASILLAS_CONSULTANT_IMAGE = "/generated_consultant.png";
 
 export const AVATAR_URL = CASILLAS_CONSULTANT_IMAGE;

@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect } from 'react';
-import { APP_LOGO_URL } from '../constants';
 
 interface LoginProps {
   onLogin: (user: any) => void;
@@ -93,9 +92,6 @@ const Login: React.FC<LoginProps> = ({ onLogin, onDevAccess, t }) => {
 
       <div className="relative z-10 w-full max-w-sm space-y-10 animate-in fade-in zoom-in duration-700">
         <div className="space-y-4">
-           <div className="size-28 bg-[#221e1b] rounded-[2.5rem] border-2 border-[#eab308] mx-auto flex items-center justify-center shadow-[0_0_50px_rgba(234,179,8,0.25)] overflow-hidden">
-              <img src={APP_LOGO_URL} alt="Logo Casillas" className="w-[80%] h-[80%] object-contain" />
-           </div>
            <h1 className="text-[#eab308] text-5xl font-black uppercase italic tracking-tighter">CASILLAS</h1>
            <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.4em]">Acesso ao Formulário Técnico</p>
         </div>

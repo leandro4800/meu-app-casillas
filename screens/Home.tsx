@@ -8,10 +8,9 @@ interface HomeProps {
   t: any;
   language: Language;
   setLanguage: (lang: Language) => void;
-  appLogo: string;
 }
 
-const Home: React.FC<HomeProps> = ({ user, navigate, t, language, setLanguage, appLogo }) => {
+const Home: React.FC<HomeProps> = ({ user, navigate, t, language, setLanguage }) => {
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
 
   const expirationNotice = useMemo(() => {
@@ -76,18 +75,6 @@ const Home: React.FC<HomeProps> = ({ user, navigate, t, language, setLanguage, a
       </div>
 
       <div className="relative z-20 flex flex-col items-center pt-12 px-6">
-        {/* LOGO DINAMICA */}
-        <div className="relative mb-6">
-          <div className="size-64 rounded-[5rem] bg-[#1c1e22] border-4 border-[#eab308] flex items-center justify-center shadow-[0_0_100px_rgba(234,179,8,0.5)] overflow-hidden p-8">
-             <img 
-               src={appLogo} 
-               alt="App Logo" 
-               className="max-w-full max-h-full object-contain"
-             />
-          </div>
-          <div className="absolute -inset-4 border border-[#eab308]/10 rounded-[5.5rem] animate-pulse pointer-events-none"></div>
-        </div>
-
         <div className="text-center space-y-1 mb-8">
           <h1 className="text-[#eab308] text-6xl font-black tracking-tighter uppercase italic leading-none">Casillas</h1>
           <h2 className="text-[#eab308] text-base font-black tracking-[0.2em] uppercase opacity-70">{t.app_subtitle}</h2>

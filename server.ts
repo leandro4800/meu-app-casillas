@@ -3,9 +3,19 @@ import { createServer as createViteServer } from "vite";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import Stripe from "stripe";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Lazy initialize Stripe
+let stripe: Stripe | null = null;
+const getStripe = () => {
+  if (!stripe && process.env.STRIPE_SECRET_KEY) {
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+  }
+  return stripe;
+};
 
 async function startServer() {
   const app = express();
@@ -16,6 +26,44 @@ async function startServer() {
   // API routes
   app.get("/api/health", (req, res) => {
     res.json({ status: "ok" });
+  });
+
+  app.post("/api/create-checkout-session", async (req, res) => {
+    const { plan, email } = req.body;
+    const stripeClient = getStripe();
+
+    if (!stripeClient) {
+      return res.status(500).json({ error: "Stripe is not configured" });
+    }
+
+    try {
+      const priceId = plan === 'annual' 
+        ? process.env.STRIPE_PRICE_ID_ANNUAL 
+        : process.env.STRIPE_PRICE_ID_MONTHLY;
+
+      if (!priceId) {
+        return res.status(400).json({ error: "Price ID not configured for this plan" });
+      }
+
+      const session = await stripeClient.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [
+          {
+            price: priceId,
+            quantity: 1,
+          },
+        ],
+        mode: 'subscription',
+        customer_email: email,
+        success_url: `${process.env.APP_URL || 'http://localhost:3000'}?session_id={CHECKOUT_SESSION_ID}&payment=success`,
+        cancel_url: `${process.env.APP_URL || 'http://localhost:3000'}?payment=cancel`,
+      });
+
+      res.json({ url: session.url });
+    } catch (error: any) {
+      console.error("Stripe error:", error);
+      res.status(500).json({ error: error.message });
+    }
   });
 
   app.post("/api/save-asset", (req, res) => {

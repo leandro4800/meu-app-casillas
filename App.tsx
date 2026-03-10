@@ -36,18 +36,16 @@ import VoiceConsultant from './screens/VoiceConsultant';
 import MediaLab from './screens/MediaLab';
 import DrawingAnalysis from './screens/DrawingAnalysis';
 
-import { HAILTOOLS_CATALOG, APP_LOGO_URL } from './constants';
+import { HAILTOOLS_CATALOG } from './constants';
 import { ToolInsert } from './types';
 import { GoogleGenAI } from "@google/genai";
 
 const PERSISTENCE_KEY = 'casillas_v1_auth_session';
-const LOGO_PERSISTENCE_KEY = 'casillas_custom_logo';
 
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [currentScreen, setCurrentScreen] = useState<Screen>('login');
   const [language, setLanguage] = useState<Language>('pt_BR');
-  const [appLogo, setAppLogo] = useState<string>(APP_LOGO_URL);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isReady, setIsReady] = useState(false);
   
@@ -64,22 +62,37 @@ export default function App() {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
     const initApp = () => {
+      // Verificar retorno do Stripe
+      const urlParams = new URLSearchParams(window.location.search);
+      const paymentStatus = urlParams.get('payment');
+      const sessionId = urlParams.get('session_id');
+
       // Carregar Sessão
       const savedSession = localStorage.getItem(PERSISTENCE_KEY);
+      let currentUser: User | null = null;
+
       if (savedSession) {
         try {
-          const parsedUser = JSON.parse(savedSession) as User;
-          setUser(parsedUser);
+          currentUser = JSON.parse(savedSession) as User;
+          
+          if (paymentStatus === 'success' && sessionId) {
+            // Em um app real, verificaríamos o sessionId no backend
+            currentUser.plan = 'annual'; // Ou 'monthly' dependendo da lógica
+            currentUser.expiryDate = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString();
+            localStorage.setItem(PERSISTENCE_KEY, JSON.stringify(currentUser));
+            alert('Assinatura Pro ativada com sucesso!');
+            // Limpar URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+          } else if (paymentStatus === 'cancel') {
+            alert('Pagamento cancelado.');
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+
+          setUser(currentUser);
           setCurrentScreen('home');
         } catch (e) {
           localStorage.removeItem(PERSISTENCE_KEY);
         }
-      }
-      
-      // Carregar Logo Customizada
-      const savedLogo = localStorage.getItem(LOGO_PERSISTENCE_KEY);
-      if (savedLogo) {
-        setAppLogo(savedLogo);
       }
       
       setIsReady(true);
@@ -108,17 +121,12 @@ export default function App() {
     }
   };
 
-  const handleUpdateLogo = (newLogo: string) => {
-    setAppLogo(newLogo);
-    localStorage.setItem(LOGO_PERSISTENCE_KEY, newLogo);
-  };
-
   const renderScreen = () => {
     if (!user && currentScreen !== 'login') return <Login onLogin={(u) => {setUser(u); setCurrentScreen('home');}} onDevAccess={() => {}} t={t} />;
 
     switch (currentScreen) {
       case 'login': return <Login onLogin={(u) => {setUser(u); setCurrentScreen('home'); localStorage.setItem(PERSISTENCE_KEY, JSON.stringify(u));}} onDevAccess={() => {}} t={t} />;
-      case 'home': return <Home user={user} navigate={navigate} t={t} language={language} setLanguage={setLanguage} appLogo={appLogo} />;
+      case 'home': return <Home user={user} navigate={navigate} t={t} language={language} setLanguage={setLanguage} />;
       case 'ai_suite': return <AISuite navigate={navigate} t={t} />;
       case 'voice_consultant': return <VoiceConsultant navigate={navigate} />;
       case 'media_lab': return <MediaLab navigate={navigate} />;
@@ -131,8 +139,6 @@ export default function App() {
           language={language} 
           setLanguage={setLanguage} 
           t={t} 
-          appLogo={appLogo}
-          onUpdateLogo={handleUpdateLogo}
           onUpdateUser={(u) => {setUser(u); localStorage.setItem(PERSISTENCE_KEY, JSON.stringify(u));}} 
           onLogout={() => {setUser(null); localStorage.removeItem(PERSISTENCE_KEY); setCurrentScreen('login');}} 
           isAdmin={user?.isDev || false} 
@@ -159,7 +165,7 @@ export default function App() {
       case 'checkout': return <Checkout user={user} t={t} onComplete={(p) => { if(user) setUser({...user, plan: p}); navigate('home'); }} />;
       case 'tool_library': return <ToolLibrary tools={catalog} isAdmin={user?.isDev || false} onSelectTool={(tool) => { setSelectedTool(tool); setCurrentScreen('tool_detail' as any); }} onAddTool={() => { setSelectedTool(null); setCurrentScreen('tool_editor' as any); }} t={t} />;
       case 'tool_detail' as any: 
-        return selectedTool ? <ToolDetail tool={selectedTool} isAdmin={user?.isDev || false} onBack={() => navigate('tool_library')} onCalculate={() => navigate('machining_params')} onEdit={() => { setCurrentScreen('tool_editor' as any); }} /> : <Home user={user} navigate={navigate} t={t} language={language} setLanguage={setLanguage} appLogo={appLogo} />;
+        return selectedTool ? <ToolDetail tool={selectedTool} isAdmin={user?.isDev || false} onBack={() => navigate('tool_library')} onCalculate={() => navigate('machining_params')} onEdit={() => { setCurrentScreen('tool_editor' as any); }} /> : <Home user={user} navigate={navigate} t={t} language={language} setLanguage={setLanguage} />;
       case 'tool_editor' as any:
         return <ToolEditor tool={selectedTool} onBack={() => navigate('tool_library')} onSave={(tool) => { 
           const idx = catalog.findIndex(t => t.id === tool.id);
@@ -167,7 +173,7 @@ export default function App() {
           else { setCatalog([...catalog, tool]); }
           navigate('tool_library');
         }} onDelete={(id) => { setCatalog(catalog.filter(t => t.id !== id)); navigate('tool_library'); }} />;
-      default: return <Home user={user} navigate={navigate} t={t} language={language} setLanguage={setLanguage} appLogo={appLogo} />;
+      default: return <Home user={user} navigate={navigate} t={t} language={language} setLanguage={setLanguage} />;
     }
   };
 
@@ -185,7 +191,7 @@ export default function App() {
         {user && currentScreen !== 'login' && (
           <BottomNav currentScreen={currentScreen} navigate={navigate} t={t} />
         )}
-        <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} navigate={navigate} user={user} t={t} appLogo={appLogo} />
+        <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} navigate={navigate} user={user} t={t} />
       </div>
     </div>
   );

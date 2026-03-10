@@ -3,6 +3,10 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leandro4800/meu-app-casillas.git"
+  },
   "scripts": {
     "dev": "tsx server.ts",
     "build": "vite build",
@@ -15,6 +19,7 @@
     "express": "^4.21.2",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
+    "stripe": "^20.4.1",
     "tailwindcss": "^4.2.1",
     "vite-plugin-pwa": "^1.2.0"
   },

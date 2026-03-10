@@ -15,12 +15,33 @@ const Checkout: React.FC<CheckoutProps> = ({ user, onComplete, t }) => {
   const monthlyPrice = 29.90;
   const annualPrice = 299.00;
 
-  const handleStripePayment = () => {
+  const handleStripePayment = async () => {
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          plan,
+          email: user?.email,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error(data.error || 'Erro ao criar sessão de checkout');
+      }
+    } catch (error: any) {
+      console.error('Erro no pagamento:', error);
+      alert('Erro ao processar pagamento. Verifique se as chaves do Stripe estão configuradas corretamente.');
+    } finally {
       setLoading(false);
-      onComplete(plan);
-    }, 3000);
+    }
   };
 
   return (

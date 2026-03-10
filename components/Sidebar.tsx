@@ -9,10 +9,9 @@ interface SidebarProps {
   navigate: (screen: Screen) => void;
   user: User | null;
   t: any;
-  appLogo: string;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, navigate, user, t, appLogo }) => {
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, navigate, user, t }) => {
   const menuGroups = [
     {
       title: t.tools,
@@ -50,14 +49,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, navigate, user, t, a
       <div className={`fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm transition-opacity duration-300 ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`} onClick={onClose} />
       <aside className={`fixed top-0 left-0 z-[110] h-full w-[85%] max-w-[320px] bg-[#1c1e22] border-r border-white/10 shadow-2xl transition-transform duration-500 ease-out transform ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex flex-col h-full overflow-hidden">
-          {/* Logo Section */}
-          <div className="p-6 bg-[#121214] flex flex-col items-center gap-3 shrink-0 border-b border-white/5">
-             <div className="size-32 rounded-3xl bg-[#0a0908] border border-white/5 flex items-center justify-center p-5 shadow-inner">
-                <img src={appLogo} className="max-w-full max-h-full object-contain" alt="Branding" />
-             </div>
-             <p className="text-[#eab308] text-[9px] font-black uppercase tracking-[0.4em]">Casillas Industrial</p>
-          </div>
-
           <div className="p-6 flex items-center gap-4 bg-[#121214]/50 border-b border-white/5">
             <div className="size-12 rounded-full border-2 border-[#eab308] overflow-hidden bg-[#252930] shrink-0">
               <img src={user?.photo || CASILLAS_CONSULTANT_IMAGE} alt="Operador" className="w-full h-full object-cover" />

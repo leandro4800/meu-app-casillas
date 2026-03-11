@@ -75,10 +75,8 @@ const Home: React.FC<HomeProps> = ({ user, navigate, t, language, setLanguage })
       </div>
 
       <div className="relative z-20 flex flex-col items-center pt-12 px-6">
-        <div className="text-center space-y-1 mb-8">
-          <h1 className="text-[#eab308] text-6xl font-black tracking-tighter uppercase italic leading-none">Casillas</h1>
-          <h2 className="text-[#eab308] text-base font-black tracking-[0.2em] uppercase opacity-70">{t.app_subtitle}</h2>
-        </div>
+        <h1 className="text-[#eab308] text-6xl font-black tracking-tighter uppercase italic leading-none mb-1">Casillas</h1>
+        <h2 className="text-[#eab308] text-base font-black tracking-[0.2em] uppercase opacity-70 mb-8">{t.app_subtitle}</h2>
 
         <p className="text-gray-400 text-[11px] leading-relaxed max-w-[280px] mx-auto text-center mb-10 font-black uppercase tracking-widest opacity-60">
           {t.app_desc}

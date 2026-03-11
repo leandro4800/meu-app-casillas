@@ -26,8 +26,8 @@ const Welcome: React.FC<WelcomeProps> = ({ onStart }) => {
         />
         
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center px-8 text-center">
-          <div className="space-y-2 animate-in fade-in slide-in-from-bottom-8 duration-700">
-            <h1 className="text-[#eab308] text-7xl font-black tracking-tighter uppercase italic leading-none drop-shadow-2xl">
+          <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
+            <h1 className="text-[#eab308] text-7xl font-black tracking-tighter uppercase italic leading-none drop-shadow-2xl mb-2">
               Casillas
             </h1>
             <p className="text-white text-xs font-black uppercase tracking-[0.4em] opacity-80">Engenharia & Usinagem</p>

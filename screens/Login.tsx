@@ -91,10 +91,8 @@ const Login: React.FC<LoginProps> = ({ onLogin, onDevAccess, t }) => {
       </div>
 
       <div className="relative z-10 w-full max-w-sm space-y-10 animate-in fade-in zoom-in duration-700">
-        <div className="space-y-4">
-           <h1 className="text-[#eab308] text-5xl font-black uppercase italic tracking-tighter">CASILLAS</h1>
-           <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.4em]">Acesso ao Formulário Técnico</p>
-        </div>
+        <h1 className="text-[#eab308] text-5xl font-black uppercase italic tracking-tighter mb-2">CASILLAS</h1>
+        <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.4em] mb-10">Acesso ao Formulário Técnico</p>
 
         <form onSubmit={handleLogin} className="space-y-4">
            <div className="space-y-1 text-left">

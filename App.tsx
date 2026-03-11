@@ -35,6 +35,7 @@ import AISuite from './screens/AISuite';
 import VoiceConsultant from './screens/VoiceConsultant';
 import MediaLab from './screens/MediaLab';
 import DrawingAnalysis from './screens/DrawingAnalysis';
+import Welcome from './screens/Welcome';
 
 import { HAILTOOLS_CATALOG } from './constants';
 import { ToolInsert } from './types';
@@ -44,7 +45,7 @@ const PERSISTENCE_KEY = 'casillas_v1_auth_session';
 
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
-  const [currentScreen, setCurrentScreen] = useState<Screen>('login');
+  const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
   const [language, setLanguage] = useState<Language>('pt_BR');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isReady, setIsReady] = useState(false);
@@ -122,9 +123,12 @@ export default function App() {
   };
 
   const renderScreen = () => {
-    if (!user && currentScreen !== 'login') return <Login onLogin={(u) => {setUser(u); setCurrentScreen('home');}} onDevAccess={() => {}} t={t} />;
+    if (!user && !['login', 'welcome'].includes(currentScreen)) {
+      return <Welcome onStart={() => navigate('login')} />;
+    }
 
     switch (currentScreen) {
+      case 'welcome': return <Welcome onStart={() => navigate('login')} />;
       case 'login': return <Login onLogin={(u) => {setUser(u); setCurrentScreen('home'); localStorage.setItem(PERSISTENCE_KEY, JSON.stringify(u));}} onDevAccess={() => {}} t={t} />;
       case 'home': return <Home user={user} navigate={navigate} t={t} language={language} setLanguage={setLanguage} />;
       case 'ai_suite': return <AISuite navigate={navigate} t={t} />;
@@ -182,13 +186,13 @@ export default function App() {
   return (
     <div className="flex h-full w-full flex-col bg-[#0a0908] text-white">
       <div className="mx-auto flex h-full w-full max-w-md flex-col bg-rust-dark shadow-2xl relative overflow-hidden">
-        {user && currentScreen !== 'login' && (
+        {user && !['login', 'welcome'].includes(currentScreen) && (
           <Header onMenuClick={() => setIsSidebarOpen(true)} onBack={() => navigate('home')} currentScreen={currentScreen} t={t} />
         )}
         <main className="flex-1 relative overflow-y-auto custom-scrollbar">
           {renderScreen()}
         </main>
-        {user && currentScreen !== 'login' && (
+        {user && !['login', 'welcome'].includes(currentScreen) && (
           <BottomNav currentScreen={currentScreen} navigate={navigate} t={t} />
         )}
         <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} navigate={navigate} user={user} t={t} />

@@ -50,9 +50,9 @@ const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, onUpd
       ...user,
       name: formData.name || user.name,
       photo: formData.photo || user.photo || AVATAR_URL,
-      company: formData.company,
-      role: formData.role,
-      phone: formData.phone
+      company: formData.company || '',
+      role: formData.role || '',
+      phone: formData.phone || ''
     };
 
     onUpdateUser(updatedUser);
@@ -126,26 +126,37 @@ const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, onUpd
               )}
            </button>
         </div>
-        <h3 className="text-[#eab308] text-2xl font-black tracking-tight uppercase italic mt-4">{formData.name || 'OPERADOR'}</h3>
+        {!isEditing && (
+          <h3 className="text-[#eab308] text-2xl font-black tracking-tight uppercase italic mt-4">{formData.name || 'OPERADOR'}</h3>
+        )}
       </div>
 
       <div className="px-6 space-y-8">
-        {/* Corporate Data */}
+        {/* User Data */}
         <section className="space-y-4">
-           <p className="text-gray-800 text-[9px] font-black uppercase tracking-[0.4em] ml-2">Dados Corporativos</p>
+           <p className="text-gray-800 text-[9px] font-black uppercase tracking-[0.4em] ml-2">Identificação Técnica</p>
            <div className="bg-[#1c1816]/60 rounded-[32px] border border-white/5 divide-y divide-white/5 overflow-hidden shadow-xl">
+              <ProfileItem label="Nome Completo" value={formData.name || ''} icon="person" isEditing={isEditing} onChange={(v: string) => handleChange('name', v)} />
               <ProfileItem label="Empresa" value={formData.company || ''} icon="apartment" isEditing={isEditing} onChange={(v: string) => handleChange('company', v)} />
               <ProfileItem label="Cargo" value={formData.role || ''} icon="engineering" isEditing={isEditing} onChange={(v: string) => handleChange('role', v)} />
               <ProfileItem label="Contato" value={formData.phone || ''} icon="call" isEditing={isEditing} onChange={(v: string) => handleChange('phone', v)} />
            </div>
         </section>
 
-        <section className="bg-gradient-to-br from-[#eab308]/5 to-transparent rounded-[32px] p-6 border border-[#eab308]/10 flex items-center justify-between">
-           <div>
-              <p className="text-white font-black text-xs uppercase">Plano {user?.plan || 'Free'}</p>
-              <p className="text-[8px] text-[#eab308] font-black uppercase tracking-widest">Expira em: {formatDate(user?.expiryDate)}</p>
+        {/* Subscription Status */}
+        <section className="bg-gradient-to-br from-[#eab308]/10 to-transparent rounded-[32px] p-6 border border-[#eab308]/20 flex items-center justify-between shadow-lg">
+           <div className="flex items-center gap-4">
+              <div className="size-12 rounded-2xl bg-[#eab308] flex items-center justify-center text-black shadow-xl">
+                 <span className="material-symbols-outlined font-black">verified</span>
+              </div>
+              <div>
+                 <p className="text-white font-black text-sm uppercase tracking-tight">Plano {user?.plan === 'annual' ? 'Anual Pro' : user?.plan === 'monthly' ? 'Mensal Pro' : 'Free'}</p>
+                 <p className="text-[9px] text-[#eab308] font-black uppercase tracking-widest">Válido até: {formatDate(user?.expiryDate)}</p>
+              </div>
            </div>
-           <button className="bg-black/20 text-[#eab308] text-[9px] font-black px-4 py-2 rounded-full border border-[#eab308]/20">Renovar</button>
+           {user?.plan === 'free' && (
+             <button onClick={() => window.location.href = '/checkout'} className="bg-white text-black text-[9px] font-black px-4 py-2 rounded-full uppercase tracking-widest hover:bg-[#eab308] transition-colors">Upgrade</button>
+           )}
         </section>
 
         <section className="bg-[#1c1816] rounded-[32px] p-6 border border-white/5 space-y-4 shadow-xl">

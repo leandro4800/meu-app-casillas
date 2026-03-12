@@ -13,8 +13,8 @@ const Checkout: React.FC<CheckoutProps> = ({ user, onComplete, onLogout, t }) =>
   const [plan, setPlan] = useState<'monthly' | 'annual'>('annual');
   const [loading, setLoading] = useState(false);
 
-  const monthlyPrice = 29.90;
-  const annualPrice = 299.00;
+  const monthlyPrice = 19.90;
+  const annualPrice = 197.00;
 
   const handleStripePayment = async () => {
     setLoading(true);
@@ -66,7 +66,7 @@ const Checkout: React.FC<CheckoutProps> = ({ user, onComplete, onLogout, t }) =>
           onClick={() => setPlan('annual')}
           className={`w-full p-6 rounded-[32px] border-2 transition-all relative flex items-center gap-6 ${plan === 'annual' ? 'bg-[#eab308] border-[#eab308] text-black shadow-2xl' : 'bg-[#221e1b] border-white/5 text-gray-500'}`}
         >
-          <div className="absolute -top-3 right-8 bg-red-600 text-white text-[8px] font-black px-3 py-1 rounded-full shadow-lg">ECONOMIA DE 16%</div>
+          <div className="absolute -top-3 right-8 bg-red-600 text-white text-[8px] font-black px-3 py-1 rounded-full shadow-lg">ECONOMIZE R$ 41,80 POR ANO</div>
           <div className="size-12 rounded-2xl bg-black/10 flex items-center justify-center">
              <span className="material-symbols-outlined text-2xl">verified</span>
           </div>
@@ -127,7 +127,7 @@ const Checkout: React.FC<CheckoutProps> = ({ user, onComplete, onLogout, t }) =>
              onClick={onLogout} 
              className="w-full py-4 text-gray-600 text-[10px] font-black uppercase tracking-[0.3em] hover:text-gray-400 transition-colors"
            >
-             Sair da Conta
+             {user ? 'Sair da Conta' : 'Fazer Login'}
            </button>
 
            <div className="flex flex-col items-center gap-4 mt-6">

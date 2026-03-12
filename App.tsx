@@ -153,21 +153,12 @@ export default function App() {
       return <Welcome onStart={() => navigate('login')} />;
     }
 
-    // Paywall Logic: Only 48mineiro@gmail.com or paid plans have access to restricted features
+    // Paywall Logic: Only 48mineiro@gmail.com or paid plans have access to the full app
     const isVip = user?.email === '48mineiro@gmail.com' || user?.isDev;
     const hasPaid = user?.plan && user.plan !== 'free';
-    
-    // Restricted screens (AI features)
-    const isRestrictedScreen = [
-      'consultant', 
-      'voice_consultant', 
-      'ai_suite', 
-      'media_lab', 
-      'drawing_analysis', 
-      'ai_agent'
-    ].includes(currentScreen);
+    const isPublicScreen = ['login', 'welcome', 'checkout'].includes(currentScreen);
 
-    if (user && !isVip && !hasPaid && isRestrictedScreen) {
+    if (user && !isVip && !hasPaid && !isPublicScreen) {
       return (
         <Checkout 
           user={user} 
@@ -241,7 +232,9 @@ export default function App() {
 
   if (!isReady) return null;
 
-  const canNavigate = !!user;
+  const isVip = user?.email === '48mineiro@gmail.com' || user?.isDev;
+  const hasPaid = user?.plan && user.plan !== 'free';
+  const canNavigate = !!user && (isVip || hasPaid);
 
   return (
     <div className="flex h-full w-full flex-col bg-[#0a0908] text-white">

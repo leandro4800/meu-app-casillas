@@ -65,8 +65,7 @@ const VoiceConsultant: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
     sessionPromiseRef.current = ai.live.connect({
-      // Guidelines: Use 'gemini-flash-latest' as a robust free model
-      model: 'gemini-flash-latest',
+      model: 'gemini-2.5-flash-native-audio-preview-09-2025',
       callbacks: {
         onopen: () => {
           setIsActive(true);
@@ -105,26 +104,31 @@ const VoiceConsultant: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate
           processor.connect(inputCtx.destination);
         },
         onmessage: async (message) => {
-          const base64EncodedAudioString = message.serverContent?.modelTurn?.parts[0]?.inlineData?.data;
-          if (base64EncodedAudioString && audioContextRef.current) {
-            nextStartTimeRef.current = Math.max(
-              nextStartTimeRef.current,
-              audioContextRef.current.currentTime
-            );
-            const audioBuffer = await decodeAudioData(
-              decode(base64EncodedAudioString),
-              audioContextRef.current
-            );
-            const source = audioContextRef.current.createBufferSource();
-            source.buffer = audioBuffer;
-            source.connect(audioContextRef.current.destination);
-            source.addEventListener('ended', () => {
-              sourcesRef.current.delete(source);
-            });
+          const parts = message.serverContent?.modelTurn?.parts;
+          if (parts && audioContextRef.current) {
+            for (const part of parts) {
+              const base64EncodedAudioString = part.inlineData?.data;
+              if (base64EncodedAudioString) {
+                nextStartTimeRef.current = Math.max(
+                  nextStartTimeRef.current,
+                  audioContextRef.current.currentTime
+                );
+                const audioBuffer = await decodeAudioData(
+                  decode(base64EncodedAudioString),
+                  audioContextRef.current
+                );
+                const source = audioContextRef.current.createBufferSource();
+                source.buffer = audioBuffer;
+                source.connect(audioContextRef.current.destination);
+                source.addEventListener('ended', () => {
+                  sourcesRef.current.delete(source);
+                });
 
-            source.start(nextStartTimeRef.current);
-            nextStartTimeRef.current = nextStartTimeRef.current + audioBuffer.duration;
-            sourcesRef.current.add(source);
+                source.start(nextStartTimeRef.current);
+                nextStartTimeRef.current = nextStartTimeRef.current + audioBuffer.duration;
+                sourcesRef.current.add(source);
+              }
+            }
           }
 
           const interrupted = message.serverContent?.interrupted;

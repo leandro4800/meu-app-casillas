@@ -148,6 +148,21 @@ const Consultant: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate }) =
                <span className="material-symbols-outlined text-[10px] text-[#eab308] filled">verified</span>
             </div>
          </div>
+         <div className="flex items-center gap-3">
+            <button 
+              onClick={() => navigate('voice_consultant')}
+              className="size-10 rounded-xl bg-[#eab308]/10 border border-[#eab308]/20 text-[#eab308] flex items-center justify-center hover:bg-[#eab308]/20 transition-all active:scale-95"
+              title="Consultor por Voz"
+            >
+              <span className="material-symbols-outlined">mic</span>
+            </button>
+            <button 
+              onClick={() => navigate('home')} 
+              className="size-10 rounded-xl bg-white/5 border border-white/10 text-gray-400 flex items-center justify-center hover:bg-white/10 transition-all active:scale-95"
+            >
+              <span className="material-symbols-outlined">close</span>
+            </button>
+         </div>
       </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-12 custom-scrollbar pb-36 relative z-10">
@@ -165,12 +180,12 @@ const Consultant: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate }) =
                 <img src={CASILLAS_CONSULTANT_IMAGE} className="w-full h-full object-cover" alt="" />
               </div>
             )}
-            <div className={`p-6 rounded-[32px] shadow-2xl border max-w-[90%] ${
+            <div className={`p-6 rounded-[32px] shadow-2xl border max-w-[90%] font-sans ${
               msg.role === 'casillas' 
-                ? 'bg-[#1c1816] text-gray-100 border-white/5 rounded-tl-none' 
+                ? 'bg-[#1c1816] text-gray-100 border-white/5 rounded-tl-none font-medium' 
                 : 'bg-[#eab308] text-black font-black rounded-tr-none border-[#eab308]'
             }`}>
-              <div className="text-sm leading-relaxed whitespace-pre-wrap tracking-tight">
+              <div className="text-base leading-[1.5] whitespace-pre-wrap tracking-[0.3px]">
                 {msg.text}
               </div>
               {msg.isStreaming && (

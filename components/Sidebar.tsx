@@ -54,21 +54,21 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, navigate, user, t })
               <img src={user?.photo || CASILLAS_CONSULTANT_IMAGE} alt="Operador" className="w-full h-full object-cover" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-white font-black text-sm uppercase italic truncate">{user?.name || 'OPERADOR'}</p>
-              <p className="text-gray-500 text-[8px] font-black uppercase tracking-widest truncate">{user?.role || 'Consultor Técnico'}</p>
+              <p className="text-white font-black text-base uppercase italic truncate">{user?.name || 'OPERADOR'}</p>
+              <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest truncate">{user?.role || 'Consultor Técnico'}</p>
             </div>
           </div>
 
           <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-8 custom-scrollbar bg-[#1c1e22]">
             {menuGroups.map((group) => (
               <div key={group.title} className="space-y-1">
-                <p className="px-5 mb-3 text-[9px] font-black text-[#eab308]/40 uppercase tracking-[0.4em]">{group.title}</p>
+                <p className="px-5 mb-3 text-[11px] font-black text-[#eab308]/40 uppercase tracking-[0.4em]">{group.title}</p>
                 {group.items.map((item) => (
                   <button key={item.id} onClick={() => navigate(item.id as Screen)} className="w-full flex items-center gap-4 px-5 py-3 rounded-2xl text-gray-400 hover:text-white hover:bg-white/5 group transition-all">
                     <div className="size-8 rounded-lg bg-[#252930] flex items-center justify-center text-gray-600 group-hover:text-[#eab308] transition-colors border border-white/5">
                        <span className="material-symbols-outlined text-xl">{item.icon}</span>
                     </div>
-                    <span className="text-sm font-bold tracking-tight">{item.label}</span>
+                    <span className="text-base font-bold tracking-tight">{item.label}</span>
                   </button>
                 ))}
               </div>
@@ -76,7 +76,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, navigate, user, t })
           </nav>
 
           <div className="p-6 border-t border-white/10 bg-[#121214] shrink-0">
-             <button onClick={() => navigate('profile')} className="w-full flex items-center justify-center gap-3 px-5 py-3 rounded-2xl bg-[#eab308]/5 text-[#eab308] font-black uppercase text-[10px] tracking-widest border border-[#eab308]/10">
+             <button onClick={() => navigate('profile')} className="w-full flex items-center justify-center gap-3 px-5 py-3 rounded-2xl bg-[#eab308]/5 text-[#eab308] font-black uppercase text-xs tracking-widest border border-[#eab308]/10">
                 <span className="material-symbols-outlined text-lg">settings</span>
                 {t.sb_manage_profile}
              </button>

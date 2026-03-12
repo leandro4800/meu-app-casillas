@@ -33,9 +33,11 @@ const Login: React.FC<LoginProps> = ({ onLogin, onDevAccess, t }) => {
       localStorage.removeItem('casillas_remembered_email');
     }
 
-    setTimeout(() => {
+    setTimeout(async () => {
+      let userData: any = null;
+
       if (email === '48mineiro@gmail.com' && password === 'delabela48') {
-        onLogin({
+        userData = {
           id: 'admin_1',
           name: '48 Mineiro',
           email: '48mineiro@gmail.com',
@@ -46,9 +48,9 @@ const Login: React.FC<LoginProps> = ({ onLogin, onDevAccess, t }) => {
           role: 'Administrador Industrial',
           sector: 'Gestão Geral',
           phone: '(31) 99999-9999'
-        });
+        };
       } else if (email && password.length >= 6) {
-        onLogin({
+        userData = {
           id: Math.random().toString(36).substr(2, 9),
           name: email.split('@')[0].toUpperCase(),
           email: email,
@@ -59,7 +61,23 @@ const Login: React.FC<LoginProps> = ({ onLogin, onDevAccess, t }) => {
           role: 'Técnico Operador',
           sector: '',
           phone: ''
-        });
+        };
+      }
+
+      if (userData) {
+        try {
+          const sessionRes = await fetch('/api/session/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: userData.email })
+          });
+          const { sessionId } = await sessionRes.json();
+          userData.sessionId = sessionId;
+          onLogin(userData);
+        } catch (err) {
+          console.error("Session error:", err);
+          onLogin(userData); // Fallback
+        }
       } else {
         setError('Dados incorretos. Verifique as credenciais técnicas.');
         setLoading(false);
@@ -67,13 +85,36 @@ const Login: React.FC<LoginProps> = ({ onLogin, onDevAccess, t }) => {
     }, 1500);
   };
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
     setLoading(true);
-    setTimeout(() => {
+    const email = 'usuario@gmail.com';
+    try {
+      const sessionRes = await fetch('/api/session/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const { sessionId } = await sessionRes.json();
+      
       onLogin({
         id: 'google_' + Math.random().toString(36).substr(2, 5),
         name: 'USUÁRIO GOOGLE',
-        email: 'usuario@gmail.com',
+        email: email,
+        photo: 'https://api.dicebear.com/7.x/avataaars/svg?seed=google',
+        plan: 'free',
+        isDev: false,
+        company: 'Unidade Google',
+        role: 'Consultor Externo',
+        phone: '',
+        sessionId: sessionId
+      });
+    } catch (err) {
+      console.error("Google session error:", err);
+      // Fallback without session if server is down
+      onLogin({
+        id: 'google_' + Math.random().toString(36).substr(2, 5),
+        name: 'USUÁRIO GOOGLE',
+        email: email,
         photo: 'https://api.dicebear.com/7.x/avataaars/svg?seed=google',
         plan: 'free',
         isDev: false,
@@ -81,7 +122,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onDevAccess, t }) => {
         role: 'Consultor Externo',
         phone: ''
       });
-    }, 1200);
+    }
   };
 
   return (

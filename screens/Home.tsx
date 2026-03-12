@@ -45,11 +45,11 @@ const Home: React.FC<HomeProps> = ({ user, navigate, t, language, setLanguage })
         <div className={`w-full py-4 px-6 flex items-center justify-between border-b ${expirationNotice.urgent ? 'bg-red-600 border-red-500' : 'bg-[#eab308] border-[#eab308]'}`}>
            <div className="flex items-center gap-3">
               <span className="material-symbols-outlined text-black font-black text-2xl">warning</span>
-              <p className="text-black font-black text-sm uppercase tracking-widest">
+              <p className="text-black font-black text-[10px] uppercase tracking-widest">
                 Expira em {expirationNotice.days} dias
               </p>
            </div>
-           <button onClick={() => navigate('checkout')} className="bg-black text-white text-[10px] font-black px-6 py-2.5 rounded-full uppercase tracking-widest shadow-xl">
+           <button onClick={() => navigate('checkout')} className="bg-black text-white text-[8px] font-black px-6 py-2.5 rounded-full uppercase tracking-widest shadow-xl">
              Renovar
            </button>
         </div>
@@ -75,10 +75,10 @@ const Home: React.FC<HomeProps> = ({ user, navigate, t, language, setLanguage })
       </div>
 
       <div className="relative z-20 flex flex-col items-center pt-12 px-6">
-        <h1 className="text-[#eab308] text-7xl font-black tracking-tighter uppercase italic leading-none mb-1">Casillas</h1>
-        <h2 className="text-[#eab308] text-xl font-black tracking-[0.2em] uppercase opacity-90 mb-8">{t.app_subtitle}</h2>
+        <h1 className="text-[#eab308] text-6xl font-black tracking-tighter uppercase italic leading-none mb-1">Casillas</h1>
+        <h2 className="text-[#eab308] text-base font-black tracking-[0.2em] uppercase opacity-90 mb-8">{t.app_subtitle}</h2>
 
-        <p className="text-gray-300 text-sm leading-relaxed max-w-[320px] mx-auto text-center mb-10 font-black uppercase tracking-widest opacity-80">
+        <p className="text-gray-300 text-[11px] leading-relaxed max-w-[320px] mx-auto text-center mb-10 font-black uppercase tracking-widest opacity-80">
           {t.app_desc}
         </p>
 
@@ -89,8 +89,8 @@ const Home: React.FC<HomeProps> = ({ user, navigate, t, language, setLanguage })
                 <span className="material-symbols-outlined text-4xl">{action.icon}</span>
               </div>
               <div className="flex-1">
-                <p className="text-white font-black text-xl tracking-tight leading-none">{action.title}</p>
-                <p className="text-gray-400 text-xs uppercase font-black tracking-widest mt-2">{action.desc}</p>
+                <p className="text-white font-black text-base tracking-tight leading-none">{action.title}</p>
+                <p className="text-gray-400 text-[10px] uppercase font-black tracking-widest mt-2">{action.desc}</p>
               </div>
             </button>
           ))}

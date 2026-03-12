@@ -159,42 +159,44 @@ const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, onUpd
            )}
         </section>
 
-        <section className="bg-[#1c1816] rounded-[32px] p-6 border border-white/5 space-y-4 shadow-xl">
-           <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                 <div className={`size-3 rounded-full ${process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.length > 10 ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
-                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Status da API Gemini</p>
-              </div>
-              <p className="text-[10px] font-black uppercase text-white">{process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.length > 10 ? 'Conectado' : 'Desconectado'}</p>
-           </div>
-           
-           <div className="pt-4 border-t border-white/5 space-y-3">
-              <p className="text-[8px] font-black text-gray-600 uppercase tracking-widest leading-tight">
-                Se a IA não estiver funcionando, você pode inserir uma chave manualmente abaixo:
-              </p>
-              <div className="flex gap-2">
-                 <input 
-                   type="password" 
-                   placeholder="Inserir Chave Manual (opcional)" 
-                   className="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-[10px] text-white outline-none focus:border-[#eab308]/50"
-                   value={localStorage.getItem('manual_gemini_key') || ''}
-                   onChange={(e) => {
-                     localStorage.setItem('manual_gemini_key', e.target.value);
-                     // Forçar re-render se necessário ou apenas salvar
-                   }}
-                 />
-                 <button 
-                   onClick={() => {
-                     localStorage.removeItem('manual_gemini_key');
-                     window.location.reload();
-                   }}
-                   className="bg-red-500/10 text-red-500 text-[8px] font-black px-3 py-2 rounded-xl border border-red-500/20 uppercase"
-                 >
-                   Limpar
-                 </button>
-              </div>
-           </div>
-        </section>
+        {user?.email === '48mineiro@gmail.com' && (
+          <section className="bg-[#1c1816] rounded-[32px] p-6 border border-white/5 space-y-4 shadow-xl">
+             <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                   <div className={`size-3 rounded-full ${process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.length > 10 ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
+                   <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Status da API Gemini</p>
+                </div>
+                <p className="text-[10px] font-black uppercase text-white">{process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.length > 10 ? 'Conectado' : 'Desconectado'}</p>
+             </div>
+             
+             <div className="pt-4 border-t border-white/5 space-y-3">
+                <p className="text-[8px] font-black text-gray-600 uppercase tracking-widest leading-tight">
+                  Se a IA não estiver funcionando, você pode inserir uma chave manualmente abaixo:
+                </p>
+                <div className="flex gap-2">
+                   <input 
+                     type="password" 
+                     placeholder="Inserir Chave Manual (opcional)" 
+                     className="flex-1 bg-black/40 border border-white/10 rounded-xl px-4 py-2 text-[10px] text-white outline-none focus:border-[#eab308]/50"
+                     value={localStorage.getItem('manual_gemini_key') || ''}
+                     onChange={(e) => {
+                       localStorage.setItem('manual_gemini_key', e.target.value);
+                       // Forçar re-render se necessário ou apenas salvar
+                     }}
+                   />
+                   <button 
+                     onClick={() => {
+                       localStorage.removeItem('manual_gemini_key');
+                       window.location.reload();
+                     }}
+                     className="bg-red-500/10 text-red-500 text-[8px] font-black px-3 py-2 rounded-xl border border-red-500/20 uppercase"
+                   >
+                     Limpar
+                   </button>
+                </div>
+             </div>
+          </section>
+        )}
 
         {canInstall && (
           <button 

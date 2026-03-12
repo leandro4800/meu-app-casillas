@@ -5,10 +5,11 @@ import { User } from '../types';
 interface CheckoutProps {
   user: User | null;
   onComplete: (plan: 'monthly' | 'annual') => void;
+  onLogout: () => void;
   t: any;
 }
 
-const Checkout: React.FC<CheckoutProps> = ({ user, onComplete, t }) => {
+const Checkout: React.FC<CheckoutProps> = ({ user, onComplete, onLogout, t }) => {
   const [plan, setPlan] = useState<'monthly' | 'annual'>('annual');
   const [loading, setLoading] = useState(false);
 
@@ -121,6 +122,14 @@ const Checkout: React.FC<CheckoutProps> = ({ user, onComplete, t }) => {
                 </>
               )}
            </button>
+
+           <button 
+             onClick={onLogout} 
+             className="w-full py-4 text-gray-600 text-[10px] font-black uppercase tracking-[0.3em] hover:text-gray-400 transition-colors"
+           >
+             Sair da Conta
+           </button>
+
            <div className="flex flex-col items-center gap-4 mt-6">
               <div className="flex items-center gap-4 opacity-30">
                  <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" className="h-4 grayscale invert" alt="Stripe" />

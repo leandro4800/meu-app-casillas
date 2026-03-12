@@ -185,7 +185,7 @@ const Consultant: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate }) =
                 ? 'bg-[#1c1816] text-gray-100 border-white/5 rounded-tl-none font-medium' 
                 : 'bg-[#eab308] text-black font-black rounded-tr-none border-[#eab308]'
             }`}>
-              <div className="text-base leading-[1.5] whitespace-pre-wrap tracking-[0.3px]">
+              <div className="text-sm leading-[1.5] whitespace-pre-wrap">
                 {msg.text}
               </div>
               {msg.isStreaming && (

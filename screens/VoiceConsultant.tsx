@@ -8,6 +8,9 @@ const VoiceConsultant: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate
   const [status, setStatus] = useState('Iniciar Consultoria por Voz');
   const sessionPromiseRef = useRef<Promise<any> | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
+  const inputCtxRef = useRef<AudioContext | null>(null);
+  const processorRef = useRef<ScriptProcessorNode | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const sourcesRef = useRef(new Set<AudioBufferSourceNode>());
   const nextStartTimeRef = useRef(0);
 
@@ -63,6 +66,7 @@ const VoiceConsultant: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate
     const ai = new GoogleGenAI({ apiKey });
     audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    streamRef.current = stream;
 
     sessionPromiseRef.current = ai.live.connect({
       model: 'gemini-2.5-flash-native-audio-preview-09-2025',
@@ -71,8 +75,10 @@ const VoiceConsultant: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate
           setIsActive(true);
           setStatus('Eng. Casillas Ouvindo...');
           const inputCtx = new AudioContext({ sampleRate: 16000 });
+          inputCtxRef.current = inputCtx;
           const source = inputCtx.createMediaStreamSource(stream);
           const processor = inputCtx.createScriptProcessor(4096, 1, 1);
+          processorRef.current = processor;
           processor.onaudioprocess = (e) => {
             const inputData = e.inputBuffer.getChannelData(0);
             const l = inputData.length;
@@ -163,9 +169,31 @@ const VoiceConsultant: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate
   };
 
   const stopSession = () => {
-    sessionPromiseRef.current?.then(s => s.close());
+    if (sessionPromiseRef.current) {
+      sessionPromiseRef.current.then(s => s.close());
+      sessionPromiseRef.current = null;
+    }
+    
+    if (processorRef.current) {
+      processorRef.current.disconnect();
+      processorRef.current = null;
+    }
+    if (inputCtxRef.current) {
+      inputCtxRef.current.close();
+      inputCtxRef.current = null;
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    if (audioContextRef.current) {
+      audioContextRef.current.close();
+      audioContextRef.current = null;
+    }
+
     setIsActive(false);
     setStatus('Iniciar Consultoria por Voz');
+    nextStartTimeRef.current = 0;
   };
 
   return (

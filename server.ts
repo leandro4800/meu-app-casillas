@@ -17,6 +17,9 @@ const getStripe = () => {
   return stripe;
 };
 
+// In-memory session store
+const activeSessions = new Map<string, string>();
+
 async function startServer() {
   const app = express();
   const PORT = 3000;
@@ -26,6 +29,33 @@ async function startServer() {
   // API routes
   app.get("/api/health", (req, res) => {
     res.json({ status: "ok" });
+  });
+
+  app.post("/api/session/login", (req, res) => {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: "Email required" });
+    
+    const sessionId = Math.random().toString(36).substring(2) + Date.now();
+    activeSessions.set(email, sessionId);
+    console.log(`New session for ${email}: ${sessionId}`);
+    res.json({ sessionId });
+  });
+
+  app.post("/api/session/check", (req, res) => {
+    const { email, sessionId } = req.body;
+    if (!email || !sessionId) return res.status(400).json({ error: "Email and sessionId required" });
+    
+    const currentSession = activeSessions.get(email);
+    // If no session exists on server, we accept the first one that comes (e.g. after server restart)
+    if (!currentSession) {
+      activeSessions.set(email, sessionId);
+      return res.json({ valid: true });
+    }
+
+    if (currentSession !== sessionId) {
+      return res.json({ valid: false });
+    }
+    res.json({ valid: true });
   });
 
   app.post("/api/create-checkout-session", async (req, res) => {

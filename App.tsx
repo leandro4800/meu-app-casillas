@@ -107,6 +107,32 @@ export default function App() {
 
   const t = useMemo(() => translations[language], [language]);
 
+  useEffect(() => {
+    const checkSession = async () => {
+      if (user && (user as any).sessionId) {
+        try {
+          const res = await fetch('/api/session/check', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: user.email, sessionId: (user as any).sessionId })
+          });
+          const data = await res.json();
+          if (data.valid === false) {
+            setUser(null);
+            localStorage.removeItem(PERSISTENCE_KEY);
+            setCurrentScreen('login');
+            alert("Esta conta foi conectada em outro dispositivo. Você foi desconectado.");
+          }
+        } catch (err) {
+          console.error("Session check error:", err);
+        }
+      }
+    };
+
+    const interval = setInterval(checkSession, 10000); // Check every 10 seconds
+    return () => clearInterval(interval);
+  }, [user]);
+
   const navigate = (screen: Screen) => {
     setCurrentScreen(screen);
     setIsSidebarOpen(false);
@@ -125,6 +151,29 @@ export default function App() {
   const renderScreen = () => {
     if (!user && !['login', 'welcome'].includes(currentScreen)) {
       return <Welcome onStart={() => navigate('login')} />;
+    }
+
+    // Paywall Logic: Only 48mineiro@gmail.com or paid plans have access to the app
+    const isVip = user?.email === '48mineiro@gmail.com' || user?.isDev;
+    const hasPaid = user?.plan && user.plan !== 'free';
+    const isPublicScreen = ['login', 'welcome', 'checkout'].includes(currentScreen);
+
+    if (user && !isVip && !hasPaid && !isPublicScreen) {
+      return (
+        <Checkout 
+          user={user} 
+          t={t} 
+          onLogout={() => {setUser(null); localStorage.removeItem(PERSISTENCE_KEY); setCurrentScreen('login');}}
+          onComplete={(p) => { 
+            if(user) {
+              const updatedUser = {...user, plan: p};
+              setUser(updatedUser);
+              localStorage.setItem(PERSISTENCE_KEY, JSON.stringify(updatedUser));
+            }
+            navigate('home'); 
+          }} 
+        />
+      );
     }
 
     switch (currentScreen) {
@@ -183,16 +232,18 @@ export default function App() {
 
   if (!isReady) return null;
 
+  const canNavigate = (user?.email === '48mineiro@gmail.com' || user?.isDev) || (user?.plan && user.plan !== 'free');
+
   return (
     <div className="flex h-full w-full flex-col bg-[#0a0908] text-white">
       <div className="mx-auto flex h-full w-full max-w-md flex-col bg-rust-dark shadow-2xl relative overflow-hidden">
-        {user && !['login', 'welcome'].includes(currentScreen) && (
+        {user && canNavigate && !['login', 'welcome'].includes(currentScreen) && (
           <Header onMenuClick={() => setIsSidebarOpen(true)} onBack={() => navigate('home')} currentScreen={currentScreen} t={t} />
         )}
         <main className="flex-1 relative overflow-y-auto custom-scrollbar">
           {renderScreen()}
         </main>
-        {user && !['login', 'welcome'].includes(currentScreen) && (
+        {user && canNavigate && !['login', 'welcome'].includes(currentScreen) && (
           <BottomNav currentScreen={currentScreen} navigate={navigate} t={t} />
         )}
         <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} navigate={navigate} user={user} t={t} />

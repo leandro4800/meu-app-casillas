@@ -42,14 +42,14 @@ const Home: React.FC<HomeProps> = ({ user, navigate, t, language, setLanguage })
     <div className="flex flex-col min-h-full bg-[#0a0908] relative overflow-y-auto custom-scrollbar">
       {/* Banner de Expiração */}
       {expirationNotice && (
-        <div className={`w-full py-3 px-6 flex items-center justify-between border-b ${expirationNotice.urgent ? 'bg-red-600 border-red-500' : 'bg-[#eab308] border-[#eab308]'}`}>
+        <div className={`w-full py-4 px-6 flex items-center justify-between border-b ${expirationNotice.urgent ? 'bg-red-600 border-red-500' : 'bg-[#eab308] border-[#eab308]'}`}>
            <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-black font-black">warning</span>
-              <p className="text-black font-black text-[10px] uppercase tracking-widest">
+              <span className="material-symbols-outlined text-black font-black text-2xl">warning</span>
+              <p className="text-black font-black text-sm uppercase tracking-widest">
                 Expira em {expirationNotice.days} dias
               </p>
            </div>
-           <button onClick={() => navigate('checkout')} className="bg-black text-white text-[8px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-xl">
+           <button onClick={() => navigate('checkout')} className="bg-black text-white text-[10px] font-black px-6 py-2.5 rounded-full uppercase tracking-widest shadow-xl">
              Renovar
            </button>
         </div>
@@ -75,22 +75,22 @@ const Home: React.FC<HomeProps> = ({ user, navigate, t, language, setLanguage })
       </div>
 
       <div className="relative z-20 flex flex-col items-center pt-12 px-6">
-        <h1 className="text-[#eab308] text-6xl font-black tracking-tighter uppercase italic leading-none mb-1">Casillas</h1>
-        <h2 className="text-[#eab308] text-base font-black tracking-[0.2em] uppercase opacity-70 mb-8">{t.app_subtitle}</h2>
+        <h1 className="text-[#eab308] text-7xl font-black tracking-tighter uppercase italic leading-none mb-1">Casillas</h1>
+        <h2 className="text-[#eab308] text-xl font-black tracking-[0.2em] uppercase opacity-90 mb-8">{t.app_subtitle}</h2>
 
-        <p className="text-gray-400 text-[11px] leading-relaxed max-w-[280px] mx-auto text-center mb-10 font-black uppercase tracking-widest opacity-60">
+        <p className="text-gray-300 text-sm leading-relaxed max-w-[320px] mx-auto text-center mb-10 font-black uppercase tracking-widest opacity-80">
           {t.app_desc}
         </p>
 
-        <div className="w-full space-y-4 mb-16">
+        <div className="w-full space-y-6 mb-16">
           {mainActions.map((action) => (
-            <button key={action.id} onClick={() => navigate(action.id as Screen)} className="w-full bg-[#1c1e22]/60 backdrop-blur-sm border border-white/5 rounded-2xl p-4 flex items-center gap-5 text-left active:scale-[0.98] transition-all shadow-xl hover:border-[#eab308]/20 group">
-              <div className="size-14 rounded-2xl bg-[#252930] flex items-center justify-center text-[#eab308] shrink-0 border border-white/5 group-hover:bg-[#eab308]/10 transition-colors">
-                <span className="material-symbols-outlined text-3xl">{action.icon}</span>
+            <button key={action.id} onClick={() => navigate(action.id as Screen)} className="w-full bg-[#1c1e22] border border-white/10 rounded-[2rem] p-6 flex items-center gap-6 text-left active:scale-[0.98] transition-all shadow-2xl hover:border-[#eab308]/40 group">
+              <div className="size-16 rounded-2xl bg-[#252930] flex items-center justify-center text-[#eab308] shrink-0 border border-white/10 group-hover:bg-[#eab308]/20 transition-colors">
+                <span className="material-symbols-outlined text-4xl">{action.icon}</span>
               </div>
               <div className="flex-1">
-                <p className="text-white font-black text-base tracking-tight">{action.title}</p>
-                <p className="text-gray-500 text-[10px] uppercase font-black tracking-widest mt-0.5">{action.desc}</p>
+                <p className="text-white font-black text-xl tracking-tight leading-none">{action.title}</p>
+                <p className="text-gray-400 text-xs uppercase font-black tracking-widest mt-2">{action.desc}</p>
               </div>
             </button>
           ))}

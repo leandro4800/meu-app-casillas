@@ -81,66 +81,72 @@ const MachiningParams: React.FC<MachiningParamsProps> = ({ initialData, onBack, 
         </div>
       )}
 
-      <div className="flex-1 p-4 space-y-3 overflow-hidden">
-        <div className="grid grid-cols-2 gap-2">
-          <select value={material} onChange={(e) => setMaterial(e.target.value)} className="bg-[#1c1e22] border border-white/5 rounded-xl h-10 px-2 text-[10px] text-[#eab308] font-black outline-none appearance-none">
-            {Object.keys(PARAM_MATRIX).map(m => <option key={m} value={m}>{m}</option>)}
-          </select>
-          <select value={toolType} onChange={(e) => setToolType(e.target.value as any)} className="bg-[#1c1e22] border border-white/5 rounded-xl h-10 px-2 text-[10px] text-[#eab308] font-black outline-none appearance-none">
-            <option value="HSS">HSS</option>
-            <option value="HM">HM</option>
-          </select>
-        </div>
-
-        <div className="grid grid-cols-2 gap-2">
-          <div className="col-span-1 bg-[#1c1e22] p-2 rounded-xl border border-white/5">
-            <label className="text-gray-500 text-[8px] font-black uppercase tracking-widest ml-1">{t.diameter} ({t.unit})</label>
-            <div className="flex items-center">
-              <input type="number" value={dia} onChange={(e) => setDia(e.target.value)} className="w-full bg-transparent text-white font-mono text-xl outline-none" />
-              <span className="text-[8px] font-black text-[#eab308]">{displayDia}</span>
-            </div>
+      <div className="flex-1 p-6 space-y-6 overflow-y-auto custom-scrollbar">
+        <div className="grid grid-cols-1 gap-4">
+          <div className="space-y-2">
+            <label className="text-gray-500 text-xs font-black uppercase tracking-widest ml-1">Material</label>
+            <select value={material} onChange={(e) => setMaterial(e.target.value)} className="w-full bg-[#1c1e22] border border-white/10 rounded-2xl h-16 px-4 text-base text-[#eab308] font-black outline-none appearance-none">
+              {Object.keys(PARAM_MATRIX).map(m => <option key={m} value={m}>{m}</option>)}
+            </select>
           </div>
-          <div className="col-span-1 bg-[#1c1e22] p-2 rounded-xl border border-white/5">
-            <label className="text-gray-500 text-[8px] font-black uppercase tracking-widest ml-1">{t.speed} ({t.vc_unit})</label>
-            <div className="flex items-center">
-              <input type="number" value={vc} onChange={(e) => setVc(e.target.value)} className="w-full bg-transparent text-white font-mono text-xl outline-none" />
-              <span className="text-[8px] font-black text-[#eab308]">{displayVc}</span>
-            </div>
-          </div>
-          <div className="col-span-1 bg-[#1c1e22] p-2 rounded-xl border border-white/5">
-            <label className="text-gray-500 text-[8px] font-black uppercase tracking-widest ml-1">{t.feed} ({t.feed_unit})</label>
-            <div className="flex items-center">
-              <input type="number" step="0.01" value={fz} onChange={(e) => setFz(e.target.value)} className="w-full bg-transparent text-white font-mono text-xl outline-none" />
-              <span className="text-[8px] font-black text-[#eab308]">{displayFz}</span>
-            </div>
-          </div>
-          <div className="col-span-1 bg-[#1c1e22] p-2 rounded-xl border border-white/5">
-            <label className="text-gray-500 text-[8px] font-black uppercase tracking-widest ml-1">{t.teeth} (z)</label>
-            <div className="flex items-center justify-between">
-              <button onClick={() => setZ(Math.max(1, z - 1))} className="text-[#eab308]"><span className="material-symbols-outlined text-sm">remove</span></button>
-              <span className="font-mono text-xl text-white">{z}</span>
-              <button onClick={() => setZ(z + 1)} className="text-[#eab308]"><span className="material-symbols-outlined text-sm">add</span></button>
-            </div>
+          <div className="space-y-2">
+            <label className="text-gray-500 text-xs font-black uppercase tracking-widest ml-1">Tipo de Ferramenta</label>
+            <select value={toolType} onChange={(e) => setToolType(e.target.value as any)} className="w-full bg-[#1c1e22] border border-white/10 rounded-2xl h-16 px-4 text-base text-[#eab308] font-black outline-none appearance-none">
+              <option value="HSS">HSS (Aço Rápido)</option>
+              <option value="HM">HM (Metal Duro)</option>
+            </select>
           </div>
         </div>
 
-        <button onClick={handleCalculate} className="w-full bg-[#eab308] text-black font-black py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 uppercase text-xs active:scale-95 transition-all">
-          <span className="material-symbols-outlined font-black text-base">calculate</span> {t.calculate}
+        <div className="grid grid-cols-1 gap-4">
+          <div className="bg-[#1c1e22] p-4 rounded-2xl border border-white/10">
+            <label className="text-gray-500 text-xs font-black uppercase tracking-widest ml-1">{t.diameter} ({t.unit})</label>
+            <div className="flex items-center mt-1">
+              <input type="number" value={dia} onChange={(e) => setDia(e.target.value)} className="w-full bg-transparent text-white font-mono text-3xl outline-none" />
+              <span className="text-sm font-black text-[#eab308] bg-[#eab308]/10 px-3 py-1 rounded-lg">{displayDia}</span>
+            </div>
+          </div>
+          <div className="bg-[#1c1e22] p-4 rounded-2xl border border-white/10">
+            <label className="text-gray-500 text-xs font-black uppercase tracking-widest ml-1">{t.speed} ({t.vc_unit})</label>
+            <div className="flex items-center mt-1">
+              <input type="number" value={vc} onChange={(e) => setVc(e.target.value)} className="w-full bg-transparent text-white font-mono text-3xl outline-none" />
+              <span className="text-sm font-black text-[#eab308] bg-[#eab308]/10 px-3 py-1 rounded-lg">{displayVc}</span>
+            </div>
+          </div>
+          <div className="bg-[#1c1e22] p-4 rounded-2xl border border-white/10">
+            <label className="text-gray-500 text-xs font-black uppercase tracking-widest ml-1">{t.feed} ({t.feed_unit})</label>
+            <div className="flex items-center mt-1">
+              <input type="number" step="0.01" value={fz} onChange={(e) => setFz(e.target.value)} className="w-full bg-transparent text-white font-mono text-3xl outline-none" />
+              <span className="text-sm font-black text-[#eab308] bg-[#eab308]/10 px-3 py-1 rounded-lg">{displayFz}</span>
+            </div>
+          </div>
+          <div className="bg-[#1c1e22] p-4 rounded-2xl border border-white/10">
+            <label className="text-gray-500 text-xs font-black uppercase tracking-widest ml-1">{t.teeth} (z)</label>
+            <div className="flex items-center justify-between mt-1">
+              <button onClick={() => setZ(Math.max(1, z - 1))} className="size-14 rounded-xl bg-white/5 flex items-center justify-center text-[#eab308]"><span className="material-symbols-outlined text-3xl">remove</span></button>
+              <span className="font-mono text-4xl text-white">{z}</span>
+              <button onClick={() => setZ(z + 1)} className="size-14 rounded-xl bg-white/5 flex items-center justify-center text-[#eab308]"><span className="material-symbols-outlined text-3xl">add</span></button>
+            </div>
+          </div>
+        </div>
+
+        <button onClick={handleCalculate} className="w-full bg-[#eab308] text-black font-black py-6 rounded-2xl shadow-2xl flex items-center justify-center gap-3 uppercase text-xl active:scale-95 transition-all">
+          <span className="material-symbols-outlined font-black text-3xl">calculate</span> {t.calculate}
         </button>
 
-        <div className="grid grid-cols-2 gap-2">
-           <div className="bg-gradient-to-br from-[#1c1e22] to-black border-l-2 border-[#eab308] rounded-xl p-3 shadow-md">
-              <p className="text-gray-500 text-[7px] font-black uppercase tracking-widest">{t.rotation} (n)</p>
-              <div className="flex items-baseline gap-1">
-                <span className="text-2xl font-black text-white tabular-nums">{results.rpm}</span>
-                <span className="text-[8px] font-black text-[#eab308]">RPM</span>
+        <div className="grid grid-cols-1 gap-4">
+           <div className="bg-gradient-to-br from-[#1c1e22] to-black border-l-4 border-[#eab308] rounded-2xl p-6 shadow-xl">
+              <p className="text-gray-500 text-sm font-black uppercase tracking-widest">{t.rotation} (n)</p>
+              <div className="flex items-baseline gap-2 mt-1">
+                <span className="text-5xl font-black text-white tabular-nums">{results.rpm}</span>
+                <span className="text-base font-black text-[#eab308]">RPM</span>
               </div>
            </div>
-           <div className="bg-gradient-to-br from-[#1c1e22] to-black border-l-2 border-[#eab308] rounded-xl p-3 shadow-md">
-              <p className="text-gray-500 text-[7px] font-black uppercase tracking-widest">{t.feed} (Vf)</p>
-              <div className="flex items-baseline gap-1">
-                <span className="text-2xl font-black text-white tabular-nums">{(results.vf * t.unit_mult).toFixed(t.unit_precision === 4 ? 2 : 0)}</span>
-                <span className="text-[8px] font-black text-[#eab308]">{t.unit}/min</span>
+           <div className="bg-gradient-to-br from-[#1c1e22] to-black border-l-4 border-[#eab308] rounded-2xl p-6 shadow-xl">
+              <p className="text-gray-500 text-sm font-black uppercase tracking-widest">{t.feed} (Vf)</p>
+              <div className="flex items-baseline gap-2 mt-1">
+                <span className="text-5xl font-black text-white tabular-nums">{(results.vf * t.unit_mult).toFixed(t.unit_precision === 4 ? 2 : 0)}</span>
+                <span className="text-base font-black text-[#eab308]">{t.unit}/min</span>
               </div>
            </div>
         </div>

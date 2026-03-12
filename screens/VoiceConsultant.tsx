@@ -179,29 +179,29 @@ const VoiceConsultant: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate
       </div>
 
       <div className="text-center z-10">
-        <div className="bg-[#eab308]/10 border border-[#eab308]/20 px-4 py-1.5 rounded-full inline-flex items-center gap-2 mb-6">
-           <span className="size-2 bg-[#eab308] rounded-full animate-pulse"></span>
-           <span className="text-[9px] font-black text-[#eab308] uppercase tracking-[0.2em]">Live Audio Engine</span>
+        <div className="bg-[#eab308]/10 border border-[#eab308]/20 px-6 py-2 rounded-full inline-flex items-center gap-3 mb-8">
+           <span className="size-3 bg-[#eab308] rounded-full animate-pulse"></span>
+           <span className="text-xs font-black text-[#eab308] uppercase tracking-[0.2em]">Live Audio Engine</span>
         </div>
-        <h2 className="text-white text-4xl font-black italic uppercase tracking-tighter leading-none">Consultor de Voz</h2>
-        <p className="text-[#eab308] text-[10px] font-black uppercase tracking-widest mt-4 opacity-70">{status}</p>
+        <h2 className="text-white text-5xl font-black italic uppercase tracking-tighter leading-none">Consultor de Voz</h2>
+        <p className="text-[#eab308] text-sm font-black uppercase tracking-widest mt-6 opacity-80">{status}</p>
       </div>
 
       <div className="relative group z-10">
-        <div className={`absolute -inset-10 bg-[#eab308]/20 rounded-full blur-[80px] transition-opacity duration-1000 ${isActive ? 'opacity-100' : 'opacity-0'}`}></div>
+        <div className={`absolute -inset-12 bg-[#eab308]/20 rounded-full blur-[100px] transition-opacity duration-1000 ${isActive ? 'opacity-100' : 'opacity-0'}`}></div>
         <button 
           onClick={isActive ? stopSession : startSession}
-          className={`size-56 rounded-[3.5rem] border-4 flex flex-col items-center justify-center transition-all duration-500 relative z-20 ${isActive ? 'bg-[#eab308] border-[#eab308] shadow-[0_0_80px_rgba(234,179,8,0.4)] rotate-0' : 'bg-[#221e1b] border-white/5 shadow-2xl rotate-3'}`}
+          className={`size-64 rounded-[4rem] border-8 flex flex-col items-center justify-center transition-all duration-500 relative z-20 ${isActive ? 'bg-[#eab308] border-[#eab308] shadow-[0_0_100px_rgba(234,179,8,0.5)] rotate-0' : 'bg-[#221e1b] border-white/10 shadow-2xl rotate-3'}`}
         >
-          <span className={`material-symbols-outlined text-8xl ${isActive ? 'text-black' : 'text-[#eab308]'}`}>{isActive ? 'equalizer' : 'mic'}</span>
-          <span className={`text-[8px] font-black uppercase tracking-widest mt-4 ${isActive ? 'text-black' : 'text-gray-600'}`}>{isActive ? 'Ouvindo...' : 'Tocar para Iniciar'}</span>
+          <span className={`material-symbols-outlined text-9xl ${isActive ? 'text-black' : 'text-[#eab308]'}`}>{isActive ? 'equalizer' : 'mic'}</span>
+          <span className={`text-xs font-black uppercase tracking-widest mt-6 ${isActive ? 'text-black' : 'text-gray-500'}`}>{isActive ? 'Ouvindo...' : 'Tocar para Iniciar'}</span>
         </button>
       </div>
 
-      <div className="bg-[#1c1e22]/80 backdrop-blur-md p-6 rounded-[32px] border border-white/5 text-center max-w-xs z-10 shadow-2xl">
-         <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest leading-relaxed">
+      <div className="bg-[#1c1e22]/80 backdrop-blur-md p-8 rounded-[40px] border border-white/10 text-center max-w-sm z-10 shadow-2xl">
+         <p className="text-gray-400 text-xs font-black uppercase tracking-widest leading-relaxed">
            Voz Masculina Ativada • Perfil Puck <br/>
-           <span className="text-[#eab308]/40">Fale naturalmente com o Eng. Casillas</span>
+           <span className="text-[#eab308]/60 mt-2 block">Fale naturalmente com o Eng. Casillas</span>
          </p>
       </div>
 

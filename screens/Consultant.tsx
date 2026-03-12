@@ -14,7 +14,7 @@ const Consultant: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate }) =
   const [messages, setMessages] = useState<ChatMessage[]>([
     { 
       role: 'casillas', 
-      text: 'Olá. Sou o **Eng. Casillas**. Especialista sênior em **Usinagem e Caldeiraria Offshore**. Domínio completo de normas API, ASME e AWS. Qual o desafio técnico na bancada ou no CNC hoje?' 
+      text: 'Olá, sou o Engenheiro Casillas, especialista em usinagem e caldeiraria. Qual o desafio técnico na bancada hoje?' 
     }
   ]);
   
@@ -200,21 +200,21 @@ const Consultant: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate }) =
         ))}
       </div>
 
-      <div className="absolute bottom-8 left-6 right-6 flex gap-2 bg-[#1c1816]/95 backdrop-blur-xl p-3 rounded-full border border-white/10 z-30 shadow-[0_15px_60px_rgba(0,0,0,0.8)]">
+      <div className="absolute bottom-10 left-6 right-6 flex gap-3 bg-[#1c1816]/98 backdrop-blur-2xl p-4 rounded-full border border-white/20 z-30 shadow-[0_20px_80px_rgba(0,0,0,0.9)]">
         <input 
           type="text" 
           value={input} 
           onChange={e => setInput(e.target.value)} 
           onKeyDown={e => e.key === 'Enter' && handleSend()} 
-          className="flex-1 bg-transparent px-5 text-white outline-none text-sm placeholder:text-gray-600" 
+          className="flex-1 bg-transparent px-6 text-white outline-none text-lg font-medium placeholder:text-gray-600" 
           placeholder="Dúvida técnica (Norma, Chanfro, Tolerância)..." 
         />
         <button 
           onClick={handleSend} 
           disabled={isTyping || !input.trim()} 
-          className="size-14 rounded-full bg-[#eab308] text-black flex items-center justify-center active:scale-95 transition-all shadow-xl disabled:opacity-20"
+          className="size-16 rounded-full bg-[#eab308] text-black flex items-center justify-center active:scale-90 transition-all shadow-2xl disabled:opacity-20 shrink-0"
         >
-          <span className="material-symbols-outlined text-3xl font-black">construction</span>
+          <span className="material-symbols-outlined text-4xl font-black">construction</span>
         </button>
       </div>
     </div>

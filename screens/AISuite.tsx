@@ -40,50 +40,50 @@ const AISuite: React.FC<AISuiteProps> = ({ navigate, t }) => {
   ];
 
   return (
-    <div className="p-6 space-y-8 animate-in fade-in duration-500 h-full overflow-y-auto custom-scrollbar">
-      <div className="space-y-1">
-        <h2 className="text-3xl font-black text-[#eab308] italic uppercase tracking-tighter leading-none">Casillas Hub</h2>
-        <div className="flex items-center gap-2">
-           <div className="h-0.5 w-6 bg-[#eab308]/30"></div>
-           <p className="text-gray-500 text-[9px] font-black uppercase tracking-[0.2em]">Inteligência Industrial Ativa</p>
+    <div className="p-6 space-y-10 animate-in fade-in duration-500 h-full overflow-y-auto custom-scrollbar">
+      <div className="space-y-2">
+        <h2 className="text-4xl font-black text-[#eab308] italic uppercase tracking-tighter leading-none">Casillas Hub</h2>
+        <div className="flex items-center gap-3">
+           <div className="h-1 w-8 bg-[#eab308]/30"></div>
+           <p className="text-gray-500 text-xs font-black uppercase tracking-[0.2em]">Inteligência Industrial Ativa</p>
         </div>
       </div>
 
-      <div className="grid gap-4">
+      <div className="grid gap-6">
         {tools.map(tool => (
           <button
             key={tool.id}
             onClick={() => navigate(tool.id as Screen)}
-            className={`w-full p-5 rounded-[2.5rem] border flex items-center gap-5 transition-all active:scale-95 shadow-2xl relative overflow-hidden group ${tool.color}`}
+            className={`w-full p-6 rounded-[3rem] border-2 flex items-center gap-6 transition-all active:scale-95 shadow-2xl relative overflow-hidden group ${tool.color}`}
           >
-            <div className="size-16 rounded-3xl bg-black/40 flex items-center justify-center shrink-0 border border-white/5 shadow-inner overflow-hidden">
-               <span className="material-symbols-outlined text-4xl block leading-none">
+            <div className="size-20 rounded-[2rem] bg-black/40 flex items-center justify-center shrink-0 border border-white/10 shadow-inner overflow-hidden">
+               <span className="material-symbols-outlined text-5xl block leading-none">
                  {tool.icon}
                </span>
             </div>
             
             <div className="flex-1 text-left min-w-0">
-               <h3 className="font-black text-lg tracking-tight uppercase italic leading-none text-white group-hover:text-[#eab308] transition-colors truncate">
+               <h3 className="font-black text-2xl tracking-tight uppercase italic leading-none text-white group-hover:text-[#eab308] transition-colors truncate">
                  {tool.title}
                </h3>
-               <p className="text-[10px] font-bold opacity-60 leading-tight uppercase tracking-widest mt-2 block">
+               <p className="text-xs font-bold opacity-80 leading-tight uppercase tracking-widest mt-3 block">
                  {tool.desc}
                </p>
             </div>
 
-            <div className="size-8 rounded-full bg-black/20 flex items-center justify-center opacity-40 group-hover:opacity-100 transition-opacity shrink-0">
-               <span className="material-symbols-outlined text-sm">arrow_forward</span>
+            <div className="size-12 rounded-full bg-black/20 flex items-center justify-center opacity-60 group-hover:opacity-100 transition-opacity shrink-0">
+               <span className="material-symbols-outlined text-2xl">arrow_forward</span>
             </div>
           </button>
         ))}
       </div>
 
-      <div className="bg-[#1c1e22] p-5 rounded-[32px] border border-white/5 mt-2">
-         <div className="flex items-center gap-4">
-            <div className="size-10 rounded-xl bg-black/40 flex items-center justify-center text-[#eab308] shrink-0">
-               <span className="material-symbols-outlined text-xl">security</span>
+      <div className="bg-[#1c1e22] p-6 rounded-[40px] border border-white/10 mt-4">
+         <div className="flex items-center gap-5">
+            <div className="size-14 rounded-2xl bg-black/40 flex items-center justify-center text-[#eab308] shrink-0">
+               <span className="material-symbols-outlined text-3xl">security</span>
             </div>
-            <p className="text-[9px] font-black text-gray-500 leading-tight uppercase tracking-[0.2em]">
+            <p className="text-xs font-black text-gray-400 leading-tight uppercase tracking-[0.15em]">
               Processamento seguro via Google AI. Seus dados técnicos estão protegidos.
             </p>
          </div>

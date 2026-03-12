@@ -180,17 +180,17 @@ const Trigonometry: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar pb-32">
+      <div className="flex-1 overflow-y-auto p-6 space-y-10 custom-scrollbar pb-32">
         {/* Diagram Area: Redesenhada para Estilo Técnico */}
-        <div className="bg-[#12100e] rounded-3xl h-64 border border-white/5 relative overflow-hidden flex items-center justify-center shadow-inner">
+        <div className="bg-[#12100e] rounded-[2.5rem] h-80 border border-white/10 relative overflow-hidden flex items-center justify-center shadow-2xl">
             <div className="absolute inset-0 opacity-10 pointer-events-none">
               <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                <defs><pattern id="trig-grid-new" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="#eab308" strokeWidth="0.5"/></pattern></defs>
+                <defs><pattern id="trig-grid-new" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M 30 0 L 0 0 0 30" fill="none" stroke="#eab308" strokeWidth="0.5"/></pattern></defs>
                 <rect width="100%" height="100%" fill="url(#trig-grid-new)" />
               </svg>
             </div>
             
-            <div className="relative w-full h-full flex items-center justify-center">
+            <div className="relative w-full h-full flex items-center justify-center scale-110">
               {subModule === 'triangle' && (
                 <svg viewBox="0 0 200 150" className="w-48 h-48 drop-shadow-[0_0_15px_rgba(234,179,8,0.2)]">
                   {/* Triângulo Principal */}
@@ -267,10 +267,10 @@ const Trigonometry: React.FC = () => {
         </div>
 
         {/* Inputs */}
-        <div className="space-y-6">
+        <div className="space-y-8">
           {subModule === 'triangle' && (
             <>
-              <div className="flex bg-[#221e1b] p-1 rounded-2xl border border-white/5">
+              <div className="flex bg-[#221e1b] p-1.5 rounded-2xl border border-white/10">
                 {[
                   { id: 'angle_hypo', label: 'Ang + Hyp' },
                   { id: 'catheti', label: '2 Catetos' },
@@ -279,28 +279,28 @@ const Trigonometry: React.FC = () => {
                   <button 
                     key={m.id}
                     onClick={() => setTriangleMode(m.id as TriangleMode)}
-                    className={`flex-1 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${triangleMode === m.id ? 'bg-[#eab308] text-black shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}
+                    className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${triangleMode === m.id ? 'bg-[#eab308] text-black shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}
                   >
                     {m.label}
                   </button>
                 ))}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-6">
                 {triangleMode === 'angle_hypo' && (
                   <>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Ângulo (α)</label>
+                      <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Ângulo (α)</label>
                       <div className="relative">
-                        <input type="number" value={angle} onChange={e => setAngle(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-16 px-5 text-white font-mono text-xl outline-none focus:border-[#eab308]/50" />
-                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#eab308] font-black text-lg">°</span>
+                        <input type="number" value={angle} onChange={e => setAngle(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-white font-mono text-3xl outline-none focus:border-[#eab308]/50" />
+                        <span className="absolute right-6 top-1/2 -translate-y-1/2 text-[#eab308] font-black text-2xl">°</span>
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Hipotenusa (H)</label>
+                      <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Hipotenusa (H)</label>
                       <div className="relative">
-                        <input type="number" value={hypo} onChange={e => setHypo(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-16 px-5 text-white font-mono text-xl outline-none focus:border-[#eab308]/50" />
-                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 font-black text-xs">MM</span>
+                        <input type="number" value={hypo} onChange={e => setHypo(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-white font-mono text-3xl outline-none focus:border-[#eab308]/50" />
+                        <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-600 font-black text-sm">MM</span>
                       </div>
                     </div>
                   </>
@@ -308,35 +308,36 @@ const Trigonometry: React.FC = () => {
                 {triangleMode === 'catheti' && (
                   <>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Cateto Oposto (OP)</label>
+                      <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Cateto Oposto (OP)</label>
                       <div className="relative">
-                        <input type="number" value={catA} onChange={e => setCatA(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-16 px-5 text-white font-mono text-xl outline-none focus:border-[#eab308]/50" />
-                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 font-black text-xs">MM</span>
+                        <input type="number" value={catA} onChange={e => setCatA(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-white font-mono text-3xl outline-none focus:border-[#eab308]/50" />
+                        <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-600 font-black text-sm">MM</span>
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Cateto Adjacente (ADJ)</label>
+                      <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Cateto Adjacente (ADJ)</label>
                       <div className="relative">
-                        <input type="number" value={catB} onChange={e => setCatB(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-16 px-5 text-white font-mono text-xl outline-none focus:border-[#eab308]/50" />
-                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 font-black text-xs">MM</span>
+                        <input type="number" value={catB} onChange={e => setCatB(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-white font-mono text-3xl outline-none focus:border-[#eab308]/50" />
+                        <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-600 font-black text-sm">MM</span>
                       </div>
                     </div>
                   </>
                 )}
+
                 {triangleMode === 'cat_hypo' && (
                   <>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Cateto Oposto (OP)</label>
+                      <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Cateto Oposto (OP)</label>
                       <div className="relative">
-                        <input type="number" value={catA} onChange={e => setCatA(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-16 px-5 text-white font-mono text-xl outline-none focus:border-[#eab308]/50" />
-                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 font-black text-xs">MM</span>
+                        <input type="number" value={catA} onChange={e => setCatA(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-white font-mono text-3xl outline-none focus:border-[#eab308]/50" />
+                        <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-600 font-black text-sm">MM</span>
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Hipotenusa (H)</label>
+                      <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Hipotenusa (H)</label>
                       <div className="relative">
-                        <input type="number" value={hypo} onChange={e => setHypo(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-16 px-5 text-white font-mono text-xl outline-none focus:border-[#eab308]/50" />
-                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 font-black text-xs">MM</span>
+                        <input type="number" value={hypo} onChange={e => setHypo(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-white font-mono text-3xl outline-none focus:border-[#eab308]/50" />
+                        <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-600 font-black text-sm">MM</span>
                       </div>
                     </div>
                   </>
@@ -346,35 +347,35 @@ const Trigonometry: React.FC = () => {
           )}
           
           {subModule === 'circle' && (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Raio (R)</label>
-                <input type="number" value={radius} onChange={e => setRadius(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-16 px-5 text-white font-mono text-xl outline-none" />
+                <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Raio (R)</label>
+                <input type="number" value={radius} onChange={e => setRadius(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-white font-mono text-3xl outline-none" />
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Ângulo (°)</label>
-                <input type="number" value={centralAngle} onChange={e => setCentralAngle(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-16 px-5 text-white font-mono text-xl outline-none" />
+                <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Ângulo (°)</label>
+                <input type="number" value={centralAngle} onChange={e => setCentralAngle(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-white font-mono text-3xl outline-none" />
               </div>
             </div>
           )}
           {subModule === 'polygons' && (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Lados</label>
-                <select value={polySides} onChange={e => setPolySides(Number(e.target.value) as 5 | 6)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-16 px-4 text-[#eab308] font-black outline-none appearance-none">
+                <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Lados</label>
+                <select value={polySides} onChange={e => setPolySides(Number(e.target.value) as 5 | 6)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-[#eab308] font-black outline-none appearance-none text-xl">
                    <option value={6}>Sextavado (6)</option>
                    <option value={5}>Pentágono (5)</option>
                 </select>
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Entre Faces</label>
-                <input type="number" value={polyDim} onChange={e => setPolyDim(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-16 px-5 text-white font-mono text-xl outline-none" />
+                <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Entre Faces</label>
+                <input type="number" value={polyDim} onChange={e => setPolyDim(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-white font-mono text-3xl outline-none" />
               </div>
             </div>
           )}
           {subModule === 'functions' && (
-            <div className="space-y-6">
-              <div className="flex bg-[#221e1b] p-1 rounded-2xl border border-white/5">
+            <div className="space-y-8">
+              <div className="flex bg-[#221e1b] p-1.5 rounded-2xl border border-white/10">
                 {[
                   { id: 'sin', label: 'Seno (SIN)' },
                   { id: 'cos', label: 'Coseno (COS)' },
@@ -383,26 +384,26 @@ const Trigonometry: React.FC = () => {
                   <button 
                     key={m.id}
                     onClick={() => setFuncType(m.id as any)}
-                    className={`flex-1 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${funcType === m.id ? 'bg-[#eab308] text-black shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}
+                    className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${funcType === m.id ? 'bg-[#eab308] text-black shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}
                   >
                     {m.label}
                   </button>
                 ))}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Ângulo (°)</label>
+                  <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Ângulo (°)</label>
                   <div className="relative">
-                    <input type="number" value={funcAngle} onChange={e => setFuncAngle(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-16 px-5 text-white font-mono text-xl outline-none focus:border-[#eab308]/50" />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[#eab308] font-black text-lg">°</span>
+                    <input type="number" value={funcAngle} onChange={e => setFuncAngle(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-white font-mono text-3xl outline-none focus:border-[#eab308]/50" />
+                    <span className="absolute right-6 top-1/2 -translate-y-1/2 text-[#eab308] font-black text-2xl">°</span>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Valor (Cota)</label>
+                  <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Valor (Cota)</label>
                   <div className="relative">
-                    <input type="number" value={funcValue} onChange={e => setFuncValue(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-16 px-5 text-white font-mono text-xl outline-none focus:border-[#eab308]/50" />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 font-black text-xs">MM</span>
+                    <input type="number" value={funcValue} onChange={e => setFuncValue(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-white font-mono text-3xl outline-none focus:border-[#eab308]/50" />
+                    <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-600 font-black text-sm">MM</span>
                   </div>
                 </div>
               </div>
@@ -411,34 +412,34 @@ const Trigonometry: React.FC = () => {
         </div>
 
         {/* Results Cards */}
-        <div className="space-y-4">
+        <div className="space-y-6">
            {subModule === 'triangle' && (
              <>
-               <div className="bg-[#221e1b] rounded-3xl p-6 border-l-4 border-[#eab308] shadow-xl">
-                  <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest">
+               <div className="bg-[#221e1b] rounded-[2rem] p-8 border-l-8 border-[#eab308] shadow-2xl">
+                  <p className="text-gray-500 text-xs font-black uppercase tracking-widest">
                     {triangleMode === 'catheti' ? 'Hipotenusa (H)' : 'Cateto Oposto (Altura)'}
                   </p>
-                  <div className="flex items-baseline gap-2 mt-2">
-                    <span className="text-5xl font-black text-white tabular-nums">
+                  <div className="flex items-baseline gap-3 mt-2">
+                    <span className="text-6xl font-black text-white tabular-nums">
                       {triangleMode === 'catheti' ? triangleResults.h.toFixed(2) : triangleResults.o.toFixed(2)}
                     </span>
-                    <span className="text-xl font-bold text-gray-600">mm</span>
+                    <span className="text-2xl font-black text-[#eab308]">MM</span>
                   </div>
                </div>
-               <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-[#221e1b] p-4 rounded-2xl border border-white/5">
-                     <p className="text-[9px] font-black text-gray-500 uppercase">
+               <div className="grid grid-cols-1 gap-4">
+                  <div className="bg-[#221e1b] p-6 rounded-2xl border border-white/10">
+                     <p className="text-xs font-black text-gray-500 uppercase tracking-widest">
                        {triangleMode === 'catheti' ? 'Ângulo Alfa (α)' : 'Cat. Adjacente'}
                      </p>
-                     <p className="text-xl font-black text-white mt-1">
+                     <p className="text-3xl font-black text-white mt-1">
                        {triangleMode === 'catheti' ? triangleResults.angle.toFixed(2) + '°' : triangleResults.adj.toFixed(2) + ' mm'}
                      </p>
                   </div>
-                  <div className="bg-[#221e1b] p-4 rounded-2xl border border-white/5">
-                     <p className="text-[9px] font-black text-gray-500 uppercase">
+                  <div className="bg-[#221e1b] p-6 rounded-2xl border border-white/10">
+                     <p className="text-xs font-black text-gray-500 uppercase tracking-widest">
                        {triangleMode === 'catheti' ? 'Ângulo Beta (β)' : 'Ângulo Complementar'}
                      </p>
-                     <p className="text-xl font-black text-[#eab308] mt-1">{triangleResults.beta.toFixed(2)}°</p>
+                     <p className="text-3xl font-black text-[#eab308] mt-1">{triangleResults.beta.toFixed(2)}°</p>
                   </div>
                </div>
                {triangleMode !== 'angle_hypo' && (
@@ -509,15 +510,15 @@ const Trigonometry: React.FC = () => {
       </div>
 
       {/* Floating Action Bar */}
-      <div className="absolute bottom-4 left-4 right-4 flex gap-2 z-40 bg-[#161412]/80 backdrop-blur-md p-2 rounded-2xl border border-white/5 shadow-2xl">
-         <button onClick={shareWhatsApp} className="size-12 bg-green-500 text-white rounded-xl flex items-center justify-center shadow-xl active:scale-95 transition-all shrink-0">
-            <span className="material-symbols-outlined text-xl">chat</span>
+      <div className="absolute bottom-6 left-6 right-6 flex gap-3 z-40 bg-[#161412]/90 backdrop-blur-xl p-3 rounded-[2rem] border border-white/10 shadow-2xl">
+         <button onClick={shareWhatsApp} className="size-16 bg-green-500 text-white rounded-2xl flex items-center justify-center shadow-xl active:scale-95 transition-all shrink-0">
+            <span className="material-symbols-outlined text-3xl">chat</span>
          </button>
-         <button onClick={shareEmail} className="size-12 bg-white/10 text-gray-300 rounded-xl border border-white/5 flex items-center justify-center shadow-xl active:scale-95 transition-all shrink-0">
-            <span className="material-symbols-outlined text-xl">mail</span>
+         <button onClick={shareEmail} className="size-16 bg-white/10 text-gray-300 rounded-2xl border border-white/10 flex items-center justify-center shadow-xl active:scale-95 transition-all shrink-0">
+            <span className="material-symbols-outlined text-3xl">mail</span>
          </button>
-         <button onClick={handleSave} className="flex-1 bg-[#eab308] text-black font-black py-3 rounded-xl shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all uppercase text-[11px] tracking-widest">
-            <span className="material-symbols-outlined text-lg">save</span> SALVAR
+         <button onClick={handleSave} className="flex-1 bg-[#eab308] text-black font-black py-4 rounded-2xl shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-all uppercase text-lg tracking-widest">
+            <span className="material-symbols-outlined text-3xl">save</span> SALVAR
          </button>
       </div>
     </div>

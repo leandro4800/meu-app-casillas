@@ -10,19 +10,20 @@ export type Screen =
 export type Language = 'pt_BR' | 'en_US' | 'fr_QC' | 'pt_PT';
 
 export interface User {
-  id: string;
-  name: string;
+  uid: string;
+  displayName: string;
   email: string;
-  photo: string;
+  photoURL: string;
   plan: 'free' | 'monthly' | 'annual';
   subscriptionDate?: string;
   expiryDate?: string;
   isDev: boolean;
-  biometricEnabled: boolean;
+  biometricEnabled?: boolean;
   company?: string;
   role?: string;
   sector?: string;
   phone?: string;
+  sessionId?: string;
 }
 
 export interface ThreadData {

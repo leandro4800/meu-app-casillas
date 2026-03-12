@@ -51,10 +51,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, navigate, user, t })
         <div className="flex flex-col h-full overflow-hidden">
           <div className="p-6 flex items-center gap-4 bg-[#121214]/50 border-b border-white/5">
             <div className="size-12 rounded-full border-2 border-[#eab308] overflow-hidden bg-[#252930] shrink-0">
-              <img src={user?.photo || CASILLAS_CONSULTANT_IMAGE} alt="Operador" className="w-full h-full object-cover" />
+              <img src={user?.photoURL || CASILLAS_CONSULTANT_IMAGE} alt="Operador" className="w-full h-full object-cover" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-white font-black text-base uppercase italic truncate">{user?.name || 'OPERADOR'}</p>
+              <p className="text-white font-black text-base uppercase italic truncate">{user?.displayName || 'OPERADOR'}</p>
               <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest truncate">{user?.role || 'Consultor Técnico'}</p>
             </div>
           </div>

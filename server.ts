@@ -63,7 +63,9 @@ async function startServer() {
     const stripeClient = getStripe();
 
     if (!stripeClient) {
-      return res.status(500).json({ error: "Stripe is not configured" });
+      return res.status(500).json({ 
+        error: "Stripe não configurado no servidor. Verifique a variável STRIPE_SECRET_KEY." 
+      });
     }
 
     try {
@@ -72,7 +74,9 @@ async function startServer() {
         : process.env.STRIPE_PRICE_ID_MONTHLY;
 
       if (!priceId) {
-        return res.status(400).json({ error: "Price ID not configured for this plan" });
+        return res.status(400).json({ 
+          error: `ID de preço não configurado para o plano ${plan === 'annual' ? 'Anual' : 'Mensal'}. Verifique as variáveis STRIPE_PRICE_ID_*.` 
+        });
       }
 
       const session = await stripeClient.checkout.sessions.create({
@@ -85,6 +89,10 @@ async function startServer() {
         ],
         mode: 'subscription',
         customer_email: email,
+        metadata: {
+          plan: plan,
+          email: email
+        },
         success_url: `${process.env.APP_URL || 'http://localhost:3000'}?session_id={CHECKOUT_SESSION_ID}&payment=success`,
         cancel_url: `${process.env.APP_URL || 'http://localhost:3000'}?payment=cancel`,
       });
@@ -92,6 +100,22 @@ async function startServer() {
       res.json({ url: session.url });
     } catch (error: any) {
       console.error("Stripe error:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/checkout-session/:sessionId", async (req, res) => {
+    const { sessionId } = req.params;
+    const stripeClient = getStripe();
+
+    if (!stripeClient) {
+      return res.status(500).json({ error: "Stripe not configured" });
+    }
+
+    try {
+      const session = await stripeClient.checkout.sessions.retrieve(sessionId);
+      res.json(session);
+    } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
   });

@@ -1,5 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
+import { auth, googleProvider, db } from '../firebase';
+import { signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 interface LoginProps {
   onLogin: (user: any) => void;
@@ -22,7 +25,32 @@ const Login: React.FC<LoginProps> = ({ onLogin, onDevAccess, t }) => {
     }
   }, []);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const syncUserWithFirestore = async (firebaseUser: any) => {
+    const userDocRef = doc(db, 'users', firebaseUser.uid);
+    const userDoc = await getDoc(userDocRef);
+
+    if (!userDoc.exists()) {
+      const newUser = {
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        displayName: firebaseUser.displayName || email.split('@')[0].toUpperCase(),
+        photoURL: firebaseUser.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${firebaseUser.email}`,
+        plan: 'free',
+        isDev: firebaseUser.email === '48mineiro@gmail.com',
+        company: '',
+        role: 'Técnico Operador',
+        sector: '',
+        phone: '',
+        createdAt: new Date().toISOString()
+      };
+      await setDoc(userDocRef, newUser);
+      return newUser;
+    } else {
+      return userDoc.data();
+    }
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
@@ -33,95 +61,65 @@ const Login: React.FC<LoginProps> = ({ onLogin, onDevAccess, t }) => {
       localStorage.removeItem('casillas_remembered_email');
     }
 
-    setTimeout(async () => {
-      let userData: any = null;
-
-      if (email === '48mineiro@gmail.com' && password === 'delabela48') {
-        userData = {
-          id: 'admin_1',
-          name: '48 Mineiro',
-          email: '48mineiro@gmail.com',
-          photo: 'https://api.dicebear.com/7.x/avataaars/svg?seed=mineiro',
-          plan: 'annual',
-          isDev: true,
-          company: 'Casillas Tech',
-          role: 'Administrador Industrial',
-          sector: 'Gestão Geral',
-          phone: '(31) 99999-9999'
-        };
-      } else if (email && password.length >= 6) {
-        userData = {
-          id: Math.random().toString(36).substr(2, 9),
-          name: email.split('@')[0].toUpperCase(),
-          email: email,
-          photo: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
-          plan: 'free',
-          isDev: false,
-          company: '',
-          role: 'Técnico Operador',
-          sector: '',
-          phone: ''
-        };
-      }
-
-      if (userData) {
-        try {
-          const sessionRes = await fetch('/api/session/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: userData.email })
-          });
-          const { sessionId } = await sessionRes.json();
-          userData.sessionId = sessionId;
-          onLogin(userData);
-        } catch (err) {
-          console.error("Session error:", err);
-          onLogin(userData); // Fallback
+    try {
+      let userCredential;
+      try {
+        userCredential = await signInWithEmailAndPassword(auth, email, password);
+      } catch (err: any) {
+        if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+          // If it's the admin or we want to allow auto-registration for this technical tool
+          try {
+            userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          } catch (createErr) {
+            throw err; // Throw original error if creation fails
+          }
+        } else {
+          throw err;
         }
-      } else {
-        setError('Dados incorretos. Verifique as credenciais técnicas.');
-        setLoading(false);
       }
-    }, 1500);
+
+      const userData = await syncUserWithFirestore(userCredential.user);
+      
+      // Session logic
+      const sessionRes = await fetch('/api/session/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: userData.email })
+      });
+      const { sessionId } = await sessionRes.json();
+      onLogin({ ...userData, sessionId });
+
+    } catch (err: any) {
+      console.error("Login error:", err);
+      if (err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
+        setError('Dados incorretos. Verifique as credenciais técnicas.');
+      } else if (err.code === 'auth/invalid-email') {
+        setError('Email inválido.');
+      } else {
+        setError('Erro ao efetuar login. Tente novamente.');
+      }
+      setLoading(false);
+    }
   };
 
   const handleGoogleLogin = async () => {
     setLoading(true);
-    const email = 'usuario@gmail.com';
+    setError('');
     try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const userData = await syncUserWithFirestore(result.user);
+      
       const sessionRes = await fetch('/api/session/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email: userData.email })
       });
       const { sessionId } = await sessionRes.json();
-      
-      onLogin({
-        id: 'google_' + Math.random().toString(36).substr(2, 5),
-        name: 'USUÁRIO GOOGLE',
-        email: email,
-        photo: 'https://api.dicebear.com/7.x/avataaars/svg?seed=google',
-        plan: 'free',
-        isDev: false,
-        company: 'Unidade Google',
-        role: 'Consultor Externo',
-        phone: '',
-        sessionId: sessionId
-      });
-    } catch (err) {
-      console.error("Google session error:", err);
-      // Fallback without session if server is down
-      onLogin({
-        id: 'google_' + Math.random().toString(36).substr(2, 5),
-        name: 'USUÁRIO GOOGLE',
-        email: email,
-        photo: 'https://api.dicebear.com/7.x/avataaars/svg?seed=google',
-        plan: 'free',
-        isDev: false,
-        company: 'Unidade Google',
-        role: 'Consultor Externo',
-        phone: ''
-      });
+      onLogin({ ...userData, sessionId });
+    } catch (err: any) {
+      console.error("Google login error:", err);
+      setError('Erro ao entrar com Google.');
+      setLoading(false);
     }
   };
 

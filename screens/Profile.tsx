@@ -20,8 +20,8 @@ const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, onUpd
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [formData, setFormData] = useState<Partial<User>>({
-    name: user?.name || '',
-    photo: user?.photo || '',
+    displayName: user?.displayName || '',
+    photoURL: user?.photoURL || '',
     company: user?.company || '',
     role: user?.role || '',
     phone: user?.phone || ''
@@ -34,8 +34,8 @@ const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, onUpd
   useEffect(() => {
     if (user) {
       setFormData({
-        name: user.name,
-        photo: user.photo,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
         company: user.company || '',
         role: user.role || '',
         phone: user.phone || ''
@@ -48,8 +48,8 @@ const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, onUpd
     
     const updatedUser: User = {
       ...user,
-      name: formData.name || user.name,
-      photo: formData.photo || user.photo || AVATAR_URL,
+      displayName: formData.displayName || user.displayName,
+      photoURL: formData.photoURL || user.photoURL || AVATAR_URL,
       company: formData.company || '',
       role: formData.role || '',
       phone: formData.phone || ''
@@ -74,7 +74,7 @@ const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, onUpd
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result as string;
-        setFormData(prev => ({ ...prev, photo: base64String }));
+        setFormData(prev => ({ ...prev, photoURL: base64String }));
         setIsUploading(false);
       };
       reader.readAsDataURL(file);
@@ -118,7 +118,7 @@ const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, onUpd
              onClick={() => isEditing && fileInputRef.current?.click()}
              className={`size-28 rounded-full border-[4px] border-[#eab308] p-1 bg-[#1c1816] shadow-2xl overflow-hidden transition-all ${isEditing ? 'active:scale-95' : ''}`}
            >
-              <img src={formData.photo || AVATAR_URL} className="w-full h-full rounded-full object-cover bg-[#0a0908]" alt="Foto" />
+              <img src={formData.photoURL || AVATAR_URL} className="w-full h-full rounded-full object-cover bg-[#0a0908]" alt="Foto" />
               {isEditing && (
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                    <span className="material-symbols-outlined text-white">add_a_photo</span>
@@ -127,7 +127,7 @@ const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, onUpd
            </button>
         </div>
         {!isEditing && (
-          <h3 className="text-[#eab308] text-2xl font-black tracking-tight uppercase italic mt-4">{formData.name || 'OPERADOR'}</h3>
+          <h3 className="text-[#eab308] text-2xl font-black tracking-tight uppercase italic mt-4">{formData.displayName || 'OPERADOR'}</h3>
         )}
       </div>
 
@@ -136,7 +136,7 @@ const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, onUpd
         <section className="space-y-4">
            <p className="text-gray-800 text-[9px] font-black uppercase tracking-[0.4em] ml-2">Identificação Técnica</p>
            <div className="bg-[#1c1816]/60 rounded-[32px] border border-white/5 divide-y divide-white/5 overflow-hidden shadow-xl">
-              <ProfileItem label="Nome Completo" value={formData.name || ''} icon="person" isEditing={isEditing} onChange={(v: string) => handleChange('name', v)} />
+              <ProfileItem label="Nome Completo" value={formData.displayName || ''} icon="person" isEditing={isEditing} onChange={(v: string) => handleChange('displayName', v)} />
               <ProfileItem label="Empresa" value={formData.company || ''} icon="apartment" isEditing={isEditing} onChange={(v: string) => handleChange('company', v)} />
               <ProfileItem label="Cargo" value={formData.role || ''} icon="engineering" isEditing={isEditing} onChange={(v: string) => handleChange('role', v)} />
               <ProfileItem label="Contato" value={formData.phone || ''} icon="call" isEditing={isEditing} onChange={(v: string) => handleChange('phone', v)} />

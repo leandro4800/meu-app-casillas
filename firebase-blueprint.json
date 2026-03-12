@@ -1,0 +1,30 @@
+
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile and subscription data",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "plan": { "type": "string", "enum": ["free", "monthly", "annual"] },
+        "expiryDate": { "type": "string" },
+        "isDev": { "type": "boolean" },
+        "company": { "type": "string" },
+        "role": { "type": "string" },
+        "sector": { "type": "string" },
+        "phone": { "type": "string" }
+      },
+      "required": ["uid", "email"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User documents stored by their Firebase Auth UID"
+    }
+  }
+}

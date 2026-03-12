@@ -39,7 +39,7 @@ const Checkout: React.FC<CheckoutProps> = ({ user, onComplete, onLogout, t }) =>
       }
     } catch (error: any) {
       console.error('Erro no pagamento:', error);
-      alert('Erro ao processar pagamento. Verifique se as chaves do Stripe estão configuradas corretamente.');
+      alert(`Erro ao processar pagamento: ${error.message}`);
     } finally {
       setLoading(false);
     }

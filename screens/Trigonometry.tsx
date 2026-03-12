@@ -2,7 +2,7 @@
 import React, { useState, useMemo } from 'react';
 
 type SubModule = 'triangle' | 'circle' | 'polygons' | 'functions';
-type TriangleMode = 'angle_hypo' | 'catheti' | 'cat_hypo';
+type TriangleMode = 'angle_hypo' | 'catheti' | 'cat_hypo' | 'adj_angle' | 'opp_angle';
 
 const Trigonometry: React.FC = () => {
   const [subModule, setSubModule] = useState<SubModule>('triangle');
@@ -53,6 +53,20 @@ const Trigonometry: React.FC = () => {
       adj = Math.sqrt(h * h - ca * ca);
       a = (Math.asin(ca / h) * 180) / Math.PI;
       o = ca;
+    } else if (triangleMode === 'adj_angle') {
+      const adjVal = parseFloat(catB);
+      if (isNaN(a) || isNaN(adjVal)) return { sin: 0, cos: 0, tan: 0, beta: 0, perimeter: 0, h: 0, o: 0, adj: 0, angle: 0 };
+      const rad = (a * Math.PI) / 180;
+      h = adjVal / Math.cos(rad);
+      o = adjVal * Math.tan(rad);
+      adj = adjVal;
+    } else if (triangleMode === 'opp_angle') {
+      const oppVal = parseFloat(catA);
+      if (isNaN(a) || isNaN(oppVal)) return { sin: 0, cos: 0, tan: 0, beta: 0, perimeter: 0, h: 0, o: 0, adj: 0, angle: 0 };
+      const rad = (a * Math.PI) / 180;
+      h = oppVal / Math.sin(rad);
+      adj = oppVal / Math.tan(rad);
+      o = oppVal;
     }
 
     const rad = (a * Math.PI) / 180;
@@ -124,7 +138,9 @@ const Trigonometry: React.FC = () => {
       text += `*Triângulo Retângulo*\n`;
       if (triangleMode === 'angle_hypo') text += `Entrada: Ang ${angle}° | Hyp ${hypo}mm\n`;
       else if (triangleMode === 'catheti') text += `Entrada: Cat.O ${catA}mm | Cat.A ${catB}mm\n`;
-      else text += `Entrada: Cat.O ${catA}mm | Hyp ${hypo}mm\n`;
+      else if (triangleMode === 'cat_hypo') text += `Entrada: Cat.O ${catA}mm | Hyp ${hypo}mm\n`;
+      else if (triangleMode === 'adj_angle') text += `Entrada: Cat.A ${catB}mm | Ang ${angle}°\n`;
+      else if (triangleMode === 'opp_angle') text += `Entrada: Cat.O ${catA}mm | Ang ${angle}°\n`;
       
       text += `Ang. Alfa: ${triangleResults.angle.toFixed(2)}°\n`;
       text += `Hipotenusa: ${triangleResults.h.toFixed(2)}mm\n`;
@@ -272,14 +288,16 @@ const Trigonometry: React.FC = () => {
             <>
               <div className="flex bg-[#221e1b] p-1.5 rounded-2xl border border-white/10">
                 {[
-                  { id: 'angle_hypo', label: 'Ang + Hyp' },
-                  { id: 'catheti', label: '2 Catetos' },
-                  { id: 'cat_hypo', label: 'Cat + Hyp' }
+                  { id: 'angle_hypo', label: 'Ang+Hyp' },
+                  { id: 'catheti', label: '2 Cat' },
+                  { id: 'cat_hypo', label: 'Cat+Hyp' },
+                  { id: 'adj_angle', label: 'Adj+Ang' },
+                  { id: 'opp_angle', label: 'Opp+Ang' }
                 ].map(m => (
                   <button 
                     key={m.id}
                     onClick={() => setTriangleMode(m.id as TriangleMode)}
-                    className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${triangleMode === m.id ? 'bg-[#eab308] text-black shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}
+                    className={`flex-1 py-3 rounded-xl text-[9px] font-black uppercase tracking-tighter transition-all ${triangleMode === m.id ? 'bg-[#eab308] text-black shadow-lg' : 'text-gray-500 hover:text-gray-300'}`}
                   >
                     {m.label}
                   </button>
@@ -324,7 +342,26 @@ const Trigonometry: React.FC = () => {
                   </>
                 )}
 
-                {triangleMode === 'cat_hypo' && (
+                {triangleMode === 'adj_angle' && (
+                  <>
+                    <div className="space-y-2">
+                      <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Cateto Adjacente (ADJ)</label>
+                      <div className="relative">
+                        <input type="number" value={catB} onChange={e => setCatB(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-white font-mono text-3xl outline-none focus:border-[#eab308]/50" />
+                        <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-600 font-black text-sm">MM</span>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Ângulo (α)</label>
+                      <div className="relative">
+                        <input type="number" value={angle} onChange={e => setAngle(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-white font-mono text-3xl outline-none focus:border-[#eab308]/50" />
+                        <span className="absolute right-6 top-1/2 -translate-y-1/2 text-[#eab308] font-black text-2xl">°</span>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {triangleMode === 'opp_angle' && (
                   <>
                     <div className="space-y-2">
                       <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Cateto Oposto (OP)</label>
@@ -334,10 +371,10 @@ const Trigonometry: React.FC = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Hipotenusa (H)</label>
+                      <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Ângulo (α)</label>
                       <div className="relative">
-                        <input type="number" value={hypo} onChange={e => setHypo(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-white font-mono text-3xl outline-none focus:border-[#eab308]/50" />
-                        <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-600 font-black text-sm">MM</span>
+                        <input type="number" value={angle} onChange={e => setAngle(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-white font-mono text-3xl outline-none focus:border-[#eab308]/50" />
+                        <span className="absolute right-6 top-1/2 -translate-y-1/2 text-[#eab308] font-black text-2xl">°</span>
                       </div>
                     </div>
                   </>

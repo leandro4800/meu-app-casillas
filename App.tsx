@@ -244,28 +244,27 @@ export default function App() {
   const renderScreen = () => {
     if (!isAuthReady) return null;
 
-    if (!user && !['login', 'welcome', 'checkout'].includes(currentScreen)) {
+    if (!user) {
+      if (currentScreen === 'login') return <Login onLogin={(u) => {setUser(u); setCurrentScreen('home');}} onDevAccess={() => {}} t={t} />;
       return <Welcome onStart={() => navigate('login')} />;
     }
 
     // Paywall Logic: Only 48mineiro@gmail.com or paid plans have access to the full app
-    const isVip = user?.email === '48mineiro@gmail.com' || user?.isDev;
-    const hasPaid = user?.plan && user.plan !== 'free';
+    const isVip = user.email === '48mineiro@gmail.com' || user.isDev;
+    const hasPaid = user.plan && user.plan !== 'free';
     const isPublicScreen = ['login', 'welcome', 'checkout'].includes(currentScreen);
 
-    if (user && !isVip && !hasPaid && !isPublicScreen) {
+    if (!isVip && !hasPaid && !isPublicScreen) {
       return (
         <Checkout 
           user={user} 
           t={t} 
           onLogout={handleLogout}
           onComplete={(p) => { 
-            if(user) {
-              const expiry = p === 'annual' 
-                ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString()
-                : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
-              handleUpdateUser({...user, plan: p, expiryDate: expiry});
-            }
+            const expiry = p === 'annual' 
+              ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString()
+              : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+            handleUpdateUser({...user, plan: p, expiryDate: expiry});
             navigate('home'); 
           }} 
         />

@@ -310,7 +310,7 @@ export default function App() {
       case 'material_comparison': return <MaterialComparison />;
       case 'verifier': return <Verifier t={t} />;
       case 'micrometer': return <Micrometer t={t} />;
-      case 'checkout': return <Checkout user={user} t={t} onComplete={(p) => { if(user) setUser({...user, plan: p}); navigate('home'); }} />;
+      case 'checkout': return <Checkout user={user} t={t} onLogout={handleLogout} onComplete={(p) => { if(user) setUser({...user, plan: p}); navigate('home'); }} />;
       case 'tool_library': return <ToolLibrary tools={catalog} isAdmin={user?.isDev || false} onSelectTool={(tool) => { setSelectedTool(tool); setCurrentScreen('tool_detail' as any); }} onAddTool={() => { setSelectedTool(null); setCurrentScreen('tool_editor' as any); }} t={t} />;
       case 'tool_detail' as any: 
         return selectedTool ? <ToolDetail tool={selectedTool} isAdmin={user?.isDev || false} onBack={() => navigate('tool_library')} onCalculate={() => navigate('machining_params')} onEdit={() => { setCurrentScreen('tool_editor' as any); }} /> : <Home user={user} navigate={navigate} t={t} language={language} setLanguage={setLanguage} />;

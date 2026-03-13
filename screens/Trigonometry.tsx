@@ -35,21 +35,21 @@ const Trigonometry: React.FC = () => {
     let adj = 0;
 
     if (triangleMode === 'angle_hypo') {
-      if (isNaN(a) || isNaN(h)) return { sin: 0, cos: 0, tan: 0, beta: 0, perimeter: 0, h: 0, o: 0, adj: 0 };
+      if (isNaN(a) || isNaN(h)) return { sin: 0, cos: 0, tan: 0, beta: 0, perimeter: 0, h: 0, o: 0, adj: 0, angle: 0 };
       const rad = (a * Math.PI) / 180;
       o = h * Math.sin(rad);
       adj = h * Math.cos(rad);
     } else if (triangleMode === 'catheti') {
       const ca = parseFloat(catA);
       const cb = parseFloat(catB);
-      if (isNaN(ca) || isNaN(cb)) return { sin: 0, cos: 0, tan: 0, beta: 0, perimeter: 0, h: 0, o: 0, adj: 0 };
+      if (isNaN(ca) || isNaN(cb)) return { sin: 0, cos: 0, tan: 0, beta: 0, perimeter: 0, h: 0, o: 0, adj: 0, angle: 0 };
       h = Math.sqrt(ca * ca + cb * cb);
       a = (Math.atan2(ca, cb) * 180) / Math.PI;
       o = ca;
       adj = cb;
     } else if (triangleMode === 'cat_hypo') {
       const ca = parseFloat(catA);
-      if (isNaN(ca) || isNaN(h) || ca >= h) return { sin: 0, cos: 0, tan: 0, beta: 0, perimeter: 0, h: 0, o: 0, adj: 0 };
+      if (isNaN(ca) || isNaN(h) || ca >= h) return { sin: 0, cos: 0, tan: 0, beta: 0, perimeter: 0, h: 0, o: 0, adj: 0, angle: 0 };
       adj = Math.sqrt(h * h - ca * ca);
       a = (Math.asin(ca / h) * 180) / Math.PI;
       o = ca;
@@ -142,16 +142,16 @@ const Trigonometry: React.FC = () => {
       else if (triangleMode === 'adj_angle') text += `Entrada: Cat.A ${catB}mm | Ang ${angle}°\n`;
       else if (triangleMode === 'opp_angle') text += `Entrada: Cat.O ${catA}mm | Ang ${angle}°\n`;
       
-      text += `Ang. Alfa: ${triangleResults.angle.toFixed(2)}°\n`;
-      text += `Hipotenusa: ${triangleResults.h.toFixed(2)}mm\n`;
-      text += `Cat. Oposto: ${triangleResults.o.toFixed(2)}mm\n`;
-      text += `Cat. Adjacente: ${triangleResults.adj.toFixed(2)}mm`;
+      text += `Ang. Alfa: ${(triangleResults.angle || 0).toFixed(2)}°\n`;
+      text += `Hipotenusa: ${(triangleResults.h || 0).toFixed(2)}mm\n`;
+      text += `Cat. Oposto: ${(triangleResults.o || 0).toFixed(2)}mm\n`;
+      text += `Cat. Adjacente: ${(triangleResults.adj || 0).toFixed(2)}mm`;
     } else if (subModule === 'circle') {
-      text += `*Segmentos Circulares*\nRaio: ${radius}mm | Ang: ${centralAngle}°\nCorda: ${circleResults.chord.toFixed(2)}mm\nArco: ${circleResults.arc.toFixed(2)}mm`;
+      text += `*Segmentos Circulares*\nRaio: ${radius}mm | Ang: ${centralAngle}°\nCorda: ${(circleResults.chord || 0).toFixed(2)}mm\nArco: ${(circleResults.arc || 0).toFixed(2)}mm`;
     } else if (subModule === 'polygons') {
-      text += `*Polígonos (${polySides} faces)*\nFace: ${polyDim}mm\nØ Vértice: ${polyResults.vertice.toFixed(2)}mm`;
+      text += `*Polígonos (${polySides} faces)*\nFace: ${polyDim}mm\nØ Vértice: ${(polyResults.vertice || 0).toFixed(2)}mm`;
     } else {
-      text += `*Funções Rápidas*\n${funcType.toUpperCase()}(${funcAngle}°) x ${funcValue} = ${funcResults.result.toFixed(4)}`;
+      text += `*Funções Rápidas*\n${funcType.toUpperCase()}(${funcAngle}°) x ${funcValue} = ${(funcResults.result || 0).toFixed(4)}`;
     }
     return text + `\n\n_Gerado via Casillas Digital_`;
   };
@@ -458,7 +458,7 @@ const Trigonometry: React.FC = () => {
                   </p>
                   <div className="flex items-baseline gap-3 mt-2">
                     <span className="text-6xl font-black text-white tabular-nums">
-                      {triangleMode === 'catheti' ? triangleResults.h.toFixed(2) : triangleResults.o.toFixed(2)}
+                      {triangleMode === 'catheti' ? (triangleResults.h || 0).toFixed(2) : (triangleResults.o || 0).toFixed(2)}
                     </span>
                     <span className="text-2xl font-black text-[#eab308]">MM</span>
                   </div>
@@ -469,14 +469,14 @@ const Trigonometry: React.FC = () => {
                        {triangleMode === 'catheti' ? 'Ângulo Alfa (α)' : 'Cat. Adjacente'}
                      </p>
                      <p className="text-3xl font-black text-white mt-1">
-                       {triangleMode === 'catheti' ? triangleResults.angle.toFixed(2) + '°' : triangleResults.adj.toFixed(2) + ' mm'}
+                       {triangleMode === 'catheti' ? (triangleResults.angle || 0).toFixed(2) + '°' : (triangleResults.adj || 0).toFixed(2) + ' mm'}
                      </p>
                   </div>
                   <div className="bg-[#221e1b] p-6 rounded-2xl border border-white/10">
                      <p className="text-xs font-black text-gray-500 uppercase tracking-widest">
                        {triangleMode === 'catheti' ? 'Ângulo Beta (β)' : 'Ângulo Complementar'}
                      </p>
-                     <p className="text-3xl font-black text-[#eab308] mt-1">{triangleResults.beta.toFixed(2)}°</p>
+                     <p className="text-3xl font-black text-[#eab308] mt-1">{(triangleResults.beta || 0).toFixed(2)}°</p>
                   </div>
                </div>
                {triangleMode !== 'angle_hypo' && (
@@ -486,8 +486,8 @@ const Trigonometry: React.FC = () => {
                     </p>
                     <p className="text-sm font-black text-gray-400 mt-1">
                       {triangleMode === 'catheti' 
-                        ? `OP: ${triangleResults.o.toFixed(2)}mm | ADJ: ${triangleResults.adj.toFixed(2)}mm`
-                        : `ADJ: ${triangleResults.adj.toFixed(2)}mm | H: ${triangleResults.h.toFixed(2)}mm`}
+                        ? `OP: ${(triangleResults.o || 0).toFixed(2)}mm | ADJ: ${(triangleResults.adj || 0).toFixed(2)}mm`
+                        : `ADJ: ${(triangleResults.adj || 0).toFixed(2)}mm | H: ${(triangleResults.h || 0).toFixed(2)}mm`}
                     </p>
                  </div>
                )}

@@ -10,7 +10,12 @@ interface ChatMessage {
   isStreaming?: boolean;
 }
 
-const DrawingAnalysis: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate }) => {
+interface DrawingAnalysisProps {
+  navigate: (s: Screen) => void;
+  t: any;
+}
+
+const DrawingAnalysis: React.FC<DrawingAnalysisProps> = ({ navigate, t }) => {
   const [image, setImage] = useState<string | null>(null);
   const [audioBase64, setAudioBase64] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -63,7 +68,7 @@ const DrawingAnalysis: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate
       mediaRecorderRef.current = recorder;
       setIsRecording(true);
     } catch (err) {
-      alert("Erro ao acessar microfone.");
+      alert(t.mic_error || "Erro ao acessar microfone.");
     }
   };
 
@@ -92,7 +97,7 @@ const DrawingAnalysis: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate
       };
       const apiKey = getApiKey();
       if (!apiKey || apiKey.length < 10) {
-        alert("Erro: Chave API não encontrada ou inválida.");
+        alert(t.api_key_error || "Erro: Chave API não encontrada ou inválida.");
         setLoading(false);
         return;
       }
@@ -132,7 +137,7 @@ const DrawingAnalysis: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate
       setMessages([{ role: 'casillas', text: response.text }]);
       setAudioBase64(null);
     } catch (e) {
-      alert('Erro na análise técnica multimodal.');
+      alert(t.multimodal_analysis_error || 'Erro na análise técnica multimodal.');
     } finally {
       setLoading(false);
     }
@@ -159,7 +164,7 @@ const DrawingAnalysis: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate
       };
       const apiKey = getApiKey();
       if (!apiKey || apiKey.length < 10) {
-        setMessages([...newMessages, { role: 'casillas', text: "Erro: Chave API não encontrada ou inválida." }]);
+        setMessages([...newMessages, { role: 'casillas', text: t.api_key_error || "Erro: Chave API não encontrada ou inválida." }]);
         setLoading(false);
         return;
       }
@@ -184,7 +189,7 @@ const DrawingAnalysis: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate
       });
       setMessages([...newMessages, { role: 'casillas', text: response.text }]);
     } catch (e) {
-      setMessages([...newMessages, { role: 'casillas', text: "Erro na comunicação técnica." }]);
+      setMessages([...newMessages, { role: 'casillas', text: t.technical_comm_error || "Erro na comunicação técnica." }]);
     } finally {
       setLoading(false);
     }
@@ -194,8 +199,8 @@ const DrawingAnalysis: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate
     <div className="flex flex-col h-full bg-[#0a0908] relative overflow-hidden">
       <div className="p-6 border-b border-[#eab308]/10 shrink-0 bg-[#0a0908]/95 z-20 backdrop-blur-md shadow-xl flex justify-between items-center">
         <div>
-          <h2 className="text-[#eab308] text-2xl font-black italic uppercase tracking-tighter leading-none">Visão Industrial</h2>
-          <p className="text-gray-500 text-[9px] font-black uppercase tracking-[0.2em] mt-1">Usinagem • Caldeiraria • Solda</p>
+          <h2 className="text-[#eab308] text-2xl font-black italic uppercase tracking-tighter leading-none">{t.industrial_vision || 'Visão Industrial'}</h2>
+          <p className="text-gray-500 text-[9px] font-black uppercase tracking-[0.2em] mt-1">{t.industrial_vision_desc || 'Usinagem • Caldeiraria • Solda'}</p>
         </div>
         <div className="size-10 rounded-xl bg-[#eab308]/10 flex items-center justify-center border border-[#eab308]/20">
            <span className="material-symbols-outlined text-[#eab308]">architecture</span>
@@ -210,7 +215,7 @@ const DrawingAnalysis: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate
                 className="w-full h-40 border-2 border-dashed border-[#eab308]/20 rounded-3xl flex flex-col items-center justify-center gap-3 bg-black/20"
               >
                  <span className="material-symbols-outlined text-4xl text-[#eab308]">file_upload</span>
-                 <p className="text-white font-black text-[10px] uppercase tracking-widest">Enviar Desenho Técnico</p>
+                 <p className="text-white font-black text-[10px] uppercase tracking-widest">{t.send_technical_drawing || 'Enviar Desenho Técnico'}</p>
               </button>
            ) : (
               <div className="space-y-4">
@@ -231,7 +236,7 @@ const DrawingAnalysis: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate
                         className={`py-4 rounded-2xl border flex flex-col items-center justify-center gap-1 transition-all active:scale-95 ${isRecording ? 'bg-red-500/20 border-red-500 animate-pulse' : 'bg-black/40 border-white/10 text-white'}`}
                       >
                          <span className="material-symbols-outlined">{isRecording ? 'mic' : 'mic_none'}</span>
-                         <span className="text-[8px] font-black uppercase tracking-widest">{isRecording ? 'Ouvindo...' : audioBase64 ? 'Áudio Gravado' : 'Instrução de Voz'}</span>
+                         <span className="text-[8px] font-black uppercase tracking-widest">{isRecording ? (t.listening || 'Ouvindo...') : audioBase64 ? (t.audio_recorded || 'Áudio Gravado') : (t.voice_instruction || 'Instrução de Voz')}</span>
                       </button>
 
                       <button 
@@ -240,7 +245,7 @@ const DrawingAnalysis: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate
                         className="bg-[#eab308] text-black font-black rounded-2xl flex flex-col items-center justify-center gap-1 shadow-xl active:scale-95 disabled:opacity-20"
                       >
                          <span className="material-symbols-outlined">{loading ? 'sync' : 'bolt'}</span>
-                         <span className="text-[8px] font-black uppercase tracking-widest">{loading ? 'Analisando...' : 'Processar Visão'}</span>
+                         <span className="text-[8px] font-black uppercase tracking-widest">{loading ? (t.analyzing || 'Analisando...') : (t.process_vision || 'Processar Visão')}</span>
                       </button>
                    </div>
                  )}
@@ -263,7 +268,7 @@ const DrawingAnalysis: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate
                }`}>
                   {msg.role === 'casillas' && (
                     <div className="absolute -top-3 left-8 flex gap-2">
-                       <div className="bg-[#eab308] text-black text-[7px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest">Protocolo Offshore Ativo</div>
+                       <div className="bg-[#eab308] text-black text-[7px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest">{t.offshore_protocol_active || 'Protocolo Offshore Ativo'}</div>
                     </div>
                   )}
                   <div className="text-sm leading-relaxed whitespace-pre-wrap tracking-tight font-medium">
@@ -290,7 +295,7 @@ const DrawingAnalysis: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate
             onChange={e => setInput(e.target.value)} 
             onKeyDown={e => e.key === 'Enter' && handleFollowUp()} 
             className="flex-1 bg-transparent px-6 text-white outline-none text-xs placeholder:text-gray-600 font-bold" 
-            placeholder="Dúvida técnica sobre este projeto?" 
+            placeholder={t.drawing_analysis_placeholder || "Dúvida técnica sobre este projeto?"} 
           />
           <button 
             onClick={handleFollowUp} 

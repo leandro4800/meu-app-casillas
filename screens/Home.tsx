@@ -46,11 +46,11 @@ const Home: React.FC<HomeProps> = ({ user, navigate, t, language, setLanguage })
            <div className="flex items-center gap-3">
               <span className="material-symbols-outlined text-black font-black text-2xl">warning</span>
               <p className="text-black font-black text-[10px] uppercase tracking-widest">
-                Expira em {expirationNotice.days} dias
+                {t.expires_in || 'Expira em'} {expirationNotice.days} {t.days || 'dias'}
               </p>
            </div>
            <button onClick={() => navigate('checkout')} className="bg-black text-white text-[8px] font-black px-6 py-2.5 rounded-full uppercase tracking-widest shadow-xl">
-             Renovar
+             {t.renew || 'Renovar'}
            </button>
         </div>
       )}

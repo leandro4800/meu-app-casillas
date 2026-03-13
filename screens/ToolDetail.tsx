@@ -8,9 +8,10 @@ interface ToolDetailProps {
   onBack: () => void;
   onCalculate: () => void;
   onEdit: () => void;
+  t: any;
 }
 
-const ToolDetail: React.FC<ToolDetailProps> = ({ tool, isAdmin, onBack, onCalculate, onEdit }) => {
+const ToolDetail: React.FC<ToolDetailProps> = ({ tool, isAdmin, onBack, onCalculate, onEdit, t }) => {
   const isDrillWithInserts = tool.category === 'Furação' && tool.code.includes('PASTILHA');
 
   return (
@@ -19,7 +20,7 @@ const ToolDetail: React.FC<ToolDetailProps> = ({ tool, isAdmin, onBack, onCalcul
          <button onClick={onBack} className="text-[#eab308] p-1">
             <span className="material-symbols-outlined text-2xl">arrow_back</span>
          </button>
-         <h2 className="text-white font-black text-xs uppercase tracking-[0.2em]">Ficha Técnica Industrial</h2>
+         <h2 className="text-white font-black text-xs uppercase tracking-[0.2em]">{t.technical_sheet || 'Ficha Técnica Industrial'}</h2>
          <div className="flex gap-2">
             {isAdmin && (
                <button onClick={onEdit} className="text-[#eab308] p-1">
@@ -46,7 +47,7 @@ const ToolDetail: React.FC<ToolDetailProps> = ({ tool, isAdmin, onBack, onCalcul
                       Grade: <span className="text-[#eab308]">{tool.grade}</span>
                     </p>
                     <p className="text-xs text-gray-500 font-bold">
-                      Revestimento: <span className="text-gray-300">{tool.coating}</span>
+                      {t.coating || 'Revestimento'}: <span className="text-gray-300">{tool.coating}</span>
                     </p>
                   </div>
                </div>
@@ -64,7 +65,7 @@ const ToolDetail: React.FC<ToolDetailProps> = ({ tool, isAdmin, onBack, onCalcul
             </div>
             <div className="col-span-2 bg-[#1c1e22]/50 border-l border-white/5 p-5 flex flex-col justify-center space-y-6">
                <div className="space-y-2 text-center">
-                  <p className="text-[9px] font-black text-[#eab308] uppercase tracking-widest leading-none">Geometria Base</p>
+                  <p className="text-[9px] font-black text-[#eab308] uppercase tracking-widest leading-none">{t.base_geometry || 'Geometria Base'}</p>
                   <h4 className="text-white font-black text-sm italic">{tool.geometry}</h4>
                   <div className="w-8 h-0.5 bg-[#eab308]/20 mx-auto"></div>
                   <p className="text-[10px] text-gray-500 font-bold leading-relaxed">{tool.geometryDesc}</p>
@@ -87,14 +88,14 @@ const ToolDetail: React.FC<ToolDetailProps> = ({ tool, isAdmin, onBack, onCalcul
          <div className="space-y-4">
             <div className="flex items-center gap-2 px-1">
                <span className="material-symbols-outlined text-[#eab308] text-xl">tune</span>
-               <h3 className="text-white font-black text-[10px] uppercase tracking-widest">Parâmetros de Início (Start Values)</h3>
+               <h3 className="text-white font-black text-[10px] uppercase tracking-widest">{t.start_values || 'Parâmetros de Início (Start Values)'}</h3>
             </div>
             
             <div className="grid grid-cols-3 gap-3">
                {[
-                 { label: 'Vc m/min', val: tool.parameters.vc, range: `${tool.parameters.vcRange[0]}-${tool.parameters.vcRange[1]}` },
-                 { label: 'fn mm/r', val: tool.parameters.fn, range: `${tool.parameters.fnRange[0]}-${tool.parameters.fnRange[1]}` },
-                 { label: 'ap mm', val: tool.parameters.ap === 0 ? '--' : tool.parameters.ap, range: tool.parameters.ap === 0 ? 'Furação' : `${tool.parameters.apRange[0]}-${tool.parameters.apRange[1]}` }
+                 { label: `Vc ${t.vc_unit || 'm/min'}`, val: tool.parameters.vc, range: `${tool.parameters.vcRange[0]}-${tool.parameters.vcRange[1]}` },
+                 { label: `fn ${t.feed_unit || 'mm/r'}`, val: tool.parameters.fn, range: `${tool.parameters.fnRange[0]}-${tool.parameters.fnRange[1]}` },
+                 { label: `ap ${t.unit || 'mm'}`, val: tool.parameters.ap === 0 ? '--' : tool.parameters.ap, range: tool.parameters.ap === 0 ? (t.drilling || 'Furação') : `${tool.parameters.apRange[0]}-${tool.parameters.apRange[1]}` }
                ].map(p => (
                  <div key={p.label} className="bg-[#252930] rounded-2xl p-4 border border-white/5 shadow-lg flex flex-col items-center">
                     <p className="text-[8px] font-black text-gray-500 uppercase mb-2 tracking-widest">{p.label}</p>
@@ -113,7 +114,7 @@ const ToolDetail: React.FC<ToolDetailProps> = ({ tool, isAdmin, onBack, onCalcul
               className="flex-1 bg-[#eab308] text-black font-black py-5 rounded-[2rem] flex items-center justify-center gap-3 shadow-2xl active:scale-95 transition-all uppercase text-[11px] tracking-widest"
             >
                <span className="material-symbols-outlined font-black">calculate</span>
-               Calcular RPM / Avanço
+               {t.calculate_rpm_feed || 'Calcular RPM / Avanço'}
             </button>
          </div>
       </div>

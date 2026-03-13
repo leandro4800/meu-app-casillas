@@ -276,11 +276,11 @@ export default function App() {
       case 'login': return <Login onLogin={(u) => {setUser(u); setCurrentScreen('home');}} onDevAccess={() => {}} t={t} />;
       case 'home': return <Home user={user} navigate={navigate} t={t} language={language} setLanguage={setLanguage} />;
       case 'ai_suite': return <AISuite navigate={navigate} t={t} />;
-      case 'voice_consultant': return <VoiceConsultant navigate={navigate} />;
-      case 'media_lab': return <MediaLab navigate={navigate} />;
-      case 'drawing_analysis': return <DrawingAnalysis navigate={navigate} />;
-      case 'consultant': return <Consultant navigate={navigate} />;
-      case 'ai_agent': return <AIAgent />;
+      case 'voice_consultant': return <VoiceConsultant navigate={navigate} t={t} />;
+      case 'media_lab': return <MediaLab navigate={navigate} t={t} />;
+      case 'drawing_analysis': return <DrawingAnalysis navigate={navigate} t={t} />;
+      case 'consultant': return <Consultant navigate={navigate} t={t} />;
+      case 'ai_agent': return <AIAgent t={t} />;
       case 'profile': return (
         <Profile 
           user={user} 
@@ -296,31 +296,31 @@ export default function App() {
         />
       );
       case 'machining_params': return <MachiningParams onBack={() => navigate('home')} initialData={selectedTool} t={t} />;
-      case 'trigonometry': return <Trigonometry />;
-      case 'table_threads': return <ThreadTables />;
-      case 'table_tolerances': return <ToleranceTables />;
-      case 'table_shackles': return <ShacklesTable />;
+      case 'trigonometry': return <Trigonometry t={t} />;
+      case 'table_threads': return <ThreadTables t={t} />;
+      case 'table_tolerances': return <ToleranceTables t={t} />;
+      case 'table_shackles': return <ShacklesTable t={t} />;
       case 'table_arc': return <ArcCalc t={t} />;
-      case 'calc_divider': return <DividerCalc />;
-      case 'calc_gears': return <GearCalc />;
+      case 'calc_divider': return <DividerCalc t={t} />;
+      case 'calc_gears': return <GearCalc t={t} />;
       case 'calc_weight': return <WeightCalc t={t} />;
-      case 'table_conversion': return <Conversion />;
-      case 'glossary': return <Glossary navigate={navigate} />;
-      case 'materials': return <MaterialsScreen />;
-      case 'material_comparison': return <MaterialComparison />;
+      case 'table_conversion': return <Conversion t={t} />;
+      case 'glossary': return <Glossary navigate={navigate} t={t} />;
+      case 'materials': return <MaterialsScreen t={t} />;
+      case 'material_comparison': return <MaterialComparison t={t} />;
       case 'verifier': return <Verifier t={t} />;
       case 'micrometer': return <Micrometer t={t} />;
       case 'checkout': return <Checkout user={user} t={t} onLogout={handleLogout} onComplete={(p) => { if(user) setUser({...user, plan: p}); navigate('home'); }} />;
       case 'tool_library': return <ToolLibrary tools={catalog} isAdmin={user?.isDev || false} onSelectTool={(tool) => { setSelectedTool(tool); setCurrentScreen('tool_detail' as any); }} onAddTool={() => { setSelectedTool(null); setCurrentScreen('tool_editor' as any); }} t={t} />;
       case 'tool_detail' as any: 
-        return selectedTool ? <ToolDetail tool={selectedTool} isAdmin={user?.isDev || false} onBack={() => navigate('tool_library')} onCalculate={() => navigate('machining_params')} onEdit={() => { setCurrentScreen('tool_editor' as any); }} /> : <Home user={user} navigate={navigate} t={t} language={language} setLanguage={setLanguage} />;
+        return selectedTool ? <ToolDetail tool={selectedTool} isAdmin={user?.isDev || false} onBack={() => navigate('tool_library')} onCalculate={() => navigate('machining_params')} onEdit={() => { setCurrentScreen('tool_editor' as any); }} t={t} /> : <Home user={user} navigate={navigate} t={t} language={language} setLanguage={setLanguage} />;
       case 'tool_editor' as any:
         return <ToolEditor tool={selectedTool} onBack={() => navigate('tool_library')} onSave={(tool) => { 
           const idx = catalog.findIndex(t => t.id === tool.id);
           if (idx > -1) { const newCat = [...catalog]; newCat[idx] = tool; setCatalog(newCat); }
           else { setCatalog([...catalog, tool]); }
           navigate('tool_library');
-        }} onDelete={(id) => { setCatalog(catalog.filter(t => t.id !== id)); navigate('tool_library'); }} />;
+        }} onDelete={(id) => { setCatalog(catalog.filter(t => t.id !== id)); navigate('tool_library'); }} t={t} />;
       default: return <Home user={user} navigate={navigate} t={t} language={language} setLanguage={setLanguage} />;
     }
   };

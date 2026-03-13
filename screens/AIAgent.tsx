@@ -9,7 +9,11 @@ interface AgentLog {
   data?: any;
 }
 
-const AIAgent: React.FC = () => {
+interface AIAgentProps {
+  t: any;
+}
+
+const AIAgent: React.FC<AIAgentProps> = ({ t }) => {
   const [activeTab, setActiveTab] = useState<'tasks' | 'leads'>('tasks');
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
@@ -125,7 +129,7 @@ const AIAgent: React.FC = () => {
               <span className="material-symbols-outlined text-[#eab308]">business_center</span>
            </div>
            <div>
-              <h2 className="text-[#eab308] text-2xl font-black uppercase italic tracking-tight leading-none">Gestão Ativa</h2>
+              <h2 className="text-[#eab308] text-2xl font-black uppercase italic tracking-tight leading-none">{t.active_management || 'Gestão Ativa'}</h2>
               <p className="text-gray-600 text-[8px] font-black uppercase tracking-[0.4em] mt-1">Industrial Intelligence Agent</p>
            </div>
         </div>
@@ -136,13 +140,13 @@ const AIAgent: React.FC = () => {
            onClick={() => setActiveTab('tasks')}
            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-[18px] text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'tasks' ? 'bg-[#eab308] text-black shadow-xl' : 'text-gray-500'}`}
          >
-           Planejador Ativo
+           {t.active_planner || 'Planejador Ativo'}
          </button>
          <button 
            onClick={() => setActiveTab('leads')}
            className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-[18px] text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'leads' ? 'bg-[#eab308] text-black shadow-xl' : 'text-gray-500'}`}
          >
-           Estratégia
+           {t.strategy || 'Estratégia'}
          </button>
       </div>
 
@@ -152,8 +156,8 @@ const AIAgent: React.FC = () => {
              value={prompt}
              onChange={(e) => setPrompt(e.target.value)}
              placeholder={activeTab === 'tasks' 
-               ? "Ex: Registre uma nova fresa CoroMill 390, classe 4340, Vc 180..." 
-               : "Ex: Gere um cronograma de produção para 20 flanges API 6A..."}
+               ? (t.agent_tasks_placeholder || "Ex: Registre uma nova fresa CoroMill 390, classe 4340, Vc 180...") 
+               : (t.agent_strategy_placeholder || "Ex: Gere um cronograma de produção para 20 flanges API 6A...")}
              className="w-full bg-[#0a0908] border border-white/5 rounded-2xl p-5 text-sm text-gray-300 focus:ring-1 focus:ring-[#eab308] outline-none h-32 resize-none"
            />
 
@@ -166,7 +170,7 @@ const AIAgent: React.FC = () => {
                 <div className="size-5 border-2 border-black/20 border-t-black rounded-full animate-spin"></div>
               ) : (
                 <>
-                  <span className="text-[11px] uppercase tracking-[0.2em]">Executar Tarefa</span>
+                  <span className="text-[11px] uppercase tracking-[0.2em]">{t.execute_task || 'Executar Tarefa'}</span>
                   <span className="material-symbols-outlined text-xl">bolt</span>
                 </>
               )}
@@ -175,7 +179,7 @@ const AIAgent: React.FC = () => {
 
         {logs.length > 0 && (
           <div className="space-y-3">
-            <p className="text-[9px] font-black text-gray-700 uppercase tracking-widest ml-2">Atividades Recentes do Agente</p>
+            <p className="text-[9px] font-black text-gray-700 uppercase tracking-widest ml-2">{t.recent_agent_activities || 'Atividades Recentes do Agente'}</p>
             {logs.map(log => (
               <div key={log.id} className="bg-blue-500/5 border border-blue-500/20 rounded-2xl p-4 flex gap-4 animate-in slide-in-from-left duration-300">
                  <span className="material-symbols-outlined text-blue-400">task_alt</span>
@@ -205,7 +209,7 @@ const AIAgent: React.FC = () => {
                 className="mt-6 flex items-center gap-2 text-[9px] font-black text-gray-500 uppercase tracking-widest hover:text-white"
               >
                  <span className="material-symbols-outlined text-sm">content_copy</span>
-                 Copiar Relatório
+                 {t.copy_report || 'Copiar Relatório'}
               </button>
           </div>
         )}

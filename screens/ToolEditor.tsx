@@ -7,9 +7,10 @@ interface ToolEditorProps {
   onSave: (tool: ToolInsert) => void;
   onDelete: (id: string) => void;
   onBack: () => void;
+  t: any;
 }
 
-const ToolEditor: React.FC<ToolEditorProps> = ({ tool, onSave, onDelete, onBack }) => {
+const ToolEditor: React.FC<ToolEditorProps> = ({ tool, onSave, onDelete, onBack, t }) => {
   const [formData, setFormData] = useState<ToolInsert>({
     id: Math.random().toString(36).substr(2, 9),
     code: '',
@@ -51,13 +52,13 @@ const ToolEditor: React.FC<ToolEditorProps> = ({ tool, onSave, onDelete, onBack 
             <span className="material-symbols-outlined">close</span>
          </button>
          <h2 className="text-white font-black text-xs uppercase tracking-widest">
-           {tool ? 'Editar Ferramenta' : 'Nova Ferramenta'}
+           {tool ? (t.edit_tool || 'Editar Ferramenta') : (t.new_tool || 'Nova Ferramenta')}
          </h2>
          <button 
            onClick={() => onSave(formData)}
            className="text-[#eab308] font-bold text-sm uppercase px-2"
          >
-           Salvar
+           {t.save || 'Salvar'}
          </button>
       </div>
 

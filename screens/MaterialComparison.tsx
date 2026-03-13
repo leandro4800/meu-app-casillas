@@ -3,7 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { MATERIALS } from '../constants';
 import { MaterialData } from '../types';
 
-const MaterialComparison: React.FC = () => {
+interface MaterialComparisonProps {
+  t: any;
+}
+
+const MaterialComparison: React.FC<MaterialComparisonProps> = ({ t }) => {
   const [selectedNames, setSelectedNames] = useState<string[]>(['SAE 1020', 'SAE 1045', 'INOX 304']);
   const [showAddModal, setShowAddModal] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
@@ -49,24 +53,24 @@ const MaterialComparison: React.FC = () => {
       {showToast && (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[100] bg-green-500 text-black px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl flex items-center gap-3 animate-in slide-in-from-top-10 duration-500">
            <span className="material-symbols-outlined">check_circle</span>
-           Relatório Gerado com Sucesso!
+           {t.report_generated_success || 'Relatório Gerado com Sucesso!'}
         </div>
       )}
 
       {/* Header Info */}
       <div className="p-5 pb-0">
         <div className="flex justify-between items-center mb-4">
-           <h2 className="text-white text-xl font-black uppercase tracking-tight">Comparativo Técnico</h2>
+           <h2 className="text-white text-xl font-black uppercase tracking-tight">{t.technical_comparison || 'Comparativo Técnico'}</h2>
            <button 
              onClick={() => setSelectedNames(['SAE 1020', 'SAE 1045', 'INOX 304'])}
              className="text-[#eab308] p-2 hover:bg-white/5 rounded-full transition-all"
-             title="Resetar Comparativo"
+             title={t.reset_comparison || "Resetar Comparativo"}
            >
               <span className="material-symbols-outlined">restart_alt</span>
            </button>
         </div>
 
-        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3">Materiais Selecionados ({selectedNames.length}/4)</p>
+        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-3">{t.selected_materials || 'Materiais Selecionados'} ({selectedNames.length}/4)</p>
         <div className="flex flex-wrap gap-2 mb-6">
            {selectedNames.length < 4 && (
              <button 
@@ -74,7 +78,7 @@ const MaterialComparison: React.FC = () => {
                className="bg-[#252930] border-2 border-dashed border-[#eab308]/30 rounded-xl px-4 py-2 flex items-center gap-2 text-[#eab308] active:scale-95 transition-all group"
              >
                 <span className="material-symbols-outlined text-sm font-black group-hover:rotate-90 transition-transform">add</span>
-                <span className="text-[10px] font-black uppercase tracking-widest">Adicionar</span>
+                <span className="text-[10px] font-black uppercase tracking-widest">{t.add || 'Adicionar'}</span>
              </button>
            )}
 
@@ -97,7 +101,7 @@ const MaterialComparison: React.FC = () => {
         {/* Gráfico de Dureza */}
         <section className="space-y-6">
            <div className="flex justify-between items-end">
-              <h3 className="text-white text-lg font-black tracking-tight">Dureza (Brinell HB)</h3>
+              <h3 className="text-white text-lg font-black tracking-tight">{t.hardness || 'Dureza'} (Brinell HB)</h3>
               <span className="material-symbols-outlined text-[#eab308] opacity-50">bar_chart</span>
            </div>
 
@@ -134,7 +138,7 @@ const MaterialComparison: React.FC = () => {
         {/* Usinabilidade */}
         <section className="space-y-6">
            <div className="flex justify-between items-end">
-              <h3 className="text-white text-lg font-black tracking-tight">Usinabilidade</h3>
+              <h3 className="text-white text-lg font-black tracking-tight">{t.machinability || 'Usinabilidade'}</h3>
               <span className="material-symbols-outlined text-[#eab308] opacity-50">precision_manufacturing</span>
            </div>
 
@@ -177,7 +181,7 @@ const MaterialComparison: React.FC = () => {
         {/* Propriedades Mecânicas */}
         <section className="space-y-6">
            <div className="flex justify-between items-end">
-              <h3 className="text-white text-lg font-black tracking-tight">Propriedades Mecânicas</h3>
+              <h3 className="text-white text-lg font-black tracking-tight">{t.mechanical_properties || 'Propriedades Mecânicas'}</h3>
               <span className="material-symbols-outlined text-[#eab308] opacity-50">analytics</span>
            </div>
 
@@ -186,7 +190,7 @@ const MaterialComparison: React.FC = () => {
                 <table className="w-full text-left border-collapse">
                    <thead>
                       <tr className="bg-[#121214]/50 text-[9px] font-black text-gray-600 uppercase tracking-widest">
-                         <th className="p-4 border-b border-white/5">Propriedade</th>
+                         <th className="p-4 border-b border-white/5">{t.property || 'Propriedade'}</th>
                          {selectedMaterials.map(m => (
                            <th key={m.name} className="p-4 text-center border-b border-white/5" style={{ color: m.color }}>
                               {m.name.split(' ')[1] || m.name}
@@ -196,7 +200,7 @@ const MaterialComparison: React.FC = () => {
                    </thead>
                    <tbody className="divide-y divide-white/5">
                       <tr className="hover:bg-white/5 transition-colors">
-                         <td className="p-4 text-[10px] font-bold text-gray-400">Limite Elástico <br/><span className="text-[8px] uppercase opacity-40">(Yield)</span></td>
+                         <td className="p-4 text-[10px] font-bold text-gray-400">{t.yield_strength || 'Limite Elástico'} <br/><span className="text-[8px] uppercase opacity-40">(Yield)</span></td>
                          {selectedMaterials.map(m => (
                            <td key={m.name} className="p-4 text-center font-mono text-sm font-bold text-white">
                               {m.yieldStrength} <span className="text-[8px] text-gray-600 block">MPa</span>
@@ -204,7 +208,7 @@ const MaterialComparison: React.FC = () => {
                          ))}
                       </tr>
                       <tr className="hover:bg-white/5 transition-colors">
-                         <td className="p-4 text-[10px] font-bold text-gray-400">Resistência <br/><span className="text-[8px] uppercase opacity-40">Tração</span></td>
+                         <td className="p-4 text-[10px] font-bold text-gray-400">{t.tensile_strength || 'Resistência Tração'} <br/><span className="text-[8px] uppercase opacity-40">Tração</span></td>
                          {selectedMaterials.map(m => (
                            <td key={m.name} className="p-4 text-center font-mono text-sm font-bold text-white">
                               {m.tensileStrength} <span className="text-[8px] text-gray-600 block">MPa</span>
@@ -212,7 +216,7 @@ const MaterialComparison: React.FC = () => {
                          ))}
                       </tr>
                       <tr className="hover:bg-white/5 transition-colors">
-                         <td className="p-4 text-[10px] font-bold text-gray-400">Carbono (C)</td>
+                         <td className="p-4 text-[10px] font-bold text-gray-400">{t.carbon || 'Carbono'} (C)</td>
                          {selectedMaterials.map(m => (
                            <td key={m.name} className="p-4 text-center font-mono text-sm font-bold text-white">
                               {m.carbonContent}
@@ -236,12 +240,12 @@ const MaterialComparison: React.FC = () => {
             {isExporting ? (
               <>
                 <div className="size-5 border-2 border-black/30 border-t-black rounded-full animate-spin"></div>
-                GERANDO RELATÓRIO...
+                {t.generating_report || 'GERANDO RELATÓRIO...'}
               </>
             ) : (
               <>
                 <span className="material-symbols-outlined">download</span>
-                EXPORTAR RELATÓRIO
+                {t.export_report || 'EXPORTAR RELATÓRIO'}
               </>
             )}
          </button>
@@ -252,7 +256,7 @@ const MaterialComparison: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-300">
            <div className="w-full max-w-md bg-[#1c1e22] rounded-t-[40px] border-t border-[#eab308]/30 p-8 shadow-2xl animate-in slide-in-from-bottom-20 duration-500">
               <div className="flex justify-between items-center mb-8">
-                 <h3 className="text-white text-2xl font-black tracking-tight">Seleção de Material</h3>
+                 <h3 className="text-white text-2xl font-black tracking-tight">{t.material_selection || 'Seleção de Material'}</h3>
                  <button onClick={() => setShowAddModal(false)} className="text-gray-500">
                     <span className="material-symbols-outlined">close</span>
                  </button>

@@ -47,12 +47,12 @@ const ArcCalc: React.FC<ArcCalcProps> = ({ t }) => {
 
   const formatReport = () => {
     if (!results) return '';
-    return `*CASILLAS - ARCO, FLECHA E CORDA*\n\n` +
-           `*Modo:* ${mode.replace('_', ' & ').toUpperCase()}\n` +
-           `*Raio (r):* ${results.r.toFixed(2)} mm\n` +
-           `*Arco (l):* ${results.l.toFixed(2)} mm\n` +
-           `*Flecha (f):* ${results.f.toFixed(2)} mm\n` +
-           `*Corda (c):* ${results.c.toFixed(2)} mm\n\n` +
+    return `*CASILLAS - ${t.arc_arrow_cord || 'ARCO, FLECHA E CORDA'}*\n\n` +
+           `*${t.mode || 'Modo'}:* ${mode.replace('_', ' & ').toUpperCase()}\n` +
+           `*${t.radius || 'Raio'} (r):* ${results.r.toFixed(2)} mm\n` +
+           `*${t.arc || 'Arco'} (l):* ${results.l.toFixed(2)} mm\n` +
+           `*${t.arrow || 'Flecha'} (f):* ${results.f.toFixed(2)} mm\n` +
+           `*${t.cord || 'Corda'} (c):* ${results.c.toFixed(2)} mm\n\n` +
            `_Gerado via Casillas Digital_`;
   };
 
@@ -69,7 +69,7 @@ const ArcCalc: React.FC<ArcCalcProps> = ({ t }) => {
     <div className="flex flex-col h-full bg-[#161412] text-white relative">
       {showToast && (
         <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] bg-[#eab308] text-black px-6 py-3 rounded-2xl font-black text-[10px] uppercase shadow-2xl animate-in fade-in slide-in-from-top-4 duration-300">
-           Resultado Salvo no Histórico
+           {t.result_saved || 'Resultado Salvo no Histórico'}
         </div>
       )}
 
@@ -80,13 +80,13 @@ const ArcCalc: React.FC<ArcCalcProps> = ({ t }) => {
             onClick={() => setActiveTab('calc')} 
             className={`flex-1 py-3 text-[10px] font-black rounded-xl transition-all uppercase tracking-widest ${activeTab === 'calc' ? 'bg-[#eab308] text-black shadow-lg' : 'text-gray-500 hover:text-gray-400'}`}
           >
-            Calculadora
+            {t.calculator || 'Calculadora'}
           </button>
           <button 
             onClick={() => setActiveTab('table')} 
             className={`flex-1 py-3 text-[10px] font-black rounded-xl transition-all uppercase tracking-widest ${activeTab === 'table' ? 'bg-[#eab308] text-black shadow-lg' : 'text-gray-500 hover:text-gray-400'}`}
           >
-            Tabela de Flechas
+            {t.arrow_table || 'Tabela de Flechas'}
           </button>
         </div>
       </div>
@@ -115,13 +115,13 @@ const ArcCalc: React.FC<ArcCalcProps> = ({ t }) => {
                
                <div className="absolute bottom-4 left-6 flex items-center gap-2">
                   <div className="size-1.5 rounded-full bg-[#eab308] animate-pulse"></div>
-                  <span className="text-[8px] font-black text-gray-700 uppercase tracking-[0.3em]">Cálculo Trigonométrico</span>
+                  <span className="text-[8px] font-black text-gray-700 uppercase tracking-[0.3em]">{t.trigonometric_calc || 'Cálculo Trigonométrico'}</span>
                </div>
             </div>
 
             {/* Seletor de Modo de Entrada */}
             <div className="space-y-3">
-              <p className="text-[#eab308]/60 text-[9px] font-black uppercase tracking-[0.2em] ml-1">Variáveis de Entrada</p>
+              <p className="text-[#eab308]/60 text-[9px] font-black uppercase tracking-[0.2em] ml-1">{t.input_variables || 'Variáveis de Entrada'}</p>
               <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
                 {(['raio_corda', 'arco_raio', 'corda_flecha'] as InputMode[]).map(m => (
                   <button 
@@ -129,7 +129,7 @@ const ArcCalc: React.FC<ArcCalcProps> = ({ t }) => {
                     onClick={() => setMode(m)} 
                     className={`whitespace-nowrap px-5 py-3 rounded-2xl border transition-all font-black text-[10px] uppercase tracking-widest ${mode === m ? 'bg-[#eab308] text-black border-[#eab308] shadow-lg shadow-[#eab308]/10' : 'bg-[#221e1b] text-gray-500 border-white/5'}`}
                   >
-                    {m.replace('_', ' & ').toUpperCase()}
+                    {m === 'raio_corda' ? `${t.radius} & ${t.cord}` : m === 'arco_raio' ? `${t.arc} & ${t.radius}` : `${t.cord} & ${t.arrow}`}
                   </button>
                 ))}
               </div>
@@ -139,7 +139,7 @@ const ArcCalc: React.FC<ArcCalcProps> = ({ t }) => {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-[9px] font-black text-gray-600 uppercase tracking-widest ml-1">
-                  {mode === 'raio_corda' ? 'Raio (R)' : mode === 'arco_raio' ? 'Arco (l)' : 'Corda (c)'}
+                  {mode === 'raio_corda' ? `${t.radius} (R)` : mode === 'arco_raio' ? `${t.arc} (l)` : `${t.cord} (c)`}
                 </label>
                 <div className="relative">
                   <input 
@@ -153,7 +153,7 @@ const ArcCalc: React.FC<ArcCalcProps> = ({ t }) => {
               </div>
               <div className="space-y-2">
                 <label className="text-[9px] font-black text-gray-600 uppercase tracking-widest ml-1">
-                  {mode === 'raio_corda' ? 'Corda (c)' : mode === 'arco_raio' ? 'Raio (R)' : 'Flecha (f)'}
+                  {mode === 'raio_corda' ? `${t.cord} (c)` : mode === 'arco_raio' ? `${t.radius} (R)` : `${t.arrow} (f)`}
                 </label>
                 <div className="relative">
                   <input 
@@ -170,7 +170,7 @@ const ArcCalc: React.FC<ArcCalcProps> = ({ t }) => {
             {/* Resultados em Cards Industriais */}
             <div className="space-y-4">
                <div className="bg-[#221e1b] rounded-[32px] p-6 border-l-4 border-[#eab308] shadow-2xl group transition-all hover:bg-[#252930]">
-                  <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest mb-2">Flecha Calculada (f)</p>
+                  <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest mb-2">{t.calculated_arrow || 'Flecha Calculada'} (f)</p>
                   <div className="flex items-baseline gap-2">
                     <span className="text-5xl font-black text-white tabular-nums tracking-tighter">{results ? results.f.toFixed(3) : '--'}</span>
                     <span className="text-xl font-black text-gray-700 italic">mm</span>
@@ -179,11 +179,11 @@ const ArcCalc: React.FC<ArcCalcProps> = ({ t }) => {
                
                <div className="grid grid-cols-2 gap-4">
                   <div className="bg-[#221e1b] p-5 rounded-3xl border border-white/5 shadow-xl">
-                     <p className="text-[9px] font-black text-gray-600 uppercase tracking-tighter">Comprimento do Arco</p>
+                     <p className="text-[9px] font-black text-gray-600 uppercase tracking-tighter">{t.arc_length || 'Comprimento do Arco'}</p>
                      <p className="text-xl font-black text-[#eab308] mt-1 tabular-nums">{results ? results.l.toFixed(2) : '--'} mm</p>
                   </div>
                   <div className="bg-[#221e1b] p-5 rounded-3xl border border-white/5 shadow-xl">
-                     <p className="text-[9px] font-black text-gray-600 uppercase tracking-tighter">Raio Calculado</p>
+                     <p className="text-[9px] font-black text-gray-600 uppercase tracking-tighter">{t.calculated_radius || 'Raio Calculado'}</p>
                      <p className="text-xl font-black text-white mt-1 tabular-nums">{results ? results.r.toFixed(2) : '--'} mm</p>
                   </div>
                </div>
@@ -193,16 +193,16 @@ const ArcCalc: React.FC<ArcCalcProps> = ({ t }) => {
           /* Tabela Técnica Refinada */
           <div className="bg-[#1c1e22] rounded-[32px] border border-white/5 shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
              <div className="p-5 border-b border-white/5 bg-[#252930]/50 flex justify-between items-center">
-                <h4 className="text-[#eab308] font-black text-[10px] uppercase tracking-[0.2em]">Referência Técnica (R=100)</h4>
+                <h4 className="text-[#eab308] font-black text-[10px] uppercase tracking-[0.2em]">{t.technical_reference || 'Referência Técnica'} (R=100)</h4>
                 <span className="material-symbols-outlined text-[#eab308] text-xl opacity-30">table_chart</span>
              </div>
              <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                    <thead>
                       <tr className="bg-[#121214]/80 text-[9px] font-black text-gray-600 uppercase tracking-widest">
-                         <th className="p-5 border-b border-white/5">Ângulo α</th>
-                         <th className="p-5 text-center border-b border-white/5">Corda (c)</th>
-                         <th className="p-5 text-right border-b border-white/5">Flecha (f)</th>
+                         <th className="p-5 border-b border-white/5">{t.angle || 'Ângulo'} α</th>
+                         <th className="p-5 text-center border-b border-white/5">{t.cord || 'Corda'} (c)</th>
+                         <th className="p-5 text-right border-b border-white/5">{t.arrow || 'Flecha'} (f)</th>
                       </tr>
                    </thead>
                    <tbody className="divide-y divide-white/5">
@@ -223,7 +223,7 @@ const ArcCalc: React.FC<ArcCalcProps> = ({ t }) => {
                 </table>
              </div>
              <div className="p-4 bg-[#121214]/40 text-center">
-                <p className="text-[8px] font-black text-gray-700 uppercase tracking-widest">Valores proporcionais ao raio selecionado</p>
+                <p className="text-[8px] font-black text-gray-700 uppercase tracking-widest">{t.proportional_values || 'Valores proporcionais ao raio selecionado'}</p>
              </div>
           </div>
         )}
@@ -236,7 +236,7 @@ const ArcCalc: React.FC<ArcCalcProps> = ({ t }) => {
          </button>
          <button onClick={handleSave} className="flex-1 bg-[#eab308] text-black font-black py-4 rounded-2xl shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-all uppercase text-xs tracking-widest">
             <span className="material-symbols-outlined text-xl font-black">save</span> 
-            Salvar Resultado
+            {t.save_result || 'Salvar Resultado'}
          </button>
       </div>
     </div>

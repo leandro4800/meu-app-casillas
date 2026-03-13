@@ -63,8 +63,9 @@ async function startServer() {
     const stripeClient = getStripe();
 
     if (!stripeClient) {
+      console.error("ERRO: STRIPE_SECRET_KEY não encontrada no ambiente.");
       return res.status(500).json({ 
-        error: "Stripe não configurado no servidor. Verifique a variável STRIPE_SECRET_KEY." 
+        error: "Stripe não configurado no servidor. Verifique se a variável STRIPE_SECRET_KEY está definida nas configurações do projeto." 
       });
     }
 
@@ -74,8 +75,9 @@ async function startServer() {
         : process.env.STRIPE_PRICE_ID_MONTHLY;
 
       if (!priceId) {
+        console.error(`ERRO: ID de preço não configurado para o plano ${plan}.`);
         return res.status(400).json({ 
-          error: `ID de preço não configurado para o plano ${plan === 'annual' ? 'Anual' : 'Mensal'}. Verifique as variáveis STRIPE_PRICE_ID_*.` 
+          error: `ID de preço não configurado para o plano ${plan === 'annual' ? 'Anual' : 'Mensal'}. Verifique as variáveis STRIPE_PRICE_ID_ANNUAL e STRIPE_PRICE_ID_MONTHLY nas configurações do projeto.` 
         });
       }
 

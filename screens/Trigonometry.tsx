@@ -4,7 +4,11 @@ import React, { useState, useMemo } from 'react';
 type SubModule = 'triangle' | 'circle' | 'polygons' | 'functions';
 type TriangleMode = 'angle_hypo' | 'catheti' | 'cat_hypo' | 'adj_angle' | 'opp_angle';
 
-const Trigonometry: React.FC = () => {
+interface TrigonometryProps {
+  t: any;
+}
+
+const Trigonometry: React.FC<TrigonometryProps> = ({ t }) => {
   const [subModule, setSubModule] = useState<SubModule>('triangle');
   const [triangleMode, setTriangleMode] = useState<TriangleMode>('angle_hypo');
   const [showToast, setShowToast] = useState(false);
@@ -308,17 +312,17 @@ const Trigonometry: React.FC = () => {
                 {triangleMode === 'angle_hypo' && (
                   <>
                     <div className="space-y-2">
-                      <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Ângulo (α)</label>
+                      <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">{t.angle} (α)</label>
                       <div className="relative">
                         <input type="number" value={angle} onChange={e => setAngle(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-white font-mono text-3xl outline-none focus:border-[#eab308]/50" />
                         <span className="absolute right-6 top-1/2 -translate-y-1/2 text-[#eab308] font-black text-2xl">°</span>
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Hipotenusa (H)</label>
+                      <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">{t.hypotenuse} (H)</label>
                       <div className="relative">
                         <input type="number" value={hypo} onChange={e => setHypo(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-white font-mono text-3xl outline-none focus:border-[#eab308]/50" />
-                        <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-600 font-black text-sm">MM</span>
+                        <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-600 font-black text-sm">{t.unit.toUpperCase()}</span>
                       </div>
                     </div>
                   </>
@@ -326,17 +330,17 @@ const Trigonometry: React.FC = () => {
                 {triangleMode === 'catheti' && (
                   <>
                     <div className="space-y-2">
-                      <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Cateto Oposto (OP)</label>
+                      <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">{t.opp_cathetus} (OP)</label>
                       <div className="relative">
                         <input type="number" value={catA} onChange={e => setCatA(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-white font-mono text-3xl outline-none focus:border-[#eab308]/50" />
-                        <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-600 font-black text-sm">MM</span>
+                        <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-600 font-black text-sm">{t.unit.toUpperCase()}</span>
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Cateto Adjacente (ADJ)</label>
+                      <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">{t.adj_cathetus} (ADJ)</label>
                       <div className="relative">
                         <input type="number" value={catB} onChange={e => setCatB(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-white font-mono text-3xl outline-none focus:border-[#eab308]/50" />
-                        <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-600 font-black text-sm">MM</span>
+                        <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-600 font-black text-sm">{t.unit.toUpperCase()}</span>
                       </div>
                     </div>
                   </>
@@ -345,14 +349,14 @@ const Trigonometry: React.FC = () => {
                 {triangleMode === 'adj_angle' && (
                   <>
                     <div className="space-y-2">
-                      <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Cateto Adjacente (ADJ)</label>
+                      <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">{t.adj_cathetus} (ADJ)</label>
                       <div className="relative">
                         <input type="number" value={catB} onChange={e => setCatB(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-white font-mono text-3xl outline-none focus:border-[#eab308]/50" />
-                        <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-600 font-black text-sm">MM</span>
+                        <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-600 font-black text-sm">{t.unit.toUpperCase()}</span>
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Ângulo (α)</label>
+                      <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">{t.angle} (α)</label>
                       <div className="relative">
                         <input type="number" value={angle} onChange={e => setAngle(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-white font-mono text-3xl outline-none focus:border-[#eab308]/50" />
                         <span className="absolute right-6 top-1/2 -translate-y-1/2 text-[#eab308] font-black text-2xl">°</span>
@@ -364,14 +368,14 @@ const Trigonometry: React.FC = () => {
                 {triangleMode === 'opp_angle' && (
                   <>
                     <div className="space-y-2">
-                      <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Cateto Oposto (OP)</label>
+                      <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">{t.opp_cathetus} (OP)</label>
                       <div className="relative">
                         <input type="number" value={catA} onChange={e => setCatA(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-white font-mono text-3xl outline-none focus:border-[#eab308]/50" />
-                        <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-600 font-black text-sm">MM</span>
+                        <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-600 font-black text-sm">{t.unit.toUpperCase()}</span>
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Ângulo (α)</label>
+                      <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">{t.angle} (α)</label>
                       <div className="relative">
                         <input type="number" value={angle} onChange={e => setAngle(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-white font-mono text-3xl outline-none focus:border-[#eab308]/50" />
                         <span className="absolute right-6 top-1/2 -translate-y-1/2 text-[#eab308] font-black text-2xl">°</span>
@@ -398,14 +402,14 @@ const Trigonometry: React.FC = () => {
           {subModule === 'polygons' && (
             <div className="grid grid-cols-1 gap-6">
               <div className="space-y-2">
-                <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Lados</label>
+                <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">{t.sides}</label>
                 <select value={polySides} onChange={e => setPolySides(Number(e.target.value) as 5 | 6)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-[#eab308] font-black outline-none appearance-none text-xl">
-                   <option value={6}>Sextavado (6)</option>
-                   <option value={5}>Pentágono (5)</option>
+                   <option value={6}>{t.hexagon} (6)</option>
+                   <option value={5}>{t.pentagon} (5)</option>
                 </select>
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Entre Faces</label>
+                <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">{t.between_faces}</label>
                 <input type="number" value={polyDim} onChange={e => setPolyDim(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-white font-mono text-3xl outline-none" />
               </div>
             </div>
@@ -430,17 +434,17 @@ const Trigonometry: React.FC = () => {
 
               <div className="grid grid-cols-1 gap-6">
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Ângulo (°)</label>
+                  <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">{t.angle} (°)</label>
                   <div className="relative">
                     <input type="number" value={funcAngle} onChange={e => setFuncAngle(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-white font-mono text-3xl outline-none focus:border-[#eab308]/50" />
                     <span className="absolute right-6 top-1/2 -translate-y-1/2 text-[#eab308] font-black text-2xl">°</span>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Valor (Cota)</label>
+                  <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">{t.value} ({t.dimension})</label>
                   <div className="relative">
                     <input type="number" value={funcValue} onChange={e => setFuncValue(e.target.value)} className="w-full bg-[#221e1b] border border-white/10 rounded-2xl h-20 px-6 text-white font-mono text-3xl outline-none focus:border-[#eab308]/50" />
-                    <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-600 font-black text-sm">MM</span>
+                    <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-600 font-black text-sm">{t.unit.toUpperCase()}</span>
                   </div>
                 </div>
               </div>
@@ -454,27 +458,27 @@ const Trigonometry: React.FC = () => {
              <>
                <div className="bg-[#221e1b] rounded-[2rem] p-8 border-l-8 border-[#eab308] shadow-2xl">
                   <p className="text-gray-500 text-xs font-black uppercase tracking-widest">
-                    {triangleMode === 'catheti' ? 'Hipotenusa (H)' : 'Cateto Oposto (Altura)'}
+                    {triangleMode === 'catheti' ? t.hypotenuse + ' (H)' : t.opp_cathetus + ' (' + t.height + ')'}
                   </p>
                   <div className="flex items-baseline gap-3 mt-2">
                     <span className="text-6xl font-black text-white tabular-nums">
                       {triangleMode === 'catheti' ? (triangleResults.h || 0).toFixed(2) : (triangleResults.o || 0).toFixed(2)}
                     </span>
-                    <span className="text-2xl font-black text-[#eab308]">MM</span>
+                    <span className="text-2xl font-black text-[#eab308]">{t.unit.toUpperCase()}</span>
                   </div>
                </div>
                <div className="grid grid-cols-1 gap-4">
                   <div className="bg-[#221e1b] p-6 rounded-2xl border border-white/10">
                      <p className="text-xs font-black text-gray-500 uppercase tracking-widest">
-                       {triangleMode === 'catheti' ? 'Ângulo Alfa (α)' : 'Cat. Adjacente'}
+                       {triangleMode === 'catheti' ? t.alpha_angle + ' (α)' : t.adj_cathetus}
                      </p>
                      <p className="text-3xl font-black text-white mt-1">
-                       {triangleMode === 'catheti' ? (triangleResults.angle || 0).toFixed(2) + '°' : (triangleResults.adj || 0).toFixed(2) + ' mm'}
+                       {triangleMode === 'catheti' ? (triangleResults.angle || 0).toFixed(2) + '°' : (triangleResults.adj || 0).toFixed(2) + ' ' + t.unit}
                      </p>
                   </div>
                   <div className="bg-[#221e1b] p-6 rounded-2xl border border-white/10">
                      <p className="text-xs font-black text-gray-500 uppercase tracking-widest">
-                       {triangleMode === 'catheti' ? 'Ângulo Beta (β)' : 'Ângulo Complementar'}
+                       {triangleMode === 'catheti' ? t.beta_angle + ' (β)' : t.complementary_angle}
                      </p>
                      <p className="text-3xl font-black text-[#eab308] mt-1">{(triangleResults.beta || 0).toFixed(2)}°</p>
                   </div>
@@ -482,12 +486,12 @@ const Trigonometry: React.FC = () => {
                {triangleMode !== 'angle_hypo' && (
                  <div className="bg-[#221e1b] p-4 rounded-2xl border border-white/5">
                     <p className="text-[9px] font-black text-gray-500 uppercase">
-                      {triangleMode === 'catheti' ? 'Cateto Oposto / Adjacente' : 'Cateto Adjacente'}
+                      {triangleMode === 'catheti' ? t.opp_cathetus + ' / ' + t.adj_cathetus : t.adj_cathetus}
                     </p>
                     <p className="text-sm font-black text-gray-400 mt-1">
                       {triangleMode === 'catheti' 
-                        ? `OP: ${(triangleResults.o || 0).toFixed(2)}mm | ADJ: ${(triangleResults.adj || 0).toFixed(2)}mm`
-                        : `ADJ: ${(triangleResults.adj || 0).toFixed(2)}mm | H: ${(triangleResults.h || 0).toFixed(2)}mm`}
+                        ? `OP: ${(triangleResults.o || 0).toFixed(2)}${t.unit} | ADJ: ${(triangleResults.adj || 0).toFixed(2)}${t.unit}`
+                        : `ADJ: ${(triangleResults.adj || 0).toFixed(2)}${t.unit} | H: ${(triangleResults.h || 0).toFixed(2)}${t.unit}`}
                     </p>
                  </div>
                )}
@@ -497,17 +501,17 @@ const Trigonometry: React.FC = () => {
            {subModule === 'circle' && (
              <div className="bg-[#221e1b] rounded-3xl p-6 border-l-4 border-[#eab308] shadow-xl space-y-6">
                 <div>
-                   <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest">Comprimento da Corda (C)</p>
-                   <p className="text-4xl font-black text-white mt-1">{circleResults.chord.toFixed(3)} mm</p>
+                   <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest">{t.chord_length} (C)</p>
+                   <p className="text-4xl font-black text-white mt-1">{circleResults.chord.toFixed(3)} {t.unit}</p>
                 </div>
                 <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/5">
                    <div>
-                      <p className="text-[9px] font-black text-gray-500 uppercase">Arco (l)</p>
-                      <p className="text-lg font-black text-white">{circleResults.arc.toFixed(2)} mm</p>
+                      <p className="text-[9px] font-black text-gray-500 uppercase">{t.arc} (l)</p>
+                      <p className="text-lg font-black text-white">{circleResults.arc.toFixed(2)} {t.unit}</p>
                    </div>
                    <div>
-                      <p className="text-[9px] font-black text-gray-500 uppercase">Flecha (f)</p>
-                      <p className="text-lg font-black text-white">{circleResults.flecha.toFixed(2)} mm</p>
+                      <p className="text-[9px] font-black text-gray-500 uppercase">{t.flecha} (f)</p>
+                      <p className="text-lg font-black text-white">{circleResults.flecha.toFixed(2)} {t.unit}</p>
                    </div>
                 </div>
              </div>
@@ -515,14 +519,14 @@ const Trigonometry: React.FC = () => {
 
            {subModule === 'polygons' && (
              <div className="bg-[#221e1b] rounded-3xl p-6 border-l-4 border-[#eab308] shadow-xl">
-                <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest">Diâmetro nos Vértices (Ø Máx)</p>
+                <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest">{t.vertex_diameter} (Ø Máx)</p>
                 <div className="flex items-baseline gap-2 mt-2">
                   <span className="text-5xl font-black text-white tabular-nums">{polyResults.vertice.toFixed(3)}</span>
-                  <span className="text-xl font-bold text-gray-600">mm</span>
+                  <span className="text-xl font-bold text-gray-600">{t.unit}</span>
                 </div>
                 <div className="mt-4 pt-4 border-t border-white/5">
-                   <p className="text-[9px] font-black text-gray-500 uppercase">Lado do Polígono</p>
-                   <p className="text-2xl font-black text-[#eab308]">{polyResults.side.toFixed(3)} mm</p>
+                   <p className="text-[9px] font-black text-gray-500 uppercase">{t.polygon_side}</p>
+                   <p className="text-2xl font-black text-[#eab308]">{polyResults.side.toFixed(3)} {t.unit}</p>
                 </div>
              </div>
            )}
@@ -530,15 +534,15 @@ const Trigonometry: React.FC = () => {
            {subModule === 'functions' && (
              <div className="bg-[#221e1b] rounded-3xl p-6 border-l-4 border-[#eab308] shadow-xl space-y-4">
                 <div className="flex justify-between items-center">
-                   <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest">Fator da Função</p>
+                   <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest">{t.function_factor}</p>
                    <p className="text-white font-black text-sm">{funcResults.factor.toFixed(6)}</p>
                 </div>
                 <div className="h-px bg-white/5"></div>
                 <div>
-                   <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest">Resultado Final</p>
+                   <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest">{t.final_result}</p>
                    <div className="flex items-baseline gap-2 mt-2">
                      <span className="text-5xl font-black text-white tabular-nums">{funcResults.result.toFixed(4)}</span>
-                     <span className="text-xl font-bold text-gray-600">mm</span>
+                     <span className="text-xl font-bold text-gray-600">{t.unit}</span>
                    </div>
                 </div>
              </div>
@@ -555,7 +559,7 @@ const Trigonometry: React.FC = () => {
             <span className="material-symbols-outlined text-3xl">mail</span>
          </button>
          <button onClick={handleSave} className="flex-1 bg-[#eab308] text-black font-black py-4 rounded-2xl shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-all uppercase text-lg tracking-widest">
-            <span className="material-symbols-outlined text-3xl">save</span> SALVAR
+            <span className="material-symbols-outlined text-3xl">save</span> {t.save}
          </button>
       </div>
     </div>

@@ -28,28 +28,28 @@ const ToolLibrary: React.FC<ToolLibraryProps> = ({ tools, isAdmin, onSelectTool,
     { 
       id: 'Fresamento', 
       icon: 'refresh', 
-      label: 'FRESAMENTO', 
+      label: t.milling || 'FRESAMENTO', 
       desc: 'MF80, CoroMill 390/490, 210, 495, Plura WhisperKut™', 
       color: 'from-[#eab308] to-[#facc15]' 
     },
     { 
       id: 'Torneamento', 
       icon: 'settings_backup_restore', 
-      label: 'TORNEAMENTO', 
+      label: t.turning || 'TORNEAMENTO', 
       desc: 'Interno, Externo, Suportes e Silent Tools™', 
       color: 'from-blue-500 to-blue-600' 
     },
     { 
       id: 'Furação', 
       icon: 'vibration', 
-      label: 'FURAÇÃO & MACHOS', 
+      label: t.drilling_tapping || 'FURAÇÃO & MACHOS', 
       desc: 'CoroDrill 860/870/880 e Machos CoroTap 300', 
       color: 'from-emerald-500 to-emerald-600' 
     },
     { 
       id: 'Cortes/Roscas', 
       icon: 'content_cut', 
-      label: 'CORTES & ROSCAS', 
+      label: t.cutting_threading || 'CORTES & ROSCAS', 
       desc: 'Bedame CoroCut 2 e Roscas CoroThread 266', 
       color: 'from-red-500 to-red-600' 
     }
@@ -66,10 +66,10 @@ const ToolLibrary: React.FC<ToolLibraryProps> = ({ tools, isAdmin, onSelectTool,
     return (
       <div className="flex flex-col min-h-full bg-[#1c1e22] p-6 space-y-8 animate-in fade-in duration-500">
         <div className="space-y-2">
-           <h2 className="text-[#eab308] text-3xl font-black uppercase italic tracking-tight leading-none">BIBLIOTECA TÉCNICA</h2>
+           <h2 className="text-[#eab308] text-3xl font-black uppercase italic tracking-tight leading-none">{t.technical_library || 'BIBLIOTECA TÉCNICA'}</h2>
            <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-2">
               <span className="w-8 h-px bg-gray-800"></span>
-              ESCOLHA A OPERAÇÃO
+              {t.choose_operation || 'ESCOLHA A OPERAÇÃO'}
            </p>
         </div>
 
@@ -115,7 +115,7 @@ const ToolLibrary: React.FC<ToolLibraryProps> = ({ tools, isAdmin, onSelectTool,
              className="flex items-center gap-2 text-gray-500 hover:text-[#eab308] transition-colors bg-white/5 px-4 py-2 rounded-full"
            >
               <span className="material-symbols-outlined text-sm">arrow_back</span>
-              <span className="text-[9px] font-black uppercase tracking-widest">VOLTAR</span>
+              <span className="text-[9px] font-black uppercase tracking-widest">{t.back || 'VOLTAR'}</span>
            </button>
            <span className="text-[#eab308] text-[10px] font-black uppercase tracking-widest bg-[#eab308]/10 px-3 py-1.5 rounded-full border border-[#eab308]/20 shadow-lg shadow-[#eab308]/5">{selectedOperation}</span>
         </div>
@@ -124,7 +124,7 @@ const ToolLibrary: React.FC<ToolLibraryProps> = ({ tools, isAdmin, onSelectTool,
           <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">search</span>
           <input 
             type="text" 
-            placeholder={`Buscar em ${selectedOperation}...`} 
+            placeholder={`${t.search_in || 'Buscar em'} ${selectedOperation}...`} 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full bg-[#121214] border border-white/5 rounded-2xl h-14 pl-12 pr-12 text-sm text-white focus:ring-1 focus:ring-[#eab308] outline-none shadow-inner transition-all focus:border-[#eab308]/50" 
@@ -152,9 +152,9 @@ const ToolLibrary: React.FC<ToolLibraryProps> = ({ tools, isAdmin, onSelectTool,
          <div className="flex items-center justify-between px-1 mb-2">
             <div className="flex items-center gap-2">
                <div className="w-1.5 h-4 bg-[#eab308] rounded-full shadow-[0_0_10px_rgba(234,179,8,0.5)]"></div>
-               <h3 className="text-white font-black text-xs uppercase tracking-[0.2em]">CATÁLOGO DE {selectedOperation}</h3>
+               <h3 className="text-white font-black text-xs uppercase tracking-[0.2em]">{t.catalog_of || 'CATÁLOGO DE'} {selectedOperation}</h3>
             </div>
-            <span className="text-[10px] text-gray-600 font-bold uppercase tracking-widest">{filteredTools.length} ITENS</span>
+            <span className="text-[10px] text-gray-600 font-bold uppercase tracking-widest">{filteredTools.length} {t.items || 'ITENS'}</span>
          </div>
 
          {filteredTools.length > 0 ? (
@@ -191,7 +191,7 @@ const ToolLibrary: React.FC<ToolLibraryProps> = ({ tools, isAdmin, onSelectTool,
          ) : (
            <div className="text-center py-20 space-y-4">
               <span className="material-symbols-outlined text-gray-800 text-5xl opacity-20">inventory_2</span>
-              <p className="text-gray-500 font-black uppercase text-xs tracking-widest">NENHUMA FERRAMENTA ENCONTRADA</p>
+              <p className="text-gray-500 font-black uppercase text-xs tracking-widest">{t.no_tools_found || 'NENHUMA FERRAMENTA ENCONTRADA'}</p>
            </div>
          )}
       </div>

@@ -11,29 +11,29 @@ const AISuite: React.FC<AISuiteProps> = ({ navigate, t }) => {
   const tools = [
     {
       id: 'drawing_analysis',
-      title: "Análise de Desenho",
-      desc: "Interprete projetos offshore e sugestão de processos",
+      title: t.drawing_analysis_title || "Análise de Desenho",
+      desc: t.drawing_analysis_desc || "Interprete projetos offshore e sugestão de processos",
       icon: 'architecture',
       color: 'border-orange-500/30 text-orange-400 bg-orange-500/5'
     },
     {
       id: 'voice_consultant',
-      title: "Consultor por Voz",
-      desc: "Suporte técnico hands-free em tempo real",
+      title: t.voice_consultant_title || "Consultor por Voz",
+      desc: t.voice_consultant_desc || "Suporte técnico hands-free em tempo real",
       icon: 'mic',
       color: 'border-blue-500/30 text-blue-400 bg-blue-500/5'
     },
     {
       id: 'media_lab',
-      title: "Laboratório Visual",
-      desc: "Crie imagens e vídeos técnicos das suas ideias",
+      title: t.media_lab_title || "Laboratório Visual",
+      desc: t.media_lab_desc || "Crie imagens e vídeos técnicos das suas ideias",
       icon: 'photo_camera',
       color: 'border-[#eab308]/30 text-[#eab308] bg-[#eab308]/5'
     },
     {
       id: 'consultant',
-      title: "Engenheiro Casillas",
-      desc: "Consultoria sênior em usinagem e caldeiraria",
+      title: t.consultant_title || "Engenheiro Casillas",
+      desc: t.consultant_desc || "Consultoria sênior em usinagem e caldeiraria",
       icon: 'engineering',
       color: 'border-emerald-500/30 text-emerald-400 bg-emerald-500/5'
     }
@@ -45,7 +45,7 @@ const AISuite: React.FC<AISuiteProps> = ({ navigate, t }) => {
         <h2 className="text-4xl font-black text-[#eab308] italic uppercase tracking-tighter leading-none">Casillas Hub</h2>
         <div className="flex items-center gap-3">
            <div className="h-1 w-8 bg-[#eab308]/30"></div>
-           <p className="text-gray-500 text-xs font-black uppercase tracking-[0.2em]">Inteligência Industrial Ativa</p>
+           <p className="text-gray-500 text-xs font-black uppercase tracking-[0.2em]">{t.active_industrial_intelligence || 'Inteligência Industrial Ativa'}</p>
         </div>
       </div>
 
@@ -84,7 +84,7 @@ const AISuite: React.FC<AISuiteProps> = ({ navigate, t }) => {
                <span className="material-symbols-outlined text-3xl">security</span>
             </div>
             <p className="text-xs font-black text-gray-400 leading-tight uppercase tracking-[0.15em]">
-              Processamento seguro via Google AI. Seus dados técnicos estão protegidos.
+              {t.secure_processing_desc || 'Processamento seguro via Google AI. Seus dados técnicos estão protegidos.'}
             </p>
          </div>
       </div>

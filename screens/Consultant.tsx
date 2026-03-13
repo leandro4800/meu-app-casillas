@@ -10,11 +10,11 @@ interface ChatMessage {
   isStreaming?: boolean;
 }
 
-const Consultant: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate }) => {
+const Consultant: React.FC<{ navigate: (s: Screen) => void; t: any }> = ({ navigate, t }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([
     { 
       role: 'casillas', 
-      text: 'Olá, sou o Engenheiro Casillas, especialista em usinagem e caldeiraria. Qual o desafio técnico na bancada hoje?' 
+      text: t.consultant_welcome || 'Olá, sou o Engenheiro Casillas, especialista em usinagem e caldeiraria. Qual o desafio técnico na bancada hoje?' 
     }
   ]);
   
@@ -169,7 +169,7 @@ const Consultant: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate }) =
         <div className="flex justify-center">
            <div className="bg-[#eab308]/5 border border-[#eab308]/10 px-4 py-2 rounded-full flex items-center gap-2">
               <span className="material-symbols-outlined text-xs text-[#eab308]">engineering</span>
-              <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Base API / ASME / AWS Ativa</span>
+              <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">{t.active_base_api || 'Base API / ASME / AWS Ativa'}</span>
            </div>
         </div>
 
@@ -207,7 +207,7 @@ const Consultant: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate }) =
           onChange={e => setInput(e.target.value)} 
           onKeyDown={e => e.key === 'Enter' && handleSend()} 
           className="flex-1 bg-transparent px-6 text-white outline-none text-lg font-medium placeholder:text-gray-600" 
-          placeholder="Dúvida técnica (Norma, Chanfro, Tolerância)..." 
+          placeholder={t.consultant_placeholder || "Dúvida técnica (Norma, Chanfro, Tolerância)..."} 
         />
         <button 
           onClick={handleSend} 

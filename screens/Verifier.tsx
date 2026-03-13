@@ -50,8 +50,8 @@ const Verifier: React.FC<VerifierProps> = ({ t }) => {
   return (
     <div className="p-5 flex flex-col gap-6 h-full overflow-y-auto custom-scrollbar pb-32">
       <div className="space-y-1">
-        <h3 className="text-[#eab308] text-2xl font-bold tracking-tight uppercase">Verificador ISO</h3>
-        <p className="text-gray-500 text-xs font-bold uppercase tracking-widest">Controle ({t.unit})</p>
+        <h3 className="text-[#eab308] text-2xl font-bold tracking-tight uppercase">{t.iso_verifier || 'Verificador ISO'}</h3>
+        <p className="text-gray-500 text-xs font-bold uppercase tracking-widest">{t.control || 'Controle'} ({t.unit})</p>
       </div>
 
       <div className="grid grid-cols-2 gap-4">

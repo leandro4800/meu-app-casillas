@@ -3,7 +3,12 @@ import React, { useState, useEffect } from 'react';
 import { GoogleGenAI } from '@google/genai';
 import { Screen } from '../types';
 
-const MediaLab: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate }) => {
+interface MediaLabProps {
+  navigate: (s: Screen) => void;
+  t: any;
+}
+
+const MediaLab: React.FC<MediaLabProps> = ({ navigate, t }) => {
   const [activeTab, setActiveTab] = useState<'generate' | 'video'>('generate');
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
@@ -60,7 +65,7 @@ const MediaLab: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate }) => 
       }
     } catch (e: any) {
       console.error(e);
-      alert("Erro na geração da imagem. Verifique sua conexão.");
+      alert(t.image_gen_error || "Erro na geração da imagem. Verifique sua conexão.");
     } finally {
       setLoading(false);
     }
@@ -109,9 +114,9 @@ const MediaLab: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate }) => 
       console.error(e);
       if (e.message?.includes("entity was not found")) {
         setHasKey(false);
-        alert("Para gerar vídeos, é necessário vincular uma chave API de um projeto com faturamento.");
+        alert(t.veo_key_error || "Para gerar vídeos, é necessário vincular uma chave API de um projeto com faturamento.");
       } else {
-        alert("Erro ao processar vídeo. Tente um prompt mais curto.");
+        alert(t.video_gen_error || "Erro ao processar vídeo. Tente um prompt mais curto.");
       }
     } finally {
       setLoading(false);
@@ -122,8 +127,8 @@ const MediaLab: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate }) => 
     <div className="p-6 space-y-6 bg-[#0a0908] h-full overflow-y-auto custom-scrollbar pb-32">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-[#eab308] text-2xl font-black uppercase italic tracking-tighter">Laboratório</h2>
-          <p className="text-gray-500 text-[9px] font-black uppercase tracking-widest mt-1">Imagens e Vídeos Industriais</p>
+          <h2 className="text-[#eab308] text-2xl font-black uppercase italic tracking-tighter">{t.lab || 'Laboratório'}</h2>
+          <p className="text-gray-500 text-[9px] font-black uppercase tracking-widest mt-1">{t.lab_desc || 'Imagens e Vídeos Industriais'}</p>
         </div>
         <button 
           onClick={() => navigate('ai_suite')} 
@@ -138,13 +143,13 @@ const MediaLab: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate }) => 
           onClick={() => { setActiveTab('generate'); setResultUrl(null); }} 
           className={`flex-1 py-3 text-[10px] font-black rounded-xl transition-all ${activeTab === 'generate' ? 'bg-[#eab308] text-black shadow-lg' : 'text-gray-500'}`}
         >
-          GERAR IMAGEM
+          {t.generate_image || 'GERAR IMAGEM'}
         </button>
         <button 
           onClick={() => { setActiveTab('video'); setResultUrl(null); }} 
           className={`flex-1 py-3 text-[10px] font-black rounded-xl transition-all ${activeTab === 'video' ? 'bg-[#eab308] text-black shadow-lg' : 'text-gray-500'}`}
         >
-          GERAR VÍDEO
+          {t.generate_video || 'GERAR VÍDEO'}
         </button>
       </div>
 
@@ -154,7 +159,7 @@ const MediaLab: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate }) => 
         <textarea 
           value={prompt} 
           onChange={e => setPrompt(e.target.value)} 
-          placeholder={activeTab === 'generate' ? "Ex: Uma flange API 6A com anel BX em corte 3D..." : "Ex: Broca CoroDrill perfurando bloco de aço Super Duplex..."} 
+          placeholder={activeTab === 'generate' ? (t.image_prompt_placeholder || "Ex: Uma flange API 6A com anel BX em corte 3D...") : (t.video_prompt_placeholder || "Ex: Broca CoroDrill perfurando bloco de aço Super Duplex...")} 
           className="w-full bg-[#0a0908] border border-white/5 rounded-2xl p-5 text-sm text-white h-32 outline-none focus:border-[#eab308]/50 transition-colors resize-none font-medium" 
         />
         
@@ -166,12 +171,12 @@ const MediaLab: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate }) => 
           {loading ? (
             <>
                <div className="size-4 border-2 border-black/30 border-t-black rounded-full animate-spin"></div>
-               PROCESSANDO...
+               {t.processing || 'PROCESSANDO...'}
             </>
           ) : (
             <>
               <span className="material-symbols-outlined text-lg">bolt</span>
-              CRIAR AGORA
+              {t.create_now || 'CRIAR AGORA'}
             </>
           )}
         </button>
@@ -185,7 +190,7 @@ const MediaLab: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate }) => 
             <img src={resultUrl} className="w-full rounded-2xl" alt="IA Industrial" />
           )}
           <div className="p-4 flex justify-between items-center bg-[#1c1816]">
-             <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Ativo Gerado com Sucesso</span>
+             <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">{t.asset_generated_success || 'Ativo Gerado com Sucesso'}</span>
              <a href={resultUrl} download={`casillas_${activeTab}.png`} className="text-[#eab308] text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
                 Download <span className="material-symbols-outlined text-sm">download</span>
              </a>
@@ -196,9 +201,9 @@ const MediaLab: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate }) => 
       {activeTab === 'video' && !hasKey && (
         <div className="bg-blue-500/10 p-5 rounded-3xl border border-blue-500/20">
            <p className="text-[9px] text-blue-400 font-bold leading-relaxed uppercase tracking-widest">
-             Nota: Geração de vídeo requer chave de faturamento do Google Cloud.
+             {t.video_key_note || 'Nota: Geração de vídeo requer chave de faturamento do Google Cloud.'}
            </p>
-           <button onClick={handleSelectKey} className="text-[#eab308] text-[9px] font-black mt-2 underline uppercase">Configurar Chave</button>
+           <button onClick={handleSelectKey} className="text-[#eab308] text-[9px] font-black mt-2 underline uppercase">{t.configure_key || 'Configurar Chave'}</button>
         </div>
       )}
     </div>

@@ -5,6 +5,7 @@ import { Screen } from '../types';
 
 interface GlossaryProps {
   navigate: (screen: Screen) => void;
+  t: any;
 }
 
 interface Term {
@@ -17,8 +18,8 @@ interface Term {
   specs?: Record<string, string>;
 }
 
-const Glossary: React.FC<GlossaryProps> = ({ navigate }) => {
-  const [activeFilter, setActiveFilter] = useState('Todos');
+const Glossary: React.FC<GlossaryProps> = ({ navigate, t }) => {
+  const [activeFilter, setActiveFilter] = useState(t.all || 'Todos');
   const [activeLetter, setActiveLetter] = useState('A');
   const [search, setSearch] = useState('');
   const [selectedTerm, setSelectedTerm] = useState<Term | null>(null);
@@ -26,10 +27,10 @@ const Glossary: React.FC<GlossaryProps> = ({ navigate }) => {
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
   const categories = [
-    { label: 'Todos', icon: 'apps' },
-    { label: 'Processos', icon: 'settings' },
-    { label: 'Ferramentas', icon: 'build' },
-    { label: 'Metrologia', icon: 'architecture' }
+    { label: t.all || 'Todos', icon: 'apps' },
+    { label: t.processes || 'Processos', icon: 'settings' },
+    { label: t.tools || 'Ferramentas', icon: 'build' },
+    { label: t.metrology || 'Metrologia', icon: 'architecture' }
   ];
 
   const filteredTerms = useMemo(() => {
@@ -38,7 +39,7 @@ const Glossary: React.FC<GlossaryProps> = ({ navigate }) => {
         item.term.toLowerCase().includes(search.toLowerCase()) || 
         item.def.toLowerCase().includes(search.toLowerCase());
       
-      const matchesCategory = activeFilter === 'Todos' || item.cat === activeFilter;
+      const matchesCategory = activeFilter === (t.all || 'Todos') || item.cat === activeFilter;
       
       const normalizedTerm = item.term.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
       const matchesLetter = normalizedTerm.startsWith(activeLetter);
@@ -49,9 +50,9 @@ const Glossary: React.FC<GlossaryProps> = ({ navigate }) => {
   }, [search, activeFilter, activeLetter]);
 
   const hasTermsForLetter = (letter: string) => {
-    return GLOSSARY_TERMS.some(t => {
-      const norm = t.term.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      return norm.startsWith(letter) && (activeFilter === 'Todos' || t.cat === activeFilter);
+    return GLOSSARY_TERMS.some(t_term => {
+      const norm = t_term.term.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      return norm.startsWith(letter) && (activeFilter === (t.all || 'Todos') || t_term.cat === activeFilter);
     });
   };
 
@@ -66,7 +67,7 @@ const Glossary: React.FC<GlossaryProps> = ({ navigate }) => {
            >
               <span className="material-symbols-outlined">arrow_back</span>
            </button>
-           <h1 className="text-white font-black text-xs uppercase tracking-[0.2em] italic">Manual Técnico • Casillas</h1>
+           <h1 className="text-white font-black text-xs uppercase tracking-[0.2em] italic">{t.technical_manual || 'Manual Técnico'} • Casillas</h1>
            <div className="size-10"></div> {/* Spacer */}
         </div>
 
@@ -75,7 +76,7 @@ const Glossary: React.FC<GlossaryProps> = ({ navigate }) => {
               <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#eab308] text-xl">search</span>
               <input 
                 type="text" 
-                placeholder="O que deseja executar ou consultar?" 
+                placeholder={t.glossary_search_placeholder || "O que deseja executar ou consultar?"} 
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full bg-[#121214] border border-white/10 rounded-2xl h-14 pl-12 pr-12 text-sm text-white focus:ring-1 focus:ring-[#eab308] outline-none shadow-inner" 
@@ -131,10 +132,10 @@ const Glossary: React.FC<GlossaryProps> = ({ navigate }) => {
            <div className="space-y-4 pb-40">
               <div className="flex items-center justify-between mb-2 px-1">
                  <h2 className="text-[#eab308] text-2xl font-black italic uppercase tracking-tighter">
-                   {search ? 'Resultados Globais' : `Índice de Termos "${activeLetter}"`}
+                   {search ? (t.global_results || 'Resultados Globais') : `${t.term_index || 'Índice de Termos'} "${activeLetter}"`}
                  </h2>
                  <span className="text-[9px] font-black text-gray-600 bg-[#1c1e22] px-3 py-1 rounded-full border border-white/5 uppercase tracking-widest">
-                    {filteredTerms.length} Itens
+                    {filteredTerms.length} {t.items || 'Itens'}
                  </span>
               </div>
 
@@ -169,7 +170,7 @@ const Glossary: React.FC<GlossaryProps> = ({ navigate }) => {
               )) : (
                 <div className="flex flex-col items-center justify-center py-24 opacity-20 text-center">
                    <span className="material-symbols-outlined text-8xl">inventory_2</span>
-                   <p className="text-sm font-black uppercase tracking-[0.5em] mt-4">Nenhum termo técnico<br/>encontrado aqui</p>
+                   <p className="text-sm font-black uppercase tracking-[0.5em] mt-4">{t.no_terms_found || 'Nenhum termo técnico encontrado aqui'}</p>
                 </div>
               )}
            </div>
@@ -205,7 +206,7 @@ const Glossary: React.FC<GlossaryProps> = ({ navigate }) => {
               <div className="p-8 space-y-6 overflow-y-auto custom-scrollbar flex-1">
                  <div className="text-center space-y-1">
                     <span className="text-[9px] font-black uppercase tracking-[0.4em]" style={{ color: selectedTerm.color }}>
-                       Protocolo Casillas • {selectedTerm.cat}
+                       {t.casillas_protocol || 'Protocolo Casillas'} • {selectedTerm.cat}
                     </span>
                     <h2 className="text-white text-3xl font-black uppercase italic tracking-tighter leading-none">
                        {selectedTerm.term}
@@ -226,7 +227,7 @@ const Glossary: React.FC<GlossaryProps> = ({ navigate }) => {
 
                  <div className="space-y-4">
                     <div className="bg-[#121214] rounded-2xl p-5 border border-white/5 shadow-inner">
-                       <h5 className="text-gray-600 text-[8px] font-black uppercase tracking-widest mb-2">Conceito Base</h5>
+                       <h5 className="text-gray-600 text-[8px] font-black uppercase tracking-widest mb-2">{t.base_concept || 'Conceito Base'}</h5>
                        <p className="text-gray-300 text-sm font-bold leading-relaxed italic">
                           {selectedTerm.def}
                        </p>
@@ -235,7 +236,7 @@ const Glossary: React.FC<GlossaryProps> = ({ navigate }) => {
                     {selectedTerm.details && (
                       <div className="bg-[#eab308]/5 rounded-3xl p-6 border border-[#eab308]/20 relative group">
                          <div className="absolute -top-3 left-6 bg-[#eab308] text-black px-4 py-1 rounded-full text-[8px] font-black uppercase tracking-widest shadow-lg">
-                            Execução Ideal de Chão de Fábrica
+                            {t.ideal_execution || 'Execução Ideal de Chão de Fábrica'}
                          </div>
                          <div className="pt-2 text-gray-200 text-xs font-bold italic leading-relaxed whitespace-pre-line">
                             {selectedTerm.details}
@@ -251,13 +252,13 @@ const Glossary: React.FC<GlossaryProps> = ({ navigate }) => {
                       className="flex items-center justify-center gap-2 bg-[#121214] border border-white/10 text-white font-black py-4 rounded-2xl text-[9px] uppercase tracking-widest hover:bg-[#eab308] hover:text-black transition-all active:scale-95"
                     >
                        <span className="material-symbols-outlined text-base">calculate</span>
-                       Calcular RPM
+                       {t.calculate_rpm || 'Calcular RPM'}
                     </button>
                     <button 
                       className="flex items-center justify-center gap-2 bg-[#121214] border border-white/10 text-white font-black py-4 rounded-2xl text-[9px] uppercase tracking-widest hover:bg-white/5 transition-all active:scale-95"
                     >
                        <span className="material-symbols-outlined text-base text-[#eab308]">verified</span>
-                       Specs ISO
+                       {t.iso_specs || 'Specs ISO'}
                     </button>
                  </div>
               </div>
@@ -268,7 +269,7 @@ const Glossary: React.FC<GlossaryProps> = ({ navigate }) => {
                    onClick={() => setSelectedTerm(null)}
                    className="w-full bg-[#eab308] text-black font-black py-5 rounded-[2rem] uppercase text-[10px] tracking-[0.2em] shadow-xl shadow-[#eab308]/10 active:scale-95 transition-all"
                  >
-                    Fechar Protocolo
+                    {t.close_protocol || 'Fechar Protocolo'}
                  </button>
               </div>
            </div>

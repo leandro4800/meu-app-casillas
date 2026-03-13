@@ -93,21 +93,21 @@ const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, onUpd
       {showToast && (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[100] bg-[#eab308] text-black px-8 py-4 rounded-[20px] font-black text-xs uppercase shadow-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-10 duration-500">
            <span className="material-symbols-outlined text-lg">verified</span>
-           Perfil Técnico Atualizado
+           {t.profile_updated || 'Perfil Técnico Atualizado'}
         </div>
       )}
 
       {/* Header */}
       <div className="sticky top-0 z-40 bg-[#0a0908]/90 backdrop-blur-xl p-4 flex justify-between items-center border-b border-white/5">
          <div className="flex flex-col">
-            <h2 className="text-[#eab308] font-black text-[10px] uppercase tracking-[0.2em]">Configurações</h2>
-            <p className="text-[8px] font-bold text-gray-600 uppercase tracking-widest">Sessão Profissional</p>
+            <h2 className="text-[#eab308] font-black text-[10px] uppercase tracking-[0.2em]">{t.settings || 'Configurações'}</h2>
+            <p className="text-[8px] font-bold text-gray-600 uppercase tracking-widest">{t.professional_session || 'Sessão Profissional'}</p>
          </div>
          <button 
            onClick={() => isEditing ? handleSave() : setIsEditing(true)}
            className={`px-6 py-2.5 rounded-full font-black text-[10px] uppercase tracking-widest transition-all ${isEditing ? 'bg-[#eab308] text-black' : 'bg-white/5 text-[#eab308] border border-[#eab308]/20'}`}
          >
-           {isEditing ? 'Confirmar' : 'Alterar Dados'}
+           {isEditing ? (t.confirm || 'Confirmar') : (t.change_data || 'Alterar Dados')}
          </button>
       </div>
 
@@ -118,7 +118,7 @@ const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, onUpd
              onClick={() => isEditing && fileInputRef.current?.click()}
              className={`size-28 rounded-full border-[4px] border-[#eab308] p-1 bg-[#1c1816] shadow-2xl overflow-hidden transition-all ${isEditing ? 'active:scale-95' : ''}`}
            >
-              <img src={formData.photoURL || AVATAR_URL} className="w-full h-full rounded-full object-cover bg-[#0a0908]" alt="Foto" />
+              <img src={formData.photoURL || AVATAR_URL} className="w-full h-full rounded-full object-cover bg-[#0a0908]" alt={t.photo || 'Foto'} />
               {isEditing && (
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                    <span className="material-symbols-outlined text-white">add_a_photo</span>
@@ -127,19 +127,19 @@ const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, onUpd
            </button>
         </div>
         {!isEditing && (
-          <h3 className="text-[#eab308] text-2xl font-black tracking-tight uppercase italic mt-4">{formData.displayName || 'OPERADOR'}</h3>
+          <h3 className="text-[#eab308] text-2xl font-black tracking-tight uppercase italic mt-4">{formData.displayName || (t.operator || 'OPERADOR')}</h3>
         )}
       </div>
 
       <div className="px-6 space-y-8">
         {/* User Data */}
         <section className="space-y-4">
-           <p className="text-gray-800 text-[9px] font-black uppercase tracking-[0.4em] ml-2">Identificação Técnica</p>
+           <p className="text-gray-800 text-[9px] font-black uppercase tracking-[0.4em] ml-2">{t.technical_identification || 'Identificação Técnica'}</p>
            <div className="bg-[#1c1816]/60 rounded-[32px] border border-white/5 divide-y divide-white/5 overflow-hidden shadow-xl">
-              <ProfileItem label="Nome Completo" value={formData.displayName || ''} icon="person" isEditing={isEditing} onChange={(v: string) => handleChange('displayName', v)} />
-              <ProfileItem label="Empresa" value={formData.company || ''} icon="apartment" isEditing={isEditing} onChange={(v: string) => handleChange('company', v)} />
-              <ProfileItem label="Cargo" value={formData.role || ''} icon="engineering" isEditing={isEditing} onChange={(v: string) => handleChange('role', v)} />
-              <ProfileItem label="Contato" value={formData.phone || ''} icon="call" isEditing={isEditing} onChange={(v: string) => handleChange('phone', v)} />
+              <ProfileItem label={t.full_name || 'Nome Completo'} value={formData.displayName || ''} icon="person" isEditing={isEditing} onChange={(v: string) => handleChange('displayName', v)} />
+              <ProfileItem label={t.company || 'Empresa'} value={formData.company || ''} icon="apartment" isEditing={isEditing} onChange={(v: string) => handleChange('company', v)} />
+              <ProfileItem label={t.role || 'Cargo'} value={formData.role || ''} icon="engineering" isEditing={isEditing} onChange={(v: string) => handleChange('role', v)} />
+              <ProfileItem label={t.contact || 'Contato'} value={formData.phone || ''} icon="call" isEditing={isEditing} onChange={(v: string) => handleChange('phone', v)} />
            </div>
         </section>
 
@@ -150,12 +150,12 @@ const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, onUpd
                  <span className="material-symbols-outlined font-black">verified</span>
               </div>
               <div>
-                 <p className="text-white font-black text-sm uppercase tracking-tight">Plano {user?.plan === 'annual' ? 'Anual Pro' : user?.plan === 'monthly' ? 'Mensal Pro' : 'Free'}</p>
-                 <p className="text-[9px] text-[#eab308] font-black uppercase tracking-widest">Válido até: {formatDate(user?.expiryDate)}</p>
+                 <p className="text-white font-black text-sm uppercase tracking-tight">{t.plan || 'Plano'} {user?.plan === 'annual' ? (t.annual_pro || 'Anual Pro') : user?.plan === 'monthly' ? (t.monthly_pro || 'Mensal Pro') : (t.free || 'Free')}</p>
+                 <p className="text-[9px] text-[#eab308] font-black uppercase tracking-widest">{t.valid_until || 'Válido até'}: {formatDate(user?.expiryDate)}</p>
               </div>
            </div>
            {user?.plan === 'free' && (
-             <button onClick={() => window.location.href = '/checkout'} className="bg-white text-black text-[9px] font-black px-4 py-2 rounded-full uppercase tracking-widest hover:bg-[#eab308] transition-colors">Upgrade</button>
+             <button onClick={() => window.location.href = '/checkout'} className="bg-white text-black text-[9px] font-black px-4 py-2 rounded-full uppercase tracking-widest hover:bg-[#eab308] transition-colors">{t.upgrade || 'Upgrade'}</button>
            )}
         </section>
 
@@ -204,13 +204,13 @@ const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, onUpd
             className="w-full bg-[#eab308] text-black font-black py-5 rounded-[28px] flex items-center justify-center gap-3 shadow-xl active:scale-95 uppercase text-[10px] tracking-widest animate-pulse"
           >
             <span className="material-symbols-outlined">install_mobile</span>
-            Instalar Aplicativo (PWA)
+            {t.install_app || 'Instalar Aplicativo (PWA)'}
           </button>
         )}
 
         <button onClick={onLogout} className="w-full bg-[#1c1816] text-red-500 font-black py-5 rounded-[28px] flex items-center justify-center gap-3 shadow-xl active:scale-95 uppercase text-[10px] tracking-widest">
            <span className="material-symbols-outlined">power_settings_new</span>
-           Encerrar Sessão
+           {t.logout || 'Encerrar Sessão'}
         </button>
       </div>
     </div>

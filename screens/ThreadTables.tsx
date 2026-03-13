@@ -58,7 +58,11 @@ const THREADS_NPT: ThreadData[] = [
   { nominal: '1"', tpi: '11.5', pitch: '2.209', drill: '29.00', extDia: '33.40', type: 'npt' },
 ];
 
-const ThreadTables: React.FC = () => {
+interface ThreadTablesProps {
+  t: any;
+}
+
+const ThreadTables: React.FC<ThreadTablesProps> = ({ t: trans }) => {
   const [tab, setTab] = useState<'métrica' | 'whitworth' | 'unf' | 'npt'>('métrica');
   const [search, setSearch] = useState('');
 
@@ -75,10 +79,10 @@ const ThreadTables: React.FC = () => {
 
   const getNormInfo = () => {
     switch (tab) {
-      case 'métrica': return { label: 'ISO DIN 13', angle: '60°', color: 'bg-blue-500/20 text-blue-400', desc: 'Rosca métrica triangular comum.' };
-      case 'whitworth': return { label: 'BSW (BS 84)', angle: '55°', color: 'bg-red-500/20 text-red-400', desc: 'Rosca grossa padrão britânico.' };
-      case 'unf': return { label: 'ANSI B1.1', angle: '60°', color: 'bg-emerald-500/20 text-emerald-400', desc: 'Rosca unificada americana fina (Fina).' };
-      case 'npt': return { label: 'ANSI B1.20.1', angle: '60°', color: 'bg-orange-500/20 text-orange-400', desc: 'Rosca cônica para vedação.' };
+      case 'métrica': return { label: 'ISO DIN 13', angle: '60°', color: 'bg-blue-500/20 text-blue-400', desc: trans.metric_desc || 'Rosca métrica triangular comum.' };
+      case 'whitworth': return { label: 'BSW (BS 84)', angle: '55°', color: 'bg-red-500/20 text-red-400', desc: trans.whitworth_desc || 'Rosca grossa padrão britânico.' };
+      case 'unf': return { label: 'ANSI B1.1', angle: '60°', color: 'bg-emerald-500/20 text-emerald-400', desc: trans.unf_desc || 'Rosca unificada americana fina (Fina).' };
+      case 'npt': return { label: 'ANSI B1.20.1', angle: '60°', color: 'bg-orange-500/20 text-orange-400', desc: trans.npt_desc || 'Rosca cônica para vedação.' };
     }
   };
 
@@ -89,15 +93,15 @@ const ThreadTables: React.FC = () => {
       <div className="p-4 space-y-4">
         {/* Seletor de Normas */}
         <div className="flex bg-[#121214] rounded-xl p-1 border border-white/5 overflow-x-auto no-scrollbar gap-1">
-          {['métrica', 'whitworth', 'unf', 'npt'].map((t) => (
+          {['métrica', 'whitworth', 'unf', 'npt'].map((tabKey) => (
             <button
-              key={t}
-              onClick={() => { setTab(t as any); setSearch(''); }}
+              key={tabKey}
+              onClick={() => { setTab(tabKey as any); setSearch(''); }}
               className={`flex-1 min-w-[80px] py-3 text-[10px] font-black rounded-lg transition-all uppercase tracking-widest ${
-                tab === t ? 'bg-[#eab308] text-[#121214] shadow-lg shadow-[#eab308]/20' : 'text-gray-500 hover:text-gray-400'
+                tab === tabKey ? 'bg-[#eab308] text-[#121214] shadow-lg shadow-[#eab308]/20' : 'text-gray-500 hover:text-gray-400'
               }`}
             >
-              {t === 'npt' ? 'NPT' : t === 'unf' ? 'UNF' : t}
+              {tabKey === 'npt' ? 'NPT' : tabKey === 'unf' ? 'UNF' : tabKey === 'métrica' ? trans.metric : tabKey}
             </button>
           ))}
         </div>
@@ -107,7 +111,7 @@ const ThreadTables: React.FC = () => {
           <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-xl">search</span>
           <input 
             type="text" 
-            placeholder={`Buscar bitola em ${tab}...`} 
+            placeholder={`${trans.search}...`} 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full bg-[#121214] border border-white/5 rounded-2xl h-14 pl-12 pr-4 text-sm text-white focus:ring-1 focus:ring-[#eab308] outline-none shadow-inner" 
@@ -119,11 +123,11 @@ const ThreadTables: React.FC = () => {
            <div className="flex-1 space-y-2 z-10">
               <div className="flex items-center gap-2">
                  <span className={`text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-widest border border-white/5 ${info.color}`}>
-                   {info.label}
+                    {info.label}
                  </span>
-                 <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">Ângulo: {info.angle}</span>
+                 <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">{trans.angle}: {info.angle}</span>
               </div>
-              <h3 className="text-white text-lg font-black uppercase tracking-tight capitalize">Rosca {tab}</h3>
+              <h3 className="text-white text-lg font-black uppercase tracking-tight capitalize">{trans.thread} {tab === 'métrica' ? trans.metric : tab}</h3>
               <p className="text-gray-500 text-[10px] font-bold leading-tight">{info.desc}</p>
            </div>
            <div className="size-20 bg-[#121214] rounded-2xl border border-white/5 flex items-center justify-center shrink-0 shadow-inner">
@@ -137,11 +141,11 @@ const ThreadTables: React.FC = () => {
         <table className="w-full text-left border-collapse">
           <thead className="bg-[#121214]/80 backdrop-blur-md sticky top-0 z-10">
             <tr className="text-[9px] font-black text-gray-600 uppercase tracking-widest border-b border-white/5">
-              <th className="p-4">Bitola</th>
-              {tab !== 'métrica' && <th className="p-4 text-center">Fios/Pol</th>}
-              <th className="p-4 text-center">Passo (mm)</th>
-              <th className="p-4 text-center text-[#eab308]">Broca (mm)</th>
-              <th className="p-4 text-right">Ø Ext. (mm)</th>
+              <th className="p-4">{trans.size}</th>
+              {tab !== 'métrica' && <th className="p-4 text-center">{trans.tpi}</th>}
+              <th className="p-4 text-center">{trans.pitch} ({trans.unit})</th>
+              <th className="p-4 text-center text-[#eab308]">{trans.drill} ({trans.unit})</th>
+              <th className="p-4 text-right">Ø {trans.external} ({trans.unit})</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5">
@@ -167,7 +171,7 @@ const ThreadTables: React.FC = () => {
               <tr>
                 <td colSpan={5} className="p-20 text-center">
                    <span className="material-symbols-outlined text-gray-800 text-5xl">inventory_2</span>
-                   <p className="text-gray-600 font-black uppercase text-[10px] tracking-widest mt-4">Nenhuma bitola encontrada</p>
+                   <p className="text-gray-600 font-black uppercase text-[10px] tracking-widest mt-4">{trans.not_found}</p>
                 </td>
               </tr>
             )}
@@ -179,10 +183,10 @@ const ThreadTables: React.FC = () => {
       <div className="p-4 bg-[#121214] border-t border-white/5 flex items-center justify-between">
          <div className="flex items-center gap-2">
             <div className="size-2 rounded-full bg-green-500 animate-pulse"></div>
-            <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Dados Verificados</span>
+            <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">{trans.verified_data}</span>
          </div>
          <button className="text-[9px] font-black text-[#eab308] uppercase tracking-[0.2em] border border-[#eab308]/20 px-4 py-2 rounded-full hover:bg-[#eab308] hover:text-black transition-all">
-            Fórmulas de Rosca
+            {trans.thread_formulas}
          </button>
       </div>
     </div>

@@ -18,7 +18,7 @@ const PARAM_MATRIX: Record<string, Record<string, [number, number, number]>> = {
 };
 
 const MachiningParams: React.FC<MachiningParamsProps> = ({ initialData, onBack, t }) => {
-  const [activeTab, setActiveTab] = useState<'Fresamento' | 'Torneamento' | 'Furação'>('Fresamento');
+  const [activeTab, setActiveTab] = useState<'Fresamento' | 'Torneamento' | 'Furação'>(t.milling || 'Fresamento');
   const [material, setMaterial] = useState(MATERIALS[1].name);
   const [toolType, setToolType] = useState<'HSS' | 'HM'>('HM');
   const [dia, setDia] = useState<string>('12');
@@ -39,7 +39,7 @@ const MachiningParams: React.FC<MachiningParamsProps> = ({ initialData, onBack, 
       if (data) {
         setVc((toolType === 'HSS' ? data[0] : data[1]).toString());
         setFz(data[2].toString());
-        setZ(activeTab === 'Fresamento' ? 4 : 1);
+        setZ(activeTab === (t.milling || 'Fresamento') ? 4 : 1);
       }
     }
   }, [material, toolType, activeTab]);
@@ -77,23 +77,23 @@ const MachiningParams: React.FC<MachiningParamsProps> = ({ initialData, onBack, 
     <div className="flex flex-col h-full bg-[#121214] text-white relative overflow-hidden">
       {showToast && (
         <div className="fixed top-16 left-1/2 -translate-x-1/2 z-[100] bg-[#eab308] text-black px-4 py-2 rounded-xl font-black text-[10px] uppercase shadow-2xl animate-bounce">
-           Salvo!
+           {t.saved}!
         </div>
       )}
 
       <div className="flex-1 p-6 space-y-6 overflow-y-auto custom-scrollbar">
         <div className="grid grid-cols-1 gap-4">
           <div className="space-y-2">
-            <label className="text-gray-500 text-xs font-black uppercase tracking-widest ml-1">Material</label>
+            <label className="text-gray-500 text-xs font-black uppercase tracking-widest ml-1">{t.material}</label>
             <select value={material} onChange={(e) => setMaterial(e.target.value)} className="w-full bg-[#1c1e22] border border-white/10 rounded-2xl h-16 px-4 text-base text-[#eab308] font-black outline-none appearance-none">
               {Object.keys(PARAM_MATRIX).map(m => <option key={m} value={m}>{m}</option>)}
             </select>
           </div>
           <div className="space-y-2">
-            <label className="text-gray-500 text-xs font-black uppercase tracking-widest ml-1">Tipo de Ferramenta</label>
+            <label className="text-gray-500 text-xs font-black uppercase tracking-widest ml-1">{t.tool_type}</label>
             <select value={toolType} onChange={(e) => setToolType(e.target.value as any)} className="w-full bg-[#1c1e22] border border-white/10 rounded-2xl h-16 px-4 text-base text-[#eab308] font-black outline-none appearance-none">
-              <option value="HSS">HSS (Aço Rápido)</option>
-              <option value="HM">HM (Metal Duro)</option>
+              <option value="HSS">HSS ({t.hss_desc})</option>
+              <option value="HM">HM ({t.hm_desc})</option>
             </select>
           </div>
         </div>

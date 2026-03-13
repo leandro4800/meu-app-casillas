@@ -16,8 +16,15 @@ interface WeightCalcProps {
 }
 
 const WeightCalc: React.FC<WeightCalcProps> = ({ t }) => {
+  const MATERIALS_LIST: Material[] = [
+    { name: t.carbon_steel || 'Aço Carbono', density: 7.85 },
+    { name: t.stainless_steel || 'Aço Inox', density: 8.00 },
+    { name: t.aluminum || 'Alumínio', density: 2.70 },
+    { name: t.brass || 'Latão', density: 8.50 }
+  ];
+
   const [shape, setShape] = useState<Shape>('block');
-  const [material, setMaterial] = useState<Material>(MATERIALS_LIST[0]);
+  const [material, setMaterial] = useState<Material>({ name: t.carbon_steel || 'Aço Carbono', density: 7.85 });
   const [dim1, setDim1] = useState('100');
   const [dim2, setDim2] = useState('50');
   const [dim3, setDim3] = useState('10');

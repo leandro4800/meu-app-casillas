@@ -1,7 +1,11 @@
 
 import React, { useState, useMemo } from 'react';
 
-const Conversion: React.FC = () => {
+interface ConversionProps {
+  t: any;
+}
+
+const Conversion: React.FC<ConversionProps> = ({ t }) => {
   const [mode, setMode] = useState<'mm_pol' | 'pol_mm'>('mm_pol');
   const [inputValue, setInputValue] = useState('25.4');
   const [precision, setPrecision] = useState('.0000');
@@ -101,7 +105,7 @@ const Conversion: React.FC = () => {
     <div className="flex flex-col h-full bg-[#161412] text-white">
       {showToast && (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[100] bg-[#eab308] text-black px-6 py-3 rounded-2xl font-black text-xs uppercase shadow-2xl animate-bounce">
-           Ação Realizada!
+           {t.action_performed || 'Ação Realizada!'}
         </div>
       )}
 
@@ -124,13 +128,13 @@ const Conversion: React.FC = () => {
 
         <div className="grid grid-cols-2 gap-3 items-center">
           <div className="space-y-1">
-            <p className="text-[8px] font-black text-[#eab308] uppercase tracking-widest ml-1 opacity-70">Entrada ({mode === 'mm_pol' ? 'mm' : 'pol'})</p>
+            <p className="text-[8px] font-black text-[#eab308] uppercase tracking-widest ml-1 opacity-70">{t.input} ({mode === 'mm_pol' ? 'mm' : 'pol'})</p>
             <div className="bg-[#121214] border-2 border-[#eab308]/30 rounded-2xl h-14 flex items-center justify-center relative overflow-hidden">
                <span className="text-2xl font-black text-white tabular-nums z-10">{inputValue}</span>
             </div>
           </div>
           <div className="space-y-1">
-            <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest ml-1">Convertido</p>
+            <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest ml-1">{t.converted}</p>
             <div className="bg-[#252930] border border-white/5 rounded-2xl h-14 flex flex-col items-center justify-center shadow-inner">
                <span className="text-2xl font-black text-[#eab308] tabular-nums tracking-tighter leading-none">{getOutput}</span>
                <span className="text-[8px] font-black text-gray-600 uppercase mt-0.5">{getNearestFraction(parseFloat(inputValue))}</span>
@@ -142,16 +146,16 @@ const Conversion: React.FC = () => {
       {/* 2. SEÇÃO CENTRAL SCROLLABLE: Tabela de Referência */}
       <div className="flex-1 overflow-y-auto custom-scrollbar p-4 bg-[#121214]/20">
         <div className="bg-[#121214] rounded-3xl border border-white/5 p-4 shadow-xl">
-           <div className="flex items-center justify-between mb-4 px-1">
+            <div className="flex items-center justify-between mb-4 px-1">
               <h4 className="text-[#eab308] font-black text-[9px] uppercase tracking-widest flex items-center gap-2">
                 <span className="material-symbols-outlined text-sm">table_chart</span>
-                Referência Rápida
+                {t.quick_reference}
               </h4>
               <div className="bg-[#1c1e22] rounded-lg px-3 py-1.5 flex items-center gap-2 border border-white/5">
                  <span className="material-symbols-outlined text-gray-500 text-xs">search</span>
                  <input 
                   type="text" 
-                  placeholder="Filtrar..." 
+                  placeholder={t.filter} 
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="bg-transparent border-none focus:ring-0 text-[9px] text-white w-16 font-bold" 
@@ -161,9 +165,9 @@ const Conversion: React.FC = () => {
 
            <div className="space-y-0.5">
               <div className="grid grid-cols-3 text-[8px] font-black text-gray-600 uppercase tracking-[0.2em] pb-2 border-b border-white/5 px-2">
-                 <span>Fração</span>
-                 <span className="text-center">Decimal</span>
-                 <span className="text-right">Milímetro</span>
+                 <span>{t.fraction}</span>
+                 <span className="text-center">{t.decimal}</span>
+                 <span className="text-right">{t.millimeter}</span>
               </div>
               <div className="divide-y divide-white/5">
                 {filteredTable.map((row, i) => (

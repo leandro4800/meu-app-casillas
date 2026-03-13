@@ -3,9 +3,14 @@ import React, { useState, useRef } from 'react';
 import { GoogleGenAI, Modality } from '@google/genai';
 import { Screen } from '../types';
 
-const VoiceConsultant: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate }) => {
+interface VoiceConsultantProps {
+  navigate: (s: Screen) => void;
+  t: any;
+}
+
+const VoiceConsultant: React.FC<VoiceConsultantProps> = ({ navigate, t }) => {
   const [isActive, setIsActive] = useState(false);
-  const [status, setStatus] = useState('Iniciar Consultoria por Voz');
+  const [status, setStatus] = useState(t.start_voice_consultancy || 'Iniciar Consultoria por Voz');
   const sessionPromiseRef = useRef<Promise<any> | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const inputCtxRef = useRef<AudioContext | null>(null);
@@ -73,7 +78,7 @@ const VoiceConsultant: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate
       callbacks: {
         onopen: () => {
           setIsActive(true);
-          setStatus('Eng. Casillas Ouvindo...');
+          setStatus(t.casillas_listening || 'Eng. Casillas Ouvindo...');
           const inputCtx = new AudioContext({ sampleRate: 16000 });
           inputCtxRef.current = inputCtx;
           const source = inputCtx.createMediaStreamSource(stream);
@@ -148,11 +153,11 @@ const VoiceConsultant: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate
         },
         onclose: () => { 
           setIsActive(false); 
-          setStatus('Sessão Encerrada'); 
+          setStatus(t.session_ended || 'Sessão Encerrada'); 
         },
         onerror: (e) => {
           console.error(e);
-          setStatus('Erro no Protocolo de Voz');
+          setStatus(t.voice_protocol_error || 'Erro no Protocolo de Voz');
         }
       },
       config: {
@@ -192,7 +197,7 @@ const VoiceConsultant: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate
     }
 
     setIsActive(false);
-    setStatus('Iniciar Consultoria por Voz');
+    setStatus(t.start_voice_consultancy || 'Iniciar Consultoria por Voz');
     nextStartTimeRef.current = 0;
   };
 
@@ -211,7 +216,7 @@ const VoiceConsultant: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate
            <span className="size-3 bg-[#eab308] rounded-full animate-pulse"></span>
            <span className="text-xs font-black text-[#eab308] uppercase tracking-[0.2em]">Live Audio Engine</span>
         </div>
-        <h2 className="text-white text-5xl font-black italic uppercase tracking-tighter leading-none">Consultor de Voz</h2>
+        <h2 className="text-white text-5xl font-black italic uppercase tracking-tighter leading-none">{t.voice_consultant || 'Consultor de Voz'}</h2>
         <p className="text-[#eab308] text-sm font-black uppercase tracking-widest mt-6 opacity-80">{status}</p>
       </div>
 
@@ -222,14 +227,14 @@ const VoiceConsultant: React.FC<{ navigate: (s: Screen) => void }> = ({ navigate
           className={`size-64 rounded-[4rem] border-8 flex flex-col items-center justify-center transition-all duration-500 relative z-20 ${isActive ? 'bg-[#eab308] border-[#eab308] shadow-[0_0_100px_rgba(234,179,8,0.5)] rotate-0' : 'bg-[#221e1b] border-white/10 shadow-2xl rotate-3'}`}
         >
           <span className={`material-symbols-outlined text-9xl ${isActive ? 'text-black' : 'text-[#eab308]'}`}>{isActive ? 'equalizer' : 'mic'}</span>
-          <span className={`text-xs font-black uppercase tracking-widest mt-6 ${isActive ? 'text-black' : 'text-gray-500'}`}>{isActive ? 'Ouvindo...' : 'Tocar para Iniciar'}</span>
+          <span className={`text-xs font-black uppercase tracking-widest mt-6 ${isActive ? 'text-black' : 'text-gray-500'}`}>{isActive ? (t.listening || 'Ouvindo...') : (t.tap_to_start || 'Tocar para Iniciar')}</span>
         </button>
       </div>
 
       <div className="bg-[#1c1e22]/80 backdrop-blur-md p-8 rounded-[40px] border border-white/10 text-center max-w-sm z-10 shadow-2xl">
          <p className="text-gray-400 text-xs font-black uppercase tracking-widest leading-relaxed">
-           Voz Masculina Ativada • Perfil Puck <br/>
-           <span className="text-[#eab308]/60 mt-2 block">Fale naturalmente com o Eng. Casillas</span>
+           {t.voice_profile_desc || 'Voz Masculina Ativada • Perfil Puck'} <br/>
+           <span className="text-[#eab308]/60 mt-2 block">{t.speak_naturally || 'Fale naturalmente com o Eng. Casillas'}</span>
          </p>
       </div>
 

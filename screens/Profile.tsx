@@ -24,12 +24,14 @@ const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, onUpd
     photoURL: user?.photoURL || '',
     company: user?.company || '',
     role: user?.role || '',
-    phone: user?.phone || ''
+    phone: user?.phone || '',
+    sector: user?.sector || ''
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -38,22 +40,33 @@ const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, onUpd
         photoURL: user.photoURL,
         company: user.company || '',
         role: user.role || '',
-        phone: user.phone || ''
+        phone: user.phone || '',
+        sector: user.sector || ''
       });
     }
   }, [user]);
 
   const handleSave = async () => {
     if (!user) return;
+    setIsSaving(true);
     
     const updatedUser: User = {
       ...user,
-      displayName: formData.displayName || user.displayName,
+      displayName: formData.displayName?.trim() || user.displayName,
       photoURL: formData.photoURL || user.photoURL || AVATAR_URL,
       company: formData.company || '',
       role: formData.role || '',
-      phone: formData.phone || ''
+      phone: formData.phone || '',
+      sector: formData.sector || '',
+      language: language
     };
+
+    // Check if photoURL (base64) is too large for Firestore (1MB limit)
+    if (updatedUser.photoURL && updatedUser.photoURL.startsWith('data:image') && updatedUser.photoURL.length > 800000) {
+      alert("A imagem selecionada é muito grande. Por favor, escolha uma imagem menor (máximo 500KB).");
+      setIsSaving(false);
+      return;
+    }
 
     try {
       await onUpdateUser(updatedUser);
@@ -62,9 +75,18 @@ const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, onUpd
       setTimeout(() => setShowToast(false), 3000);
       
       if (navigator.vibrate) navigator.vibrate(50);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error saving profile:", err);
-      alert("Erro ao salvar perfil. Tente novamente.");
+      const errorMessage = err?.message || "Erro desconhecido";
+      if (errorMessage.includes("insufficient permissions")) {
+        alert("Erro de permissão: Você não tem autorização para atualizar este perfil.");
+      } else if (errorMessage.includes("quota exceeded")) {
+        alert("Erro: Limite de uso do banco de dados excedido. Tente novamente amanhã.");
+      } else {
+        alert(`Erro ao salvar perfil: ${errorMessage}. Verifique sua conexão e tente novamente.`);
+      }
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -109,10 +131,11 @@ const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, onUpd
             <p className="text-[8px] font-bold text-gray-600 uppercase tracking-widest">{t.professional_session || 'Sessão Profissional'}</p>
          </div>
          <button 
-           onClick={() => isEditing ? handleSave() : setIsEditing(true)}
-           className={`px-6 py-2.5 rounded-full font-black text-[10px] uppercase tracking-widest transition-all ${isEditing ? 'bg-[#eab308] text-black' : 'bg-white/5 text-[#eab308] border border-[#eab308]/20'}`}
+           onClick={() => isEditing ? (isSaving ? null : handleSave()) : setIsEditing(true)}
+           disabled={isSaving}
+           className={`px-6 py-2.5 rounded-full font-black text-[10px] uppercase tracking-widest transition-all ${isEditing ? 'bg-[#eab308] text-black' : 'bg-white/5 text-[#eab308] border border-[#eab308]/20'} ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
          >
-           {isEditing ? (t.confirm || 'Confirmar') : (t.change_data || 'Alterar Dados')}
+           {isSaving ? 'Salvando...' : (isEditing ? (t.confirm || 'Confirmar') : (t.change_data || 'Alterar Dados'))}
          </button>
       </div>
 
@@ -144,7 +167,28 @@ const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, onUpd
               <ProfileItem label={t.full_name || 'Nome Completo'} value={formData.displayName || ''} icon="person" isEditing={isEditing} onChange={(v: string) => handleChange('displayName', v)} />
               <ProfileItem label={t.company || 'Empresa'} value={formData.company || ''} icon="apartment" isEditing={isEditing} onChange={(v: string) => handleChange('company', v)} />
               <ProfileItem label={t.role || 'Cargo'} value={formData.role || ''} icon="engineering" isEditing={isEditing} onChange={(v: string) => handleChange('role', v)} />
+              <ProfileItem label="Setor" value={formData.sector || ''} icon="category" isEditing={isEditing} onChange={(v: string) => handleChange('sector', v)} />
               <ProfileItem label={t.contact || 'Contato'} value={formData.phone || ''} icon="call" isEditing={isEditing} onChange={(v: string) => handleChange('phone', v)} />
+              
+              <div className="p-5 flex items-center gap-5">
+                  <div className="size-10 rounded-xl bg-[#0a0908] flex items-center justify-center text-gray-700 border border-white/5">
+                    <span className="material-symbols-outlined text-lg">language</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-[8px] font-black text-gray-700 uppercase tracking-widest leading-none mb-2">{t.language || 'Idioma'}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {(['pt_BR', 'en_US', 'fr_QC', 'pt_PT'] as Language[]).map((lang) => (
+                        <button
+                          key={lang}
+                          onClick={() => setLanguage(lang)}
+                          className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${language === lang ? 'bg-[#eab308] text-black' : 'bg-black/40 text-gray-500 border border-white/5'}`}
+                        >
+                          {lang === 'pt_BR' ? 'PT-BR' : lang === 'en_US' ? 'EN-US' : lang === 'fr_QC' ? 'FR-QC' : 'PT-PT'}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+               </div>
            </div>
         </section>
 

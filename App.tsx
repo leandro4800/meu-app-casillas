@@ -135,6 +135,7 @@ export default function App() {
           if (docSnap.exists()) {
             const userData = docSnap.data() as User;
             setUser(userData);
+            if (userData.language) setLanguage(userData.language);
             localStorage.setItem(PERSISTENCE_KEY, JSON.stringify(userData));
             
             // Se estiver na tela de boas-vindas ou login, vai para home
@@ -292,20 +293,37 @@ export default function App() {
     if (!auth.currentUser) return;
     try {
       const userDocRef = doc(db, 'users', auth.currentUser.uid);
-      const updateData: any = {};
       
-      if (updatedUser.displayName !== undefined) updateData.displayName = updatedUser.displayName;
-      if (updatedUser.photoURL !== undefined) updateData.photoURL = updatedUser.photoURL;
-      if (updatedUser.company !== undefined) updateData.company = updatedUser.company;
-      if (updatedUser.role !== undefined) updateData.role = updatedUser.role;
-      if (updatedUser.phone !== undefined) updateData.phone = updatedUser.phone;
-      if (updatedUser.plan !== undefined) updateData.plan = updatedUser.plan;
-      if (updatedUser.expiryDate !== undefined) updateData.expiryDate = updatedUser.expiryDate;
-      if (updatedUser.sector !== undefined) updateData.sector = updatedUser.sector;
+      // Only update fields that have actually changed to avoid unnecessary writes and permission issues
+      const updateData: any = {};
+      const fields: (keyof User)[] = ['displayName', 'photoURL', 'company', 'role', 'phone', 'plan', 'expiryDate', 'sector', 'isDev', 'language'];
+      
+      fields.forEach(field => {
+        if (updatedUser[field] !== undefined && updatedUser[field] !== user?.[field]) {
+          updateData[field] = updatedUser[field];
+        }
+      });
+
+      if (Object.keys(updateData).length === 0) {
+        console.log("No fields changed, skipping update.");
+        return;
+      }
 
       await updateDoc(userDocRef, updateData);
-      setUser(updatedUser);
-      localStorage.setItem(PERSISTENCE_KEY, JSON.stringify(updatedUser));
+      
+      // Update local state by merging to preserve any fields not in updateData
+      setUser(prev => prev ? { ...prev, ...updateData } : updatedUser);
+      
+      // Update persistence
+      const currentSaved = localStorage.getItem(PERSISTENCE_KEY);
+      let currentObj = {};
+      try {
+        currentObj = currentSaved ? JSON.parse(currentSaved) : {};
+      } catch (e) {
+        console.error("Error parsing persistence:", e);
+      }
+      localStorage.setItem(PERSISTENCE_KEY, JSON.stringify({ ...currentObj, ...updateData }));
+      
     } catch (err) {
       handleFirestoreError(err, 'update', `users/${auth.currentUser.uid}`);
       throw err;

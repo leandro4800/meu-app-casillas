@@ -16,7 +16,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, navigate, user, t })
     {
       title: t.tools,
       items: [
-        // { id: 'tool_library', label: t.sb_hailtools, icon: 'auto_stories' },
+        { id: 'consultant', label: t.ai_hailtools_title || "Consultor Hailtools", icon: 'engineering' },
+        { id: 'tool_library', label: t.sb_hailtools, icon: 'auto_stories' },
         { id: 'glossary', label: t.sb_glossary, icon: 'menu_book' },
         { id: 'materials', label: t.sb_materials, icon: 'science' },
         { id: 'material_comparison', label: t.sb_comparison, icon: 'compare_arrows' },

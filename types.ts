@@ -56,7 +56,7 @@ export interface ToolInsert {
   coating: string;
   geometry: string;
   geometryDesc: string;
-  category: 'Torneamento' | 'Fresamento' | 'Furação' | 'Cortes/Roscas' | 'Corte e Canal' | 'Rosqueamento';
+  category: 'Torneamento' | 'Fresamento' | 'Furação' | 'Cortes/Roscas' | 'Corte e Canal' | 'Rosqueamento' | 'Roscamento' | 'Adaptadores' | 'Mandrilamento';
   isoCategories: string[];
   applicationPrimary: string;
   applicationSecondary?: string;

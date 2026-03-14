@@ -62,10 +62,10 @@ const MediaLab: React.FC<MediaLabProps> = ({ navigate, t }) => {
       
       // Usando gemini-2.5-flash-image para geração de imagem
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-image',
+        model: 'gemini-3.1-flash-image-preview',
         contents: { parts: [{ text: `Imagem técnica industrial profissional: ${prompt}. Estilo: Fotografia de engenharia, alta definição, iluminação de fábrica.` }] },
         config: { 
-          imageConfig: { aspectRatio: '1:1' } 
+          imageConfig: { aspectRatio: '1:1', imageSize: '1K' } 
         },
       });
       

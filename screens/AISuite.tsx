@@ -32,8 +32,8 @@ const AISuite: React.FC<AISuiteProps> = ({ navigate, t }) => {
     },
     {
       id: 'consultant',
-      title: t.consultant_title || "Engenheiro Casillas",
-      desc: t.consultant_desc || "Consultoria sênior em usinagem e caldeiraria",
+      title: t.ai_hailtools_title || "Consultor Hailtools",
+      desc: t.ai_hailtools_desc || "Especialista em ferramentas Sandvik e processos Hailtools",
       icon: 'engineering',
       color: 'border-emerald-500/30 text-emerald-400 bg-emerald-500/5'
     }

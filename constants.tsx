@@ -109,6 +109,58 @@ export const HAILTOOLS_CATALOG: ToolInsert[] = [
     applicationPrimary: 'Canais de Vedação BX/RX',
     parameters: { vc: 140, vcRange: [100, 180], fn: 0.18, fnRange: [0.1, 0.3], ap: 3.0, apRange: [0.5, 5.0] },
     image: 'https://images.unsplash.com/photo-1565608438257-fac3c27beb36?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: 'thread_266',
+    code: 'CoroThread® 266 - ROSCAMENTO',
+    grade: 'GC1135',
+    coating: 'PVD',
+    geometry: '-PM (Perfil Médio)',
+    geometryDesc: 'Sistema iLock™ para estabilidade extrema em roscas API e NPT.',
+    category: 'Roscamento',
+    isoCategories: ['P', 'M', 'S'],
+    applicationPrimary: 'Roscas de Conexão Offshore',
+    parameters: { vc: 120, vcRange: [80, 160], fn: 0, fnRange: [0, 0], ap: 0, apRange: [0, 0] },
+    image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: 'silent_tools',
+    code: 'Silent Tools™ - ADAPTADORES ANTIVIBRATÓRIOS',
+    grade: 'N/A',
+    coating: 'N/A',
+    geometry: 'Dampened',
+    geometryDesc: 'Barras de mandrilar com amortecimento interno para grandes balanços (até 14xD).',
+    category: 'Adaptadores',
+    isoCategories: ['P', 'M', 'K', 'N', 'S', 'H'],
+    applicationPrimary: 'Usinagem Interna de Longo Alcance',
+    parameters: { vc: 0, vcRange: [0, 0], fn: 0, fnRange: [0, 0], ap: 0, apRange: [0, 0] },
+    image: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: 'drill_860',
+    code: 'CoroDrill® 860-GM - FURAÇÃO MULTI-MATERIAL',
+    grade: 'X1BM',
+    coating: 'PVD Multi-layer',
+    geometry: '-GM',
+    geometryDesc: 'Broca de metal duro integral para furação de alta velocidade em diversos materiais.',
+    category: 'Furação',
+    isoCategories: ['P', 'M', 'K', 'H'],
+    applicationPrimary: 'Furação Geral de Alta Performance',
+    parameters: { vc: 120, vcRange: [90, 150], fn: 0.2, fnRange: [0.1, 0.3], ap: 0, apRange: [0, 0] },
+    image: 'https://images.unsplash.com/photo-1513828583688-c52646db42da?auto=format&fit=crop&q=80&w=300'
+  },
+  {
+    id: 'mill_490',
+    code: 'CoroMill® 490 - FRESAMENTO 90°',
+    grade: 'GC1130',
+    coating: 'Zertivo™',
+    geometry: '-PM',
+    geometryDesc: 'Fresa de esquadrejamento com 4 arestas reais para excelente acabamento.',
+    category: 'Fresamento',
+    isoCategories: ['P', 'M'],
+    applicationPrimary: 'Esquadrejamento e Faceamento',
+    parameters: { vc: 280, vcRange: [220, 350], fn: 0.15, fnRange: [0.1, 0.25], ap: 4.0, apRange: [0.5, 5.5] },
+    image: 'https://images.unsplash.com/photo-1581092346544-2ff810428bc8?auto=format&fit=crop&q=80&w=300'
   }
 ];
 

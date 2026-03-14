@@ -9,6 +9,34 @@ import { auth, db } from './firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, onSnapshot, updateDoc, getDocFromServer } from 'firebase/firestore';
 
+enum OperationType {
+  CREATE = 'create',
+  UPDATE = 'update',
+  DELETE = 'delete',
+  LIST = 'list',
+  GET = 'get',
+  WRITE = 'write',
+}
+
+interface FirestoreErrorInfo {
+  error: string;
+  operationType: string;
+  path: string | null;
+  authInfo: {
+    userId: string | undefined;
+    email: string | null | undefined;
+    emailVerified: boolean | undefined;
+    isAnonymous: boolean | undefined;
+    tenantId: string | null | undefined;
+    providerInfo: {
+      providerId: string;
+      displayName: string | null;
+      email: string | null;
+      photoUrl: string | null;
+    }[];
+  }
+}
+
 // Screens
 import Login from './screens/Login';
 import Home from './screens/Home';
@@ -58,6 +86,28 @@ export default function App() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
 
+  const handleFirestoreError = (error: unknown, operationType: string, path: string | null) => {
+    const errInfo: FirestoreErrorInfo = {
+      error: error instanceof Error ? error.message : String(error),
+      authInfo: {
+        userId: auth.currentUser?.uid,
+        email: auth.currentUser?.email,
+        emailVerified: auth.currentUser?.emailVerified,
+        isAnonymous: auth.currentUser?.isAnonymous,
+        tenantId: auth.currentUser?.tenantId,
+        providerInfo: auth.currentUser?.providerData.map(provider => ({
+          providerId: provider.providerId,
+          displayName: provider.displayName,
+          email: provider.email,
+          photoUrl: provider.photoURL
+        })) || []
+      },
+      operationType,
+      path
+    };
+    console.error('Firestore Error: ', JSON.stringify(errInfo));
+  };
+
   useEffect(() => {
     // Test connection to Firestore
     const testConnection = async () => {
@@ -71,26 +121,42 @@ export default function App() {
     };
     testConnection();
 
+    let unsubscribeDoc: (() => void) | null = null;
+
     const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (unsubscribeDoc) {
+        unsubscribeDoc();
+        unsubscribeDoc = null;
+      }
+
       if (firebaseUser) {
         // Listen to user document in Firestore
-        const unsubscribeDoc = onSnapshot(doc(db, 'users', firebaseUser.uid), (docSnap) => {
+        unsubscribeDoc = onSnapshot(doc(db, 'users', firebaseUser.uid), (docSnap) => {
           if (docSnap.exists()) {
             const userData = docSnap.data() as User;
             setUser(userData);
             localStorage.setItem(PERSISTENCE_KEY, JSON.stringify(userData));
+            
+            // Se estiver na tela de boas-vindas ou login, vai para home
+            setCurrentScreen(prev => (prev === 'welcome' || prev === 'login') ? 'home' : prev);
           }
+        }, (error) => {
+          handleFirestoreError(error, 'get', `users/${firebaseUser.uid}`);
         });
         setIsAuthReady(true);
-        return () => unsubscribeDoc();
       } else {
         setUser(null);
         localStorage.removeItem(PERSISTENCE_KEY);
         setIsAuthReady(true);
+        // Se a sessão for perdida e não estivermos em telas públicas, volta para welcome
+        setCurrentScreen(prev => (!['welcome', 'login', 'checkout'].includes(prev)) ? 'welcome' : prev);
       }
     });
 
-    return () => unsubscribeAuth();
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribeDoc) unsubscribeDoc();
+    };
   }, []);
 
   useEffect(() => {
@@ -113,6 +179,7 @@ export default function App() {
         try {
           const currentUser = JSON.parse(savedSession) as User;
           setUser(currentUser);
+          setCurrentScreen('home');
         } catch (e) {
           localStorage.removeItem(PERSISTENCE_KEY);
         }
@@ -225,19 +292,23 @@ export default function App() {
     if (!auth.currentUser) return;
     try {
       const userDocRef = doc(db, 'users', auth.currentUser.uid);
-      await updateDoc(userDocRef, {
-        displayName: updatedUser.displayName,
-        photoURL: updatedUser.photoURL,
-        company: updatedUser.company,
-        role: updatedUser.role,
-        phone: updatedUser.phone,
-        plan: updatedUser.plan,
-        expiryDate: updatedUser.expiryDate
-      });
+      const updateData: any = {};
+      
+      if (updatedUser.displayName !== undefined) updateData.displayName = updatedUser.displayName;
+      if (updatedUser.photoURL !== undefined) updateData.photoURL = updatedUser.photoURL;
+      if (updatedUser.company !== undefined) updateData.company = updatedUser.company;
+      if (updatedUser.role !== undefined) updateData.role = updatedUser.role;
+      if (updatedUser.phone !== undefined) updateData.phone = updatedUser.phone;
+      if (updatedUser.plan !== undefined) updateData.plan = updatedUser.plan;
+      if (updatedUser.expiryDate !== undefined) updateData.expiryDate = updatedUser.expiryDate;
+      if (updatedUser.sector !== undefined) updateData.sector = updatedUser.sector;
+
+      await updateDoc(userDocRef, updateData);
       setUser(updatedUser);
       localStorage.setItem(PERSISTENCE_KEY, JSON.stringify(updatedUser));
     } catch (err) {
-      console.error("Error updating user:", err);
+      handleFirestoreError(err, 'update', `users/${auth.currentUser.uid}`);
+      throw err;
     }
   };
 

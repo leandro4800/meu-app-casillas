@@ -165,7 +165,7 @@ const Consultant: React.FC<{ navigate: (s: Screen) => void; t: any }> = ({ navig
          </div>
       </div>
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-12 custom-scrollbar pb-36 relative z-10">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-8 custom-scrollbar pb-36 relative z-10">
         <div className="flex justify-center">
            <div className="bg-[#eab308]/5 border border-[#eab308]/10 px-4 py-2 rounded-full flex items-center gap-2">
               <span className="material-symbols-outlined text-xs text-[#eab308]">engineering</span>
@@ -180,12 +180,12 @@ const Consultant: React.FC<{ navigate: (s: Screen) => void; t: any }> = ({ navig
                 <img src={CASILLAS_CONSULTANT_IMAGE} className="w-full h-full object-cover" alt="" />
               </div>
             )}
-            <div className={`p-6 rounded-[32px] shadow-2xl border max-w-[90%] font-sans ${
+            <div className={`p-4 rounded-[24px] shadow-2xl border max-w-[90%] font-sans ${
               msg.role === 'casillas' 
                 ? 'bg-[#1c1816] text-gray-100 border-white/5 rounded-tl-none font-medium' 
                 : 'bg-[#eab308] text-black font-black rounded-tr-none border-[#eab308]'
             }`}>
-              <div className="text-sm leading-[1.5] whitespace-pre-wrap">
+              <div className="text-xs leading-[1.4] whitespace-pre-wrap">
                 {msg.text}
               </div>
               {msg.isStreaming && (

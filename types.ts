@@ -24,6 +24,7 @@ export interface User {
   sector?: string;
   phone?: string;
   sessionId?: string;
+  language?: Language;
 }
 
 export interface ThreadData {

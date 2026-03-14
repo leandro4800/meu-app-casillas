@@ -43,7 +43,7 @@ const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, onUpd
     }
   }, [user]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!user) return;
     
     const updatedUser: User = {
@@ -55,12 +55,17 @@ const Profile: React.FC<ProfileProps> = ({ user, language, setLanguage, t, onUpd
       phone: formData.phone || ''
     };
 
-    onUpdateUser(updatedUser);
-    setIsEditing(false);
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
-    
-    if (navigator.vibrate) navigator.vibrate(50);
+    try {
+      await onUpdateUser(updatedUser);
+      setIsEditing(false);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      
+      if (navigator.vibrate) navigator.vibrate(50);
+    } catch (err) {
+      console.error("Error saving profile:", err);
+      alert("Erro ao salvar perfil. Tente novamente.");
+    }
   };
 
   const handleChange = (field: keyof User, value: string) => {

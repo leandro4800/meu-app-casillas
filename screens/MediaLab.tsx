@@ -16,6 +16,14 @@ const MediaLab: React.FC<MediaLabProps> = ({ navigate, t }) => {
   const [hasKey, setHasKey] = useState<boolean>(true); // Assume true por padrão para fluidez
 
   useEffect(() => {
+    return () => {
+      if (resultUrl && resultUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(resultUrl);
+      }
+    };
+  }, [resultUrl]);
+
+  useEffect(() => {
     checkKeyStatus();
   }, []);
 
@@ -49,23 +57,27 @@ const MediaLab: React.FC<MediaLabProps> = ({ navigate, t }) => {
           ""
         ).trim();
       };
-      const ai = new GoogleGenAI({ apiKey: getApiKey() });
-      // Usando Flash Image para geração "normal" e rápida
+      const apiKey = getApiKey();
+      const ai = new GoogleGenAI({ apiKey });
+      
+      // Usando gemini-2.5-flash-image para geração de imagem
       const response = await ai.models.generateContent({
-        model: 'gemini-flash-latest',
+        model: 'gemini-2.5-flash-image',
         contents: { parts: [{ text: `Imagem técnica industrial profissional: ${prompt}. Estilo: Fotografia de engenharia, alta definição, iluminação de fábrica.` }] },
         config: { 
           imageConfig: { aspectRatio: '1:1' } 
         },
       });
       
-      const imagePart = response.candidates[0].content.parts.find(p => p.inlineData);
+      const imagePart = response.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
       if (imagePart?.inlineData) {
         setResultUrl(`data:image/png;base64,${imagePart.inlineData.data}`);
+      } else {
+        throw new Error("Nenhuma imagem foi gerada.");
       }
     } catch (e: any) {
       console.error(e);
-      alert(t.image_gen_error || "Erro na geração da imagem. Verifique sua conexão.");
+      alert(t.image_gen_error || "Erro na geração da imagem. Verifique sua conexão ou chave API.");
     } finally {
       setLoading(false);
     }
@@ -77,8 +89,11 @@ const MediaLab: React.FC<MediaLabProps> = ({ navigate, t }) => {
     setResultUrl(null);
     try {
       // Para Veo, a seleção de chave é obrigatória por regra do SDK
-      if (!hasKey) {
-        await handleSelectKey();
+      if ((window as any).aistudio?.hasSelectedApiKey) {
+        const hasKeyStatus = await (window as any).aistudio.hasSelectedApiKey();
+        if (!hasKeyStatus && (window as any).aistudio.openSelectKey) {
+          await (window as any).aistudio.openSelectKey();
+        }
       }
 
       const getApiKey = () => {
@@ -92,7 +107,10 @@ const MediaLab: React.FC<MediaLabProps> = ({ navigate, t }) => {
           ""
         ).trim();
       };
-      const ai = new GoogleGenAI({ apiKey: getApiKey() });
+      
+      const apiKey = getApiKey();
+      const ai = new GoogleGenAI({ apiKey });
+      
       let op = await ai.models.generateVideos({
         model: 'veo-3.1-fast-generate-preview',
         prompt: `Cena industrial offshore: ${prompt}. Estilo cinematográfico, alta qualidade técnica.`,
@@ -109,14 +127,32 @@ const MediaLab: React.FC<MediaLabProps> = ({ navigate, t }) => {
       }
 
       const downloadLink = op.response?.generatedVideos?.[0]?.video?.uri;
-      setResultUrl(`${downloadLink}&key=${getApiKey()}`);
+      if (downloadLink) {
+        // Fetch the video with the API key header as per guidelines
+        const videoResponse = await fetch(downloadLink, {
+          method: 'GET',
+          headers: {
+            'x-goog-api-key': apiKey,
+          },
+        });
+        
+        if (!videoResponse.ok) {
+          throw new Error(`Erro ao baixar vídeo: ${videoResponse.statusText}`);
+        }
+        
+        const videoBlob = await videoResponse.blob();
+        const videoUrl = URL.createObjectURL(videoBlob);
+        setResultUrl(videoUrl);
+      } else {
+        throw new Error("Link de download do vídeo não encontrado.");
+      }
     } catch (e: any) {
       console.error(e);
-      if (e.message?.includes("entity was not found")) {
+      if (e.message?.includes("entity was not found") || e.message?.includes("404")) {
         setHasKey(false);
         alert(t.veo_key_error || "Para gerar vídeos, é necessário vincular uma chave API de um projeto com faturamento.");
       } else {
-        alert(t.video_gen_error || "Erro ao processar vídeo. Tente um prompt mais curto.");
+        alert(t.video_gen_error || "Erro ao processar vídeo. Tente um prompt mais curto ou verifique sua chave.");
       }
     } finally {
       setLoading(false);

@@ -14,8 +14,16 @@ interface VerifierProps {
 
 const Verifier: React.FC<VerifierProps> = ({ t }) => {
   const [nominalStr, setNominalStr] = useState('50');
-  const [measuredValue, setMeasuredValue] = useState(50.012);
+  const [measuredValue, setMeasuredValue] = useState(50);
   const [isoClass, setIsoClass] = useState('H7');
+
+  const handleNominalChange = (val: string) => {
+    setNominalStr(val);
+    const num = parseFloat(val);
+    if (!isNaN(num)) {
+      setMeasuredValue(num);
+    }
+  };
 
   const toleranceLimits = useMemo(() => {
     const nominal = parseFloat(nominalStr);
@@ -57,7 +65,7 @@ const Verifier: React.FC<VerifierProps> = ({ t }) => {
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-1">
           <label className="text-[10px] font-black text-gray-500 uppercase ml-1">{t.nominal} (mm)</label>
-          <input type="number" value={nominalStr} onChange={(e) => setNominalStr(e.target.value)} className="w-full bg-[#252930] rounded-xl h-14 px-4 text-white font-mono font-black text-lg outline-none" />
+          <input type="number" value={nominalStr} onChange={(e) => handleNominalChange(e.target.value)} className="w-full bg-[#252930] rounded-xl h-14 px-4 text-white font-mono font-black text-lg outline-none" />
           <p className="text-[9px] text-[#eab308] font-bold mt-1">{(parseFloat(nominalStr) * t.unit_mult).toFixed(t.unit_precision)} {t.unit}</p>
         </div>
         <div className="flex flex-col gap-1">

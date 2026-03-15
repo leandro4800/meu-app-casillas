@@ -61,6 +61,8 @@ export const translations: Record<Language, any> = {
     ai_media_desc: "Geração e edição técnica de imagens e vídeos",
     ai_consultant_title: "Consultoria Técnica",
     ai_consultant_desc: "Análise de códigos ISO e manuais de processo",
+    drawing_analysis_title: "Análise de Desenho",
+    drawing_analysis_desc: "Análise técnica de desenhos: cotas, furos, roscas e tolerâncias ISO/GD&T.",
     consultant_title: "Engenheiro Casillas",
     consultant_desc: "Consultoria sênior em usinagem e caldeiraria",
     ai_hailtools_title: "Consultor Hailtools",
@@ -159,6 +161,7 @@ export const translations: Record<Language, any> = {
     image_gen_error: "Erro na geração da imagem. Verifique sua conexão.",
     veo_key_error: "Para gerar vídeos, é necessário vincular uma chave API de um projeto com faturamento.",
     video_gen_error: "Erro ao processar vídeo. Tente um prompt mais curto.",
+    export_whatsapp: "Exportar para WhatsApp",
   },
   en_US: {
     unit: 'in',
@@ -219,6 +222,8 @@ export const translations: Record<Language, any> = {
     ai_media_desc: "Technical generation and editing of images and videos",
     ai_consultant_title: "Technical Consulting",
     ai_consultant_desc: "ISO code analysis and process manuals",
+    drawing_analysis_title: "Drawing Analysis",
+    drawing_analysis_desc: "Technical drawing analysis: dimensions, holes, threads, and ISO/GD&T tolerances.",
     consultant_title: "Engineer Casillas",
     consultant_desc: "Senior consulting in machining and boilermaking",
     ai_hailtools_title: "Hailtools Consultant",
@@ -317,6 +322,7 @@ export const translations: Record<Language, any> = {
     image_gen_error: "Error generating image. Check your connection.",
     veo_key_error: "To generate videos, you must link an API key from a project with billing.",
     video_gen_error: "Error processing video. Try a shorter prompt.",
+    export_whatsapp: "Export to WhatsApp",
   },
   fr_QC: {
     unit: 'po',
@@ -377,6 +383,8 @@ export const translations: Record<Language, any> = {
     ai_media_desc: "Génération et édition technique d'images et de vidéos",
     ai_consultant_title: "Conseil Technique",
     ai_consultant_desc: "Analyse des codes ISO et manuels de processus",
+    drawing_analysis_title: "Analyse de Dessin",
+    drawing_analysis_desc: "Analyse technique de dessins : cotes, trous, filetages et tolérances ISO/GD&T.",
     consultant_title: "Ingénieur Casillas",
     consultant_desc: "Conseil senior em usinage et chaudronnerie",
     ai_hailtools_title: "Consultant Hailtools",
@@ -475,6 +483,7 @@ export const translations: Record<Language, any> = {
     image_gen_error: "Erreur lors de la génération de l'image. Vérifiez votre connexion.",
     veo_key_error: "Pour générer des vidéos, vous devez lier une clé API d'un projet avec facturation.",
     video_gen_error: "Erreur lors du traitement de la vidéo. Essayez un prompt plus court.",
+    export_whatsapp: "Exporter vers WhatsApp",
   },
   pt_PT: {
     unit: 'mm',
@@ -535,6 +544,8 @@ export const translations: Record<Language, any> = {
     ai_media_desc: "Geração e edição técnica de imagens e vídeos",
     ai_consultant_title: "Consultoria Técnica",
     ai_consultant_desc: "Análise de códigos ISO e manuais de processo",
+    drawing_analysis_title: "Análise de Desenho",
+    drawing_analysis_desc: "Análise técnica de desenhos: cotas, furos, roscas e tolerâncias ISO/GD&T.",
     consultant_title: "Engenheiro Casillas",
     consultant_desc: "Consultoria sénior em maquinação e caldeiraria",
     ai_hailtools_title: "Consultor Hailtools",
@@ -633,5 +644,6 @@ export const translations: Record<Language, any> = {
     image_gen_error: "Erro na geração da imagem. Verifique a sua ligação.",
     veo_key_error: "Para gerar vídeos, é necessário vincular uma chave API de um projeto com faturação.",
     video_gen_error: "Erro ao processar vídeo. Tente um prompt mais curto.",
+    export_whatsapp: "Exportar para WhatsApp",
   }
 };

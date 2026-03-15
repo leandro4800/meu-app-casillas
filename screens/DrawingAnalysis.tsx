@@ -113,20 +113,22 @@ const DrawingAnalysis: React.FC<DrawingAnalysisProps> = ({ navigate, t }) => {
       }
 
       parts.push({
-        text: `Você é o Engenheiro Casillas, especialista em Offshore (Usinagem e Caldeiraria).
+        text: `Você é o Engenheiro Casillas, especialista em desenho técnico mecânico aplicado à usinagem, com profundo conhecimento em normas ISO, ABNT, ASME, GD&T, rugosidade e processos de fabricação (DFM).
         
         TAREFA: Analise o desenho técnico e as instruções por voz do operador.
         
         FOCO DA ANÁLISE:
-        1. USINAGEM: Identifique tolerâncias (H7, g6), rugosidade (Ra) e requisitos API.
-        2. CALDEIRARIA: Identifique símbolos de solda, chanfros (biséis), tipos de juntas e normas (AWS/ASME).
-        3. OFFSHORE: Observe requisitos de ensaios não destrutivos (LP, PM, UT) citados ou sugeridos.
+        1. COTAS E FUROS: Identifique cotas, focando em furos e diâmetros de furação no plano cartesiano.
+        2. TOLERÂNCIAS E CORTES: Identifique tolerâncias (dimensionais/geométricas), vistas em corte e detalhes.
+        3. ROSCAS: Identifique o tipo de rosca solicitada (M, UNC, NPT, etc.).
+        4. USINAGEM: Sugira processos e ferramentas com base no desenho.
         
         RELATÓRIO TÉCNICO:
-        - RESUMO DO PROJETO (Normas aplicáveis).
-        - PREPARAÇÃO DE CALDEIRARIA (Corte e Chanfro).
-        - SEQUÊNCIA DE USINAGEM (Ferramentas e Parâmetros).
-        - CONTROLE DE QUALIDADE (Tolerâncias críticas).`
+        - RESUMO DO PROJETO (Normas e Requisitos).
+        - ANÁLISE DE COTAS E FUROS (Coordenadas e Diâmetros).
+        - TOLERÂNCIAS E ACABAMENTO (GD&T e Rugosidade).
+        - ESPECIFICAÇÃO DE ROSCAS E DETALHES.
+        - RECOMENDAÇÕES DE FABRICAÇÃO (DFM).`
       });
 
       const response = await ai.models.generateContent({
@@ -185,7 +187,7 @@ const DrawingAnalysis: React.FC<DrawingAnalysisProps> = ({ navigate, t }) => {
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: contents as any,
-        config: { systemInstruction: "Responda como Eng. Casillas, especialista offshore." }
+        config: { systemInstruction: "Você é o Eng. Casillas, especialista em desenho técnico mecânico e usinagem (ISO, ABNT, ASME, GD&T)." }
       });
       setMessages([...newMessages, { role: 'casillas', text: response.text }]);
     } catch (e) {
@@ -193,6 +195,15 @@ const DrawingAnalysis: React.FC<DrawingAnalysisProps> = ({ navigate, t }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleExportWhatsApp = () => {
+    const lastCasillasMessage = [...messages].reverse().find(m => m.role === 'casillas');
+    if (!lastCasillasMessage) return;
+
+    const text = `*Relatório Técnico - Eng. Casillas*\n\n${lastCasillasMessage.text}`;
+    const encodedText = encodeURIComponent(text);
+    window.open(`https://wa.me/?text=${encodedText}`, '_blank');
   };
 
   return (
@@ -274,6 +285,17 @@ const DrawingAnalysis: React.FC<DrawingAnalysisProps> = ({ navigate, t }) => {
                   <div className="text-sm leading-relaxed whitespace-pre-wrap tracking-tight font-medium">
                     {msg.text}
                   </div>
+                  {msg.role === 'casillas' && (
+                    <div className="mt-4 flex justify-end">
+                      <button 
+                        onClick={handleExportWhatsApp}
+                        className="flex items-center gap-2 bg-[#25d366] text-white px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-transform shadow-lg"
+                      >
+                        <span className="material-symbols-outlined text-sm">share</span>
+                        {t.export_whatsapp || 'Exportar para WhatsApp'}
+                      </button>
+                    </div>
+                  )}
                </div>
             </div>
           ))}

@@ -4,6 +4,9 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import Stripe from "stripe";
+import nodemailer from "nodemailer";
+import { Resend } from "resend";
+import { ensureDocumentsExist } from "./src/services/pdfService.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -138,6 +141,87 @@ async function startServer() {
     } catch (error) {
       console.error("Error saving asset:", error);
       res.status(500).json({ error: "Failed to save asset" });
+    }
+  });
+
+  app.post("/api/send-catalog", async (req, res) => {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: "Email required" });
+    
+    try {
+      const { catalogPath, eafuPath } = await ensureDocumentsExist();
+      
+      // Try Resend first if API key is present
+      if (process.env.RESEND_API_KEY) {
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        
+        const catalogBuffer = await fs.promises.readFile(catalogPath);
+        const eafuBuffer = await fs.promises.readFile(eafuPath);
+
+        await resend.emails.send({
+          from: process.env.SMTP_FROM || "onboarding@resend.dev",
+          to: email,
+          subject: "Hailtools - Catálogo de Ferramentas e Apostila EAFU",
+          text: "Olá,\n\nConforme solicitado, seguem em anexo o Catálogo de Ferramentas Hailtools e a Apostila de Treinamento EAFU em formato PDF.\n\nAtenciosamente,\nEquipe Hailtools",
+          attachments: [
+            {
+              filename: 'catalogo_hailtools.pdf',
+              content: catalogBuffer,
+            },
+            {
+              filename: 'apostila_eafu.pdf',
+              content: eafuBuffer,
+            }
+          ]
+        });
+
+        console.log(`Email sent successfully via Resend to: ${email}`);
+        return res.json({ success: true, message: `Catálogo e Apostila EAFU enviados com sucesso para ${email} (via Resend)` });
+      }
+
+      // Fallback to SMTP
+      const smtpConfig = {
+        host: process.env.SMTP_HOST,
+        port: parseInt(process.env.SMTP_PORT || "587"),
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+      };
+
+      if (!smtpConfig.host || !smtpConfig.auth.user) {
+        console.log(`[EMAIL SIMULATION] SMTP not configured. Simulating send to: ${email}`);
+        console.log(`[EMAIL SIMULATION] Attachments: ${catalogPath}, ${eafuPath}`);
+        return res.json({ 
+          success: true, 
+          message: `[SIMULAÇÃO] Catálogo e Apostila EAFU (PDF) enviados com sucesso para ${email}. (Configure o SMTP para envio real)` 
+        });
+      }
+
+      const transporter = nodemailer.createTransport(smtpConfig);
+
+      await transporter.sendMail({
+        from: process.env.SMTP_FROM || "hailtools@example.com",
+        to: email,
+        subject: "Hailtools - Catálogo de Ferramentas e Apostila EAFU",
+        text: "Olá,\n\nConforme solicitado, seguem em anexo o Catálogo de Ferramentas Hailtools e a Apostila de Treinamento EAFU em formato PDF.\n\nAtenciosamente,\nEquipe Hailtools",
+        attachments: [
+          {
+            filename: 'catalogo_hailtools.pdf',
+            path: catalogPath
+          },
+          {
+            filename: 'apostila_eafu.pdf',
+            path: eafuPath
+          }
+        ]
+      });
+
+      console.log(`Email sent successfully to: ${email}`);
+      res.json({ success: true, message: `Catálogo e Apostila EAFU enviados com sucesso para ${email}` });
+    } catch (error: any) {
+      console.error("Error sending email:", error);
+      res.status(500).json({ error: "Erro ao processar o envio dos documentos." });
     }
   });
 

@@ -2,7 +2,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { CASILLAS_CONSULTANT_IMAGE, HAILTOOLS_CATALOG, MATERIALS } from '../constants';
 import { Screen } from '../types';
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Type, FunctionDeclaration } from "@google/genai";
+import { auth, db } from '../firebase';
+import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 
 interface ChatMessage {
   role: 'user' | 'casillas';
@@ -58,6 +60,17 @@ const Consultant: React.FC<{ navigate: (s: Screen) => void; t: any }> = ({ navig
       return;
     }
 
+    let userName = "Usuário";
+    let sentDocs: string[] = [];
+    if (auth.currentUser) {
+      const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        userName = data.displayName || "Usuário";
+        sentDocs = data.sentDocuments || [];
+      }
+    }
+
     const ai = new GoogleGenAI({ apiKey });
     
     const catalogContext = HAILTOOLS_CATALOG.map(t => 
@@ -76,7 +89,7 @@ const Consultant: React.FC<{ navigate: (s: Screen) => void; t: any }> = ({ navig
           parts: [{ text: m.text }]
         }));
 
-      const responseStream = await ai.models.generateContentStream({
+      const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: apiContent,
         config: {
@@ -88,41 +101,74 @@ const Consultant: React.FC<{ navigate: (s: Screen) => void; t: any }> = ({ navig
           3. CALDEIRARIA: Conhece chanfros para solda, cálculo de virolas e normas ASME VIII/AWS D1.1.
           4. DFM (Design for Manufacturing): Sugere melhorias no projeto para facilitar a fabricação e reduzir custos.
           
+          CONHECIMENTO APOSTILA EAFU (Treinamento):
+          - Processo de Escolha: 1. Suporte (geometria), 2. Pastilha (material/geometria), 3. Dados de Corte (ap, fn, Vc).
+          - Fórmulas: n = (Vc * 318) / D; Vf = fz * n * Z.
+          - Materiais ISO: P (Aços), M (Inoxidáveis), K (Ferros Fundidos), N (Metais não-ferrosos), S (Super ligas), H (Aços endurecidos).
+          
+          CONTEXTO DO USUÁRIO:
+          - Nome: ${userName}
+          - Documentos já enviados: ${sentDocs.join(', ') || 'Nenhum'}
+          
           POSTURA:
           - Sua voz é masculina (Puck), tom firme e mentor profissional.
           - Responda de forma prática e técnica: "Para essa cota de furação em plano cartesiano, recomendo...".
           - Sempre priorize a precisão dimensional e normas técnicas.
+          - SUGESTÃO DE DOCUMENTOS: Ao final da conversa (quando o usuário estiver se despedindo ou o assunto estiver encerrado), se o usuário ainda NÃO recebeu os documentos ('catalog' ou 'eafu'), sugira enviar o Catálogo de Ferramentas e a Apostila de Treinamento EAFU em formato PDF por e-mail.
+          - Se o usuário já recebeu, NÃO sugira novamente, a menos que ele peça explicitamente.
+          - Se o usuário aceitar ou solicitar o envio, peça o e-mail dele e use a ferramenta 'enviar_catalogo_email'.
           
           CATÁLOGO ATUAL:
           ${catalogContext}
           
           MATERIAIS:
           ${materialContext}`,
-          temperature: 0.1
+          temperature: 0.1,
+          tools: [{ functionDeclarations: [
+            {
+              name: 'enviar_catalogo_email',
+              description: 'Envia o catálogo técnico e a apostila EAFU da Hailtools em formato PDF para o e-mail informado pelo usuário.',
+              parameters: {
+                type: Type.OBJECT,
+                properties: {
+                  email: { type: Type.STRING, description: 'O endereço de e-mail do destinatário.' }
+                },
+                required: ['email']
+              }
+            }
+          ] }]
         }
       });
 
-      let currentResponse = "";
-      setMessages(prev => [...prev, { role: 'casillas', text: "", isStreaming: true }]);
+      if (response.functionCalls) {
+        for (const fc of response.functionCalls) {
+          if (fc.name === 'enviar_catalogo_email') {
+            const { email } = fc.args as any;
+            try {
+              const res = await fetch('/api/send-catalog', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+              });
+              const data = await res.json();
 
-      for await (const chunk of responseStream) {
-        currentResponse += chunk.text || "";
-        setMessages(prev => {
-          const updated = [...prev];
-          updated[updated.length - 1] = { 
-            role: 'casillas', 
-            text: currentResponse, 
-            isStreaming: true 
-          };
-          return updated;
-        });
+              // Update Firestore
+              if (auth.currentUser) {
+                await updateDoc(doc(db, 'users', auth.currentUser.uid), {
+                  sentDocuments: arrayUnion('catalog', 'eafu')
+                });
+              }
+
+              setMessages(prev => [...prev, { role: 'casillas', text: `[SISTEMA]: ${data.message || "Catálogo e Apostila EAFU enviados com sucesso."}` }]);
+            } catch (err) {
+              console.error("Erro ao enviar catálogo:", err);
+            }
+          }
+        }
       }
 
-      setMessages(prev => {
-        const updated = [...prev];
-        updated[updated.length - 1].isStreaming = false;
-        return updated;
-      });
+      let currentResponse = response.text || "";
+      setMessages(prev => [...prev, { role: 'casillas', text: currentResponse }]);
 
     } catch (error: any) {
       console.error("Erro Gemini:", error);

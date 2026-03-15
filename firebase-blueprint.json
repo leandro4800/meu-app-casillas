@@ -16,7 +16,12 @@
         "company": { "type": "string" },
         "role": { "type": "string" },
         "sector": { "type": "string" },
-        "phone": { "type": "string" }
+        "phone": { "type": "string" },
+        "sentDocuments": { 
+          "type": "array", 
+          "items": { "type": "string" },
+          "description": "List of documents already sent to the user (e.g., 'catalog', 'eafu')"
+        }
       },
       "required": ["uid", "email"]
     }

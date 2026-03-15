@@ -1,7 +1,9 @@
 
-import React, { useState, useRef } from 'react';
-import { GoogleGenAI, Modality } from '@google/genai';
+import React, { useState, useRef, useEffect } from 'react';
+import { GoogleGenAI, Modality, Type, FunctionDeclaration } from '@google/genai';
 import { Screen } from '../types';
+import { auth, db } from '../firebase';
+import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 
 interface HailtoolsVoiceProps {
   navigate: (s: Screen) => void;
@@ -65,6 +67,18 @@ const HailtoolsVoice: React.FC<HailtoolsVoiceProps> = ({ navigate, t }) => {
       setStatus('Erro: Chave API não encontrada');
       return;
     }
+
+    let userName = "Usuário";
+    let sentDocs: string[] = [];
+    if (auth.currentUser) {
+      const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        userName = data.displayName || "Usuário";
+        sentDocs = data.sentDocuments || [];
+      }
+    }
+
     const ai = new GoogleGenAI({ apiKey });
     audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -109,6 +123,50 @@ const HailtoolsVoice: React.FC<HailtoolsVoiceProps> = ({ navigate, t }) => {
           processor.connect(inputCtx.destination);
         },
         onmessage: async (message) => {
+          // Handle tool calls
+          if (message.toolCall) {
+            for (const call of message.toolCall.functionCalls) {
+              if (call.name === 'enviar_catalogo_email') {
+                const { email } = call.args as any;
+                try {
+                  const res = await fetch('/api/send-catalog', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                  });
+                  const data = await res.json();
+                  
+                  // Update Firestore
+                  if (auth.currentUser) {
+                    await updateDoc(doc(db, 'users', auth.currentUser.uid), {
+                      sentDocuments: arrayUnion('catalog', 'eafu')
+                    });
+                  }
+
+                  sessionPromiseRef.current?.then((session) => {
+                    session.sendToolResponse({
+                      functionResponses: [{
+                        id: call.id,
+                        response: { output: data.message || "Catálogo e Apostila EAFU enviados com sucesso." }
+                      }]
+                    });
+                  });
+                  setStatus(`Documentos enviados para: ${email}`);
+                } catch (err) {
+                  console.error("Erro ao enviar catálogo:", err);
+                  sessionPromiseRef.current?.then((session) => {
+                    session.sendToolResponse({
+                      functionResponses: [{
+                        id: call.id,
+                        response: { output: "Erro ao enviar o catálogo. Tente novamente mais tarde." }
+                      }]
+                    });
+                  });
+                }
+              }
+            }
+          }
+
           const parts = message.serverContent?.modelTurn?.parts;
           if (parts && audioContextRef.current) {
             for (const part of parts) {
@@ -170,15 +228,47 @@ const HailtoolsVoice: React.FC<HailtoolsVoiceProps> = ({ navigate, t }) => {
           4. COROMILL MF80/490/390: Fresamento pesado e esquadrejamento com tecnologia Inveio™.
           5. SILENT TOOLS: Adaptadores antivibratórios para grandes balanços em mandrilamento profundo.
           
+          CONHECIMENTO APOSTILA EAFU (Treinamento):
+          - Processo de Escolha: 1. Suporte (geometria), 2. Pastilha (material/geometria), 3. Dados de Corte (ap, fn, Vc).
+          - Fórmulas: n = (Vc * 318) / D; Vf = fz * n * Z.
+          - Materiais ISO: P (Aços), M (Inoxidáveis), K (Ferros Fundidos), N (Metais não-ferrosos), S (Super ligas), H (Aços endurecidos).
+          
           ESPECIALIDADES OFFSHORE:
           - Caldeiraria pesada (ASME VIII, AWS D1.1).
           - Usinagem de materiais CRA (Inconel 625, Duplex).
           - Tolerâncias ISO 286 e acabamentos Ra 0.8 em ranhuras BX/RX.
           
-          POSTURA:
+          CONTEXTO DO USUÁRIO:
+          - Nome: ${userName}
+          - Documentos já enviados: ${sentDocs.join(', ') || 'Nenhum'}
+          
+          REGRAS DE INTERAÇÃO:
           - Sua voz é masculina, tom firme, mentor técnico e extremamente prático.
           - Responda: "Para este canal BX em Inconel, recomendo o CoroCut 2 com grade GC1125 e geometria -TF".
-          - Você é um consultor por voz. Fale de forma clara e objetiva.`
+          - Você é um consultor por voz. Fale de forma clara e objetiva.
+          - SUGESTÃO DE DOCUMENTOS: Ao final da conversa (quando o usuário estiver se despedindo ou o assunto estiver encerrado), se o usuário ainda NÃO recebeu os documentos ('catalog' ou 'eafu'), sugira enviar o Catálogo de Ferramentas e a Apostila de Treinamento EAFU em formato PDF por e-mail.
+          - Se o usuário já recebeu, NÃO sugira novamente, a menos que ele peça explicitamente.
+          - Se o usuário aceitar ou solicitar o envio, peça o e-mail dele e use a ferramenta 'enviar_catalogo_email'.`,
+        tools: [
+          {
+            functionDeclarations: [
+              {
+                name: 'enviar_catalogo_email',
+                description: 'Envia o catálogo técnico e a apostila EAFU da Hailtools em formato PDF para o e-mail informado pelo usuário.',
+                parameters: {
+                  type: Type.OBJECT,
+                  properties: {
+                    email: {
+                      type: Type.STRING,
+                      description: 'O endereço de e-mail do destinatário.'
+                    }
+                  },
+                  required: ['email']
+                }
+              }
+            ]
+          }
+        ]
       }
     });
   };

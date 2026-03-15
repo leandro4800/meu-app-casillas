@@ -20,6 +20,7 @@ service cloud.firestore {
     //   - role: string
     //   - sector: string
     //   - phone: string
+    //   - sentDocuments: list
     //
     // ===============================================================
 
@@ -47,7 +48,8 @@ service cloud.firestore {
              data.uid is string &&
              data.email is string &&
              (!('plan' in data) || data.plan in ['free', 'monthly', 'annual']) &&
-             (!('isDev' in data) || data.isDev is bool);
+             (!('isDev' in data) || data.isDev is bool) &&
+             (!('sentDocuments' in data) || data.sentDocuments is list);
     }
 
     // ===============================================================

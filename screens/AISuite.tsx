@@ -43,6 +43,13 @@ const AISuite: React.FC<AISuiteProps> = ({ navigate, t }) => {
       desc: t.ai_hailtools_desc || "Especialista em ferramentas Sandvik e processos Hailtools",
       icon: 'record_voice_over',
       color: 'border-blue-500/30 text-blue-400 bg-blue-500/5'
+    },
+    {
+      id: 'machining_optimizer',
+      title: "Otimizador de Processos",
+      desc: "Sugestões inteligentes para redução de tempo e aumento de vida útil",
+      icon: 'bolt',
+      color: 'border-emerald-500/30 text-emerald-400 bg-emerald-500/5'
     }
   ];
 

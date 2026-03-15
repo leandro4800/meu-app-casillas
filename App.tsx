@@ -68,6 +68,7 @@ import MediaLab from './screens/MediaLab';
 import DrawingAnalysis from './screens/DrawingAnalysis';
 import Welcome from './screens/Welcome';
 import HailtoolsVoice from './screens/HailtoolsVoice';
+import MachiningOptimizer from './screens/MachiningOptimizer';
 
 import { HAILTOOLS_CATALOG } from './constants';
 import { ToolInsert } from './types';
@@ -370,6 +371,7 @@ export default function App() {
       case 'media_lab': return <MediaLab navigate={navigate} t={t} />;
       case 'drawing_analysis': return <DrawingAnalysis navigate={navigate} t={t} />;
       case 'hailtools_voice': return <HailtoolsVoice navigate={navigate} t={t} />;
+      case 'machining_optimizer': return <MachiningOptimizer onBack={() => navigate('ai_suite')} t={t} />;
       case 'consultant': return <Consultant navigate={navigate} t={t} />;
       case 'ai_agent': return <AIAgent t={t} />;
       case 'profile': return (

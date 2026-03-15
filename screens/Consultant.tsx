@@ -61,13 +61,16 @@ const Consultant: React.FC<{ navigate: (s: Screen) => void; t: any }> = ({ navig
     }
 
     let userName = "Usuário";
+    let userEmail = "";
     let sentDocs: string[] = [];
     if (auth.currentUser) {
       const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
+      userEmail = auth.currentUser.email || "";
       if (userDoc.exists()) {
         const data = userDoc.data();
         userName = data.displayName || "Usuário";
         sentDocs = data.sentDocuments || [];
+        if (!userEmail && data.email) userEmail = data.email;
       }
     }
 
@@ -108,15 +111,17 @@ const Consultant: React.FC<{ navigate: (s: Screen) => void; t: any }> = ({ navig
           
           CONTEXTO DO USUÁRIO:
           - Nome: ${userName}
+          - E-mail vinculado: ${userEmail}
           - Documentos já enviados: ${sentDocs.join(', ') || 'Nenhum'}
           
           POSTURA:
           - Sua voz é masculina (Puck), tom firme e mentor profissional.
           - Responda de forma prática e técnica: "Para essa cota de furação em plano cartesiano, recomendo...".
           - Sempre priorize a precisão dimensional e normas técnicas.
-          - SUGESTÃO DE DOCUMENTOS: Ao final da conversa (quando o usuário estiver se despedindo ou o assunto estiver encerrado), se o usuário ainda NÃO recebeu os documentos ('catalog' ou 'eafu'), sugira enviar o Catálogo de Ferramentas e a Apostila de Treinamento EAFU em formato PDF por e-mail.
+          - SUGESTÃO DE DOCUMENTOS: Ao final da conversa (quando o usuário estiver se despedindo ou o assunto estiver encerrado), se o usuário ainda NÃO recebeu os documentos ('catalog' ou 'eafu'), informe que você enviará o Catálogo de Ferramentas e a Apostila de Treinamento EAFU em formato PDF para o e-mail dele (${userEmail}).
+          - NÃO peça o e-mail, pois você já tem acesso a ele. Apenas confirme que está enviando.
           - Se o usuário já recebeu, NÃO sugira novamente, a menos que ele peça explicitamente.
-          - Se o usuário aceitar ou solicitar o envio, peça o e-mail dele e use a ferramenta 'enviar_catalogo_email'.
+          - Use a ferramenta 'enviar_catalogo_email' passando o e-mail vinculado: ${userEmail}.
           
           CATÁLOGO ATUAL:
           ${catalogContext}
@@ -127,11 +132,11 @@ const Consultant: React.FC<{ navigate: (s: Screen) => void; t: any }> = ({ navig
           tools: [{ functionDeclarations: [
             {
               name: 'enviar_catalogo_email',
-              description: 'Envia o catálogo técnico e a apostila EAFU da Hailtools em formato PDF para o e-mail informado pelo usuário.',
+              description: 'Envia o catálogo técnico e a apostila EAFU da Hailtools em formato PDF para o e-mail vinculado do usuário.',
               parameters: {
                 type: Type.OBJECT,
                 properties: {
-                  email: { type: Type.STRING, description: 'O endereço de e-mail do destinatário.' }
+                  email: { type: Type.STRING, description: 'O endereço de e-mail vinculado do usuário.' }
                 },
                 required: ['email']
               }

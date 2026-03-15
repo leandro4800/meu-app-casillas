@@ -12,6 +12,7 @@ const BottomNav: React.FC<BottomNavProps> = ({ currentScreen, navigate, t }) => 
   const items = [
     { id: 'home', icon: 'home', label: t.home || 'Início' },
     { id: 'ai_suite', icon: 'auto_spark', label: 'Consultor Técnico' },
+    { id: 'hailtools_voice', icon: 'record_voice_over', label: 'Hailtools' },
     { id: 'ai_agent', icon: 'business_center', label: 'Gestão' },
     { id: 'trigonometry', icon: 'architecture', label: t.trig || 'Trig' },
     { id: 'profile', icon: 'person', label: t.profile || 'Perfil' },

@@ -5,7 +5,7 @@ export type Screen =
   | 'checkout' | 'table_threads' | 'table_tolerances' | 'materials'
   | 'tool_library' | 'calc_weight' | 'calc_gears' | 'calc_divider' | 'verifier' | 'micrometer' | 'table_conversion'
   | 'glossary' | 'material_comparison' | 'table_shackles' | 'table_arc'
-  | 'ai_suite' | 'voice_consultant' | 'media_lab' | 'drawing_analysis';
+  | 'ai_suite' | 'voice_consultant' | 'media_lab' | 'drawing_analysis' | 'hailtools_voice';
 
 export type Language = 'pt_BR' | 'en_US' | 'fr_QC' | 'pt_PT';
 

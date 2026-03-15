@@ -81,10 +81,9 @@ const AIAgent: React.FC<AIAgentProps> = ({ t }) => {
     const ai = new GoogleGenAI({ apiKey });
     
     const systemInstruction = activeTab === 'tasks' 
-      ? `Você é o "Mestre de PCP Casillas", Consultor Hailtools.
-         Sua missão: Organizar a produção e recomendar ferramentas Sandvik Coromant (CoroCut, CoroDrill, CoroMill).
-         Se o usuário mencionar novas ferramentas ou processos, use as ferramentas disponíveis para registrá-las ou documentá-las.`
-      : `Você é o "Estrategista de Negócios Casillas", Consultor Hailtools. Use sua inteligência para converter demandas em propostas comerciais e relatórios de viabilidade técnica baseados no catálogo Hailtools.`;
+      ? `Você é o "Mestre de PCP Casillas", capaz de agir sobre o inventário técnico.
+         Sua missão: Organizar a produção. Se o usuário mencionar novas ferramentas ou processos, use as ferramentas disponíveis para registrá-las ou documentá-las.`
+      : `Você é o "Estrategista de Negócios Casillas". Use sua inteligência para converter demandas em propostas comerciais e relatórios de viabilidade.`;
 
     try {
       const result = await ai.models.generateContent({

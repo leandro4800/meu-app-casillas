@@ -32,10 +32,17 @@ const AISuite: React.FC<AISuiteProps> = ({ navigate, t }) => {
     },
     {
       id: 'consultant',
-      title: t.ai_hailtools_title || "Consultor Hailtools",
-      desc: t.ai_hailtools_desc || "Especialista em ferramentas Sandvik e processos Hailtools",
+      title: t.consultant_title || "Engenheiro Casillas",
+      desc: t.consultant_desc || "Consultoria sênior em usinagem e caldeiraria",
       icon: 'engineering',
       color: 'border-emerald-500/30 text-emerald-400 bg-emerald-500/5'
+    },
+    {
+      id: 'hailtools_voice',
+      title: t.ai_hailtools_title || "Consultor Hailtools",
+      desc: t.ai_hailtools_desc || "Especialista em ferramentas Sandvik e processos Hailtools",
+      icon: 'record_voice_over',
+      color: 'border-blue-500/30 text-blue-400 bg-blue-500/5'
     }
   ];
 

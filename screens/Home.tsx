@@ -25,6 +25,7 @@ const Home: React.FC<HomeProps> = ({ user, navigate, t, language, setLanguage })
 
   const mainActions = [
     { id: 'machining_params', icon: 'calculate', title: t.home_calc_title, desc: t.home_calc_desc },
+    { id: 'hailtools_voice', icon: 'record_voice_over', title: t.ai_hailtools_title || "Consultor Hailtools", desc: t.ai_hailtools_desc || "Especialista em ferramentas Sandvik e processos Hailtools" },
     { id: 'verifier', icon: 'table_rows', title: t.home_iso_title, desc: t.home_iso_desc },
     { id: 'table_conversion', icon: 'swap_horiz', title: t.home_conv_title, desc: t.home_conv_desc }
   ];

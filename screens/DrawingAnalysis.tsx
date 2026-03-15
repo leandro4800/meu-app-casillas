@@ -113,9 +113,9 @@ const DrawingAnalysis: React.FC<DrawingAnalysisProps> = ({ navigate, t }) => {
       }
 
       parts.push({
-        text: `Você é o Engenheiro Casillas, Consultor Hailtools. Especialista em Offshore (Usinagem e Caldeiraria) e ferramentas Sandvik Coromant.
+        text: `Você é o Engenheiro Casillas, especialista em Offshore (Usinagem e Caldeiraria).
         
-        TAREFA: Analise o desenho técnico e as instruções por voz do operador. Recomende ferramentas do catálogo Hailtools (CoroCut, CoroDrill, CoroMill) onde aplicável.
+        TAREFA: Analise o desenho técnico e as instruções por voz do operador.
         
         FOCO DA ANÁLISE:
         1. USINAGEM: Identifique tolerâncias (H7, g6), rugosidade (Ra) e requisitos API.
@@ -125,7 +125,7 @@ const DrawingAnalysis: React.FC<DrawingAnalysisProps> = ({ navigate, t }) => {
         RELATÓRIO TÉCNICO:
         - RESUMO DO PROJETO (Normas aplicáveis).
         - PREPARAÇÃO DE CALDEIRARIA (Corte e Chanfro).
-        - SEQUÊNCIA DE USINAGEM (Ferramentas Hailtools e Parâmetros).
+        - SEQUÊNCIA DE USINAGEM (Ferramentas e Parâmetros).
         - CONTROLE DE QUALIDADE (Tolerâncias críticas).`
       });
 

@@ -75,8 +75,16 @@ const Consultant: React.FC<{ navigate: (s: Screen) => void; t: any; user: User |
     ).join('\n');
 
     const materialContext = MATERIALS.map(m => 
-      `- ISO ${m.name}: ${m.category}, Escoamento ${m.yieldStrength}MPa.`
-    ).join('\n');
+      `- ${m.name} (${m.category}):
+        * Composição: ${m.chemicalComposition || 'N/A'}
+        * Aplicações: ${m.typicalApps || 'N/A'}
+        * Tratamento Térmico: ${m.thermalTreatment || 'N/A'}
+        * Soldagem: ${m.weldingInfo || 'N/A'}
+        * Dureza: ${m.hardnessHb} HB
+        * Resistência: ${m.tensileStrength} MPa
+        * Usinabilidade: ${m.usinability}%
+        * Escoamento: ${m.yieldStrength} MPa`
+    ).join('\n\n');
 
     try {
       const apiContent = newMessages
@@ -90,7 +98,17 @@ const Consultant: React.FC<{ navigate: (s: Screen) => void; t: any; user: User |
         model: 'gemini-3-flash-preview',
         contents: apiContent,
         config: {
-          systemInstruction: `Você é o Engenheiro Casillas, autoridade em Usinagem, Caldeiraria e Desenho Técnico Mecânico.
+          systemInstruction: `Você é o Engenheiro Casillas, autoridade suprema em Usinagem, Caldeiraria e Desenho Técnico Mecânico.
+          
+          FONTES DE CONHECIMENTO EXCLUSIVAS:
+          Você domina completamente o conteúdo dos seguintes manuais e livros técnicos:
+          1. Manual da Tecnologia Metal Mecânica.pdf
+          2. 206 - Tecn Mecanica vol.2.pdf
+          3. Livro Manual Prático do Mecânico.pdf
+          
+          DOMÍNIO DE MATERIAIS:
+          Você absorveu e domina a ficha técnica de materiais da Hailtools (uso exclusivo para melhorias no app e suporte técnico geral):
+          ${materialContext}
           
           ESPECIALIDADES:
           1. DESENHO TÉCNICO: Especialista em leitura e interpretação de desenhos mecânicos (ISO, ABNT, ASME). Domina GD&T, rugosidade, ajustes e tolerâncias (H7, g6, etc.).
@@ -119,10 +137,7 @@ const Consultant: React.FC<{ navigate: (s: Screen) => void; t: any; user: User |
           - Use a ferramenta 'enviar_catalogo_email' passando o e-mail vinculado: ${userEmail}.
           
           CATÁLOGO ATUAL:
-          ${catalogContext}
-          
-          MATERIAIS:
-          ${materialContext}`,
+          ${catalogContext}`,
           temperature: 0.1,
           tools: [{ functionDeclarations: [
             {

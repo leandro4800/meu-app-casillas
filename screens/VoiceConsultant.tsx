@@ -2,6 +2,7 @@
 import React, { useState, useRef } from 'react';
 import { GoogleGenAI, Modality } from '@google/genai';
 import { Screen } from '../types';
+import { MATERIALS, HAILTOOLS_CATALOG } from '../constants';
 
 interface VoiceConsultantProps {
   navigate: (s: Screen) => void;
@@ -69,6 +70,15 @@ const VoiceConsultant: React.FC<VoiceConsultantProps> = ({ navigate, t }) => {
       return;
     }
     const ai = new GoogleGenAI({ apiKey });
+    
+    const catalogContext = HAILTOOLS_CATALOG.map(t => 
+      `- ${t.code}: Grade ${t.grade}, Geometria ${t.geometry}. Foco em: ${t.applicationPrimary}.`
+    ).join('\n');
+
+    const materialContext = MATERIALS.map(m => 
+      `- ${m.name} (${m.category}): Dureza ${m.hardnessHb}HB, Resistência ${m.tensileStrength}MPa, Usinabilidade ${m.usinability}%.`
+    ).join('\n');
+
     audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     streamRef.current = stream;
@@ -168,7 +178,22 @@ const VoiceConsultant: React.FC<VoiceConsultantProps> = ({ navigate, t }) => {
             prebuiltVoiceConfig: { voiceName: 'Puck' } 
           } 
         },
-        systemInstruction: 'Você é o Eng. Casillas, um consultor técnico sênior experiente. Sua voz é firme, masculina e confiante. Você domina usinagem, normas API e materiais O&G. Responda de forma direta, técnica e prática, como se estivesse orientando um operador no pé da máquina.'
+        systemInstruction: `Você é o Eng. Casillas, um consultor técnico sênior experiente. Sua voz é firme, masculina e confiante. Você domina usinagem, normas API e materiais O&G.
+          
+          FONTES DE CONHECIMENTO EXCLUSIVAS:
+          Você domina completamente o conteúdo dos seguintes manuais e livros técnicos:
+          1. Manual da Tecnologia Metal Mecânica.pdf
+          2. 206 - Tecn Mecanica vol.2.pdf
+          3. Livro Manual Prático do Mecânico.pdf
+
+          DOMÍNIO DE MATERIAIS (CONHECIMENTO EXCLUSIVO):
+          Você absorveu e domina completamente a ficha técnica de materiais da Hailtools. Use este conhecimento para sugerir melhorias e orientar processos:
+          ${materialContext}
+
+          CATÁLOGO TÉCNICO:
+          ${catalogContext}
+
+          Responda de forma direta, técnica e prática, como se estivesse orientando um operador no pé da máquina.`
       }
     });
   };

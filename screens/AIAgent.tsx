@@ -1,6 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenAI, Type, FunctionDeclaration } from "@google/genai";
+import { MATERIALS } from '../constants';
 
 interface AgentLog {
   id: string;
@@ -80,10 +81,26 @@ const AIAgent: React.FC<AIAgentProps> = ({ t }) => {
 
     const ai = new GoogleGenAI({ apiKey });
     
+    const materialContext = MATERIALS.map(m => 
+      `- ${m.name} (${m.category}): Dureza ${m.hardnessHb}HB, Resistência ${m.tensileStrength}MPa, Usinabilidade ${m.usinability}%.`
+    ).join('\n');
+
     const systemInstruction = activeTab === 'tasks' 
-      ? `Você é o "Mestre de PCP Casillas", capaz de agir sobre o inventário técnico.
-         Sua missão: Organizar a produção. Se o usuário mencionar novas ferramentas ou processos, use as ferramentas disponíveis para registrá-las ou documentá-las.`
-      : `Você é o "Estrategista de Negócios Casillas". Use sua inteligência para converter demandas em propostas comerciais e relatórios de viabilidade.`;
+      ? `Você é o "Mestre de PCP Casillas", autoridade suprema em materiais e inventário técnico.
+         Você domina completamente o conteúdo dos seguintes manuais:
+         1. Manual da Tecnologia Metal Mecânica.pdf
+         2. 206 - Tecn Mecanica vol.2.pdf
+         3. Livro Manual Prático do Mecânico.pdf
+
+         Você domina a ficha técnica de materiais da Hailtools:
+         ${materialContext}
+         
+         Sua missão: Organizar a produção. Use seu conhecimento de materiais para sugerir melhorias nos processos. Se o usuário mencionar novas ferramentas ou processos, use as ferramentas disponíveis para registrá-las ou documentá-las.`
+      : `Você é o "Estrategista de Negócios Casillas". Você domina o conteúdo técnico dos manuais de Metal Mecânica e o Manual Prático do Mecânico.
+         Você domina a ficha técnica de materiais da Hailtools:
+         ${materialContext}
+         
+         Use sua inteligência e conhecimento técnico de materiais para converter demandas em propostas comerciais e relatórios de viabilidade altamente precisos.`;
 
     try {
       const result = await ai.models.generateContent({

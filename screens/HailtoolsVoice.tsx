@@ -4,6 +4,7 @@ import { GoogleGenAI, Modality, Type, FunctionDeclaration } from '@google/genai'
 import { Screen, User } from '../types';
 import { auth, db } from '../firebase';
 import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
+import { MATERIALS, HAILTOOLS_CATALOG } from '../constants';
 
 interface HailtoolsVoiceProps {
   navigate: (s: Screen) => void;
@@ -79,6 +80,11 @@ const HailtoolsVoice: React.FC<HailtoolsVoiceProps> = ({ navigate, t, user }) =>
     }
 
     const ai = new GoogleGenAI({ apiKey });
+
+    const catalogContext = HAILTOOLS_CATALOG.map(t => 
+      `- ${t.code}: Grade ${t.grade}, Geometria ${t.geometry}. Foco em: ${t.applicationPrimary}.`
+    ).join('\n');
+
     audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     streamRef.current = stream;
@@ -243,6 +249,9 @@ const HailtoolsVoice: React.FC<HailtoolsVoiceProps> = ({ navigate, t, user }) =>
         },
         systemInstruction: `Você é o Consultor Hailtools, autoridade máxima em ferramentas Sandvik Coromant e processos de usinagem Hailtools.
           
+          CATÁLOGO TÉCNICO HAILTOOLS:
+          ${catalogContext}
+          
           CONHECIMENTOS ESPECÍFICOS HAILTOOLS:
           1. COROCUT 2: Sistema de alta rigidez para canais, corte e perfilamento. Foco em ranhuras de vedação API.
           2. COROTHREAD 266: Estabilidade extrema com iLock™ para roscas offshore (API, NPT).
@@ -272,7 +281,7 @@ const HailtoolsVoice: React.FC<HailtoolsVoiceProps> = ({ navigate, t, user }) =>
           - FOCO EM OTIMIZAÇÃO: Sugira ativamente otimizações de processo (redução de vibração, aumento de produtividade, economia de energia).
           - SUGESTÃO DE DOCUMENTOS: Ao final da conversa (quando o usuário estiver se despedindo ou o assunto estiver encerrado), se o usuário ainda NÃO recebeu os documentos ('catalog' ou 'eafu'), informe que você enviará o Catálogo de Ferramentas e a Apostila de Treinamento EAFU em formato PDF para o e-mail dele (${userEmail}).
           - NÃO peça o e-mail, pois você já tem acesso a ele. Apenas confirme que está enviando.
-          - Se o usuário já recebeu, NÃO sugira novamente, a menos que ele peça explicitamente.
+          - Se o usuário já recebeu, NÃO sugira novamente, a menos que ele pede explicitamente.
           - Use a ferramenta 'enviar_catalogo_email' passando o e-mail vinculado: ${userEmail}.`,
         tools: [
           {

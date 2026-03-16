@@ -162,6 +162,11 @@ export const translations: Record<Language, any> = {
     veo_key_error: "Para gerar vídeos, é necessário vincular uma chave API de um projeto com faturamento.",
     video_gen_error: "Erro ao processar vídeo. Tente um prompt mais curto.",
     export_whatsapp: "Exportar para WhatsApp",
+    chemical_composition: "Composição Química",
+    typical_apps: "Aplicações Típicas",
+    thermal_treatment: "Tratamento Térmico",
+    welding_info: "Informações de Soldagem",
+    close_details: "Fechar Detalhes",
   },
   en_US: {
     unit: 'in',
@@ -323,6 +328,11 @@ export const translations: Record<Language, any> = {
     veo_key_error: "To generate videos, you must link an API key from a project with billing.",
     video_gen_error: "Error processing video. Try a shorter prompt.",
     export_whatsapp: "Export to WhatsApp",
+    chemical_composition: "Chemical Composition",
+    typical_apps: "Typical Applications",
+    thermal_treatment: "Thermal Treatment",
+    welding_info: "Welding Information",
+    close_details: "Close Details",
   },
   fr_QC: {
     unit: 'po',

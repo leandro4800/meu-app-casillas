@@ -47,6 +47,10 @@ export interface MaterialData {
   carbonContent: string;
   usinability: number;
   color: string;
+  chemicalComposition?: string;
+  typicalApps?: string;
+  thermalTreatment?: string;
+  weldingInfo?: string;
 }
 
 export interface ToolInsert {

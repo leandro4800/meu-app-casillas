@@ -15,6 +15,7 @@ const HailtoolsVoice: React.FC<HailtoolsVoiceProps> = ({ navigate, t, user }) =>
   const [isActive, setIsActive] = useState(false);
   const [status, setStatus] = useState(t.ai_hailtools_title || 'Consultor Hailtools');
   const sessionPromiseRef = useRef<Promise<any> | null>(null);
+  const sessionRef = useRef<any>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const inputCtxRef = useRef<AudioContext | null>(null);
   const processorRef = useRef<ScriptProcessorNode | null>(null);
@@ -82,10 +83,11 @@ const HailtoolsVoice: React.FC<HailtoolsVoiceProps> = ({ navigate, t, user }) =>
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     streamRef.current = stream;
 
-    sessionPromiseRef.current = ai.live.connect({
+    const sessionPromise = ai.live.connect({
       model: 'gemini-2.5-flash-native-audio-preview-09-2025',
       callbacks: {
         onopen: () => {
+          sessionPromise.then(s => { sessionRef.current = s; });
           setIsActive(true);
           setStatus('Consultor Hailtools Ativo');
           const inputCtx = new AudioContext({ sampleRate: 16000 });
@@ -108,14 +110,14 @@ const HailtoolsVoice: React.FC<HailtoolsVoiceProps> = ({ navigate, t, user }) =>
             }
             const base64Data = btoa(binary);
 
-            sessionPromiseRef.current?.then((session) => {
-              session.sendRealtimeInput({ 
+            if (sessionRef.current) {
+              sessionRef.current.sendRealtimeInput({ 
                 media: { 
                   data: base64Data, 
                   mimeType: 'audio/pcm;rate=16000' 
                 } 
               });
-            });
+            }
           };
           source.connect(processor);
           processor.connect(inputCtx.destination);
@@ -129,12 +131,21 @@ const HailtoolsVoice: React.FC<HailtoolsVoiceProps> = ({ navigate, t, user }) =>
               if (call.name === 'enviar_catalogo_email') {
                 const { email } = call.args as any;
                 console.log(`Executing tool 'enviar_catalogo_email' for: ${email}`);
+                setStatus(`Enviando documentos para ${email}...`);
+                
                 try {
+                  // Add a timeout to the fetch call
+                  const controller = new AbortController();
+                  const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
                   const res = await fetch('/api/send-catalog', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email })
+                    body: JSON.stringify({ email }),
+                    signal: controller.signal
                   });
+                  clearTimeout(timeoutId);
+
                   const data = await res.json();
                   console.log("API Response:", data);
                   
@@ -142,34 +153,36 @@ const HailtoolsVoice: React.FC<HailtoolsVoiceProps> = ({ navigate, t, user }) =>
                     throw new Error(data.error || "Erro no servidor");
                   }
 
-                  // Update Firestore
+                  // Update Firestore (non-blocking)
                   if (auth.currentUser) {
-                    await updateDoc(doc(db, 'users', auth.currentUser.uid), {
+                    updateDoc(doc(db, 'users', auth.currentUser.uid), {
                       sentDocuments: arrayUnion('catalog', 'eafu')
-                    });
+                    }).catch(err => console.error("Firestore update error:", err));
                   }
 
-                  sessionPromiseRef.current?.then((session) => {
+                  if (sessionRef.current) {
                     console.log("Sending tool response back to session...");
-                    session.sendToolResponse({
+                    sessionRef.current.sendToolResponse({
                       functionResponses: [{
                         id: call.id,
                         response: { output: data.message || "Catálogo e Apostila EAFU enviados com sucesso." }
                       }]
                     });
-                  });
+                  }
                   setStatus(`Documentos enviados para: ${email}`);
                 } catch (err: any) {
                   console.error("Erro ao enviar catálogo:", err);
-                  sessionPromiseRef.current?.then((session) => {
-                    session.sendToolResponse({
+                  const errorMessage = err.name === 'AbortError' ? "Tempo de resposta excedido" : err.message;
+                  
+                  if (sessionRef.current) {
+                    sessionRef.current.sendToolResponse({
                       functionResponses: [{
                         id: call.id,
-                        response: { output: `Erro ao enviar o catálogo: ${err.message}` }
+                        response: { output: `Erro ao enviar o catálogo: ${errorMessage}` }
                       }]
                     });
-                  });
-                  setStatus(`Erro no envio: ${err.message}`);
+                  }
+                  setStatus(`Erro no envio: ${errorMessage}`);
                 }
               }
             }

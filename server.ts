@@ -166,8 +166,19 @@ async function startServer() {
         const fromAddress = process.env.SMTP_FROM || "onboarding@resend.dev";
         console.log(`[RESEND] Using 'from' address: ${fromAddress}`);
 
+        // Basic validation: if using onboarding@resend.dev, ensure it's not trying to spoof a domain
+        let finalFrom = fromAddress;
+        if (fromAddress !== "onboarding@resend.dev" && !fromAddress.includes("@")) {
+           console.warn("[RESEND] SMTP_FROM seems invalid, falling back to onboarding@resend.dev");
+           finalFrom = "onboarding@resend.dev";
+        }
+        
+        // If the user provided a custom domain but it's not verified, Resend will fail.
+        // We can't check verification here, but we can log it.
+        console.log(`[RESEND] Sending email from ${finalFrom} to ${email}...`);
+
         const { data, error } = await resend.emails.send({
-          from: fromAddress,
+          from: finalFrom,
           to: email,
           subject: "Hailtools - Catálogo de Ferramentas e Apostila EAFU",
           text: "Olá,\n\nConforme solicitado, seguem em anexo o Catálogo de Ferramentas Hailtools e a Apostila de Treinamento EAFU em formato PDF.\n\nAtenciosamente,\nEquipe Hailtools",

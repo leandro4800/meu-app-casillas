@@ -17,6 +17,18 @@ const THREADS_METRIC: ThreadData[] = [
   { nominal: 'M16', pitch: '2.00', drill: '14.00', extDia: '16.00', type: 'métrica' },
   { nominal: 'M20', pitch: '2.50', drill: '17.50', extDia: '20.00', type: 'métrica' },
   { nominal: 'M24', pitch: '3.00', drill: '21.00', extDia: '24.00', type: 'métrica' },
+  { nominal: 'M27', pitch: '3.00', drill: '24.00', extDia: '27.00', type: 'métrica' },
+  { nominal: 'M30', pitch: '3.50', drill: '26.50', extDia: '30.00', type: 'métrica' },
+  { nominal: 'M33', pitch: '3.50', drill: '29.50', extDia: '33.00', type: 'métrica' },
+  { nominal: 'M36', pitch: '4.00', drill: '32.00', extDia: '36.00', type: 'métrica' },
+  { nominal: 'M39', pitch: '4.00', drill: '35.00', extDia: '39.00', type: 'métrica' },
+  { nominal: 'M42', pitch: '4.50', drill: '37.50', extDia: '42.00', type: 'métrica' },
+  { nominal: 'M45', pitch: '4.50', drill: '40.50', extDia: '45.00', type: 'métrica' },
+  { nominal: 'M48', pitch: '5.00', drill: '43.00', extDia: '48.00', type: 'métrica' },
+  { nominal: 'M52', pitch: '5.00', drill: '47.00', extDia: '52.00', type: 'métrica' },
+  { nominal: 'M56', pitch: '5.50', drill: '50.50', extDia: '56.00', type: 'métrica' },
+  { nominal: 'M60', pitch: '5.50', drill: '54.50', extDia: '60.00', type: 'métrica' },
+  { nominal: 'M64', pitch: '6.00', drill: '58.00', extDia: '64.00', type: 'métrica' },
 ];
 
 const THREADS_WHITWORTH: ThreadData[] = [
@@ -32,6 +44,14 @@ const THREADS_WHITWORTH: ThreadData[] = [
   { nominal: '3/4"', tpi: '10', pitch: '2.540', drill: '16.50', extDia: '19.050', type: 'whitworth' },
   { nominal: '7/8"', tpi: '9', pitch: '2.822', drill: '19.25', extDia: '22.225', type: 'whitworth' },
   { nominal: '1"', tpi: '8', pitch: '3.175', drill: '22.00', extDia: '25.400', type: 'whitworth' },
+  { nominal: '1.1/8"', tpi: '7', pitch: '3.628', drill: '24.75', extDia: '28.575', type: 'whitworth' },
+  { nominal: '1.1/4"', tpi: '7', pitch: '3.628', drill: '27.75', extDia: '31.750', type: 'whitworth' },
+  { nominal: '1.3/8"', tpi: '6', pitch: '4.233', drill: '30.50', extDia: '34.925', type: 'whitworth' },
+  { nominal: '1.1/2"', tpi: '6', pitch: '4.233', drill: '33.50', extDia: '38.100', type: 'whitworth' },
+  { nominal: '1.5/8"', tpi: '5', pitch: '5.080', drill: '35.50', extDia: '41.275', type: 'whitworth' },
+  { nominal: '1.3/4"', tpi: '5', pitch: '5.080', drill: '39.00', extDia: '44.450', type: 'whitworth' },
+  { nominal: '1.7/8"', tpi: '4.5', pitch: '5.644', drill: '41.50', extDia: '47.625', type: 'whitworth' },
+  { nominal: '2"', tpi: '4.5', pitch: '5.644', drill: '44.50', extDia: '50.800', type: 'whitworth' },
 ];
 
 const THREADS_UNF: ThreadData[] = [
@@ -46,6 +66,10 @@ const THREADS_UNF: ThreadData[] = [
   { nominal: '3/4"', tpi: '16', pitch: '1.588', drill: '17.50', extDia: '19.050', type: 'unf' },
   { nominal: '7/8"', tpi: '14', pitch: '1.814', drill: '20.50', extDia: '22.225', type: 'unf' },
   { nominal: '1"', tpi: '12', pitch: '2.117', drill: '23.25', extDia: '25.400', type: 'unf' },
+  { nominal: '1.1/8"', tpi: '12', pitch: '2.117', drill: '26.50', extDia: '28.575', type: 'unf' },
+  { nominal: '1.1/4"', tpi: '12', pitch: '2.117', drill: '29.50', extDia: '31.750', type: 'unf' },
+  { nominal: '1.3/8"', tpi: '12', pitch: '2.117', drill: '32.75', extDia: '34.925', type: 'unf' },
+  { nominal: '1.1/2"', tpi: '12', pitch: '2.117', drill: '36.00', extDia: '38.100', type: 'unf' },
 ];
 
 const THREADS_NPT: ThreadData[] = [
@@ -56,6 +80,12 @@ const THREADS_NPT: ThreadData[] = [
   { nominal: '1/2"', tpi: '14', pitch: '1.814', drill: '17.80', extDia: '21.33', type: 'npt' },
   { nominal: '3/4"', tpi: '14', pitch: '1.814', drill: '23.00', extDia: '26.67', type: 'npt' },
   { nominal: '1"', tpi: '11.5', pitch: '2.209', drill: '29.00', extDia: '33.40', type: 'npt' },
+  { nominal: '1.1/4"', tpi: '11.5', pitch: '2.209', drill: '38.10', extDia: '42.16', type: 'npt' },
+  { nominal: '1.1/2"', tpi: '11.5', pitch: '2.209', drill: '44.00', extDia: '48.26', type: 'npt' },
+  { nominal: '2"', tpi: '11.5', pitch: '2.209', drill: '56.00', extDia: '60.33', type: 'npt' },
+  { nominal: '2.1/2"', tpi: '8', pitch: '3.175', drill: '67.00', extDia: '73.03', type: 'npt' },
+  { nominal: '3"', tpi: '8', pitch: '3.175', drill: '83.00', extDia: '88.90', type: 'npt' },
+  { nominal: '4"', tpi: '8', pitch: '3.175', drill: '108.00', extDia: '114.30', type: 'npt' },
 ];
 
 interface ThreadTablesProps {

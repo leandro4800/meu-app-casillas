@@ -6,7 +6,7 @@ import { fileURLToPath } from "url";
 import Stripe from "stripe";
 import nodemailer from "nodemailer";
 import { Resend } from "resend";
-import { ensureDocumentsExist } from "./src/services/pdfService.js";
+import { ensureDocumentsExist } from "./src/services/pdfService.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

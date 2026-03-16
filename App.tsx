@@ -77,6 +77,7 @@ import { GoogleGenAI } from "@google/genai";
 const PERSISTENCE_KEY = 'casillas_v1_auth_session';
 
 export default function App() {
+  console.log("App rendering...");
   const [user, setUser] = useState<User | null>(null);
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
   const [language, setLanguage] = useState<Language>('pt_BR');
@@ -126,6 +127,7 @@ export default function App() {
     let unsubscribeDoc: (() => void) | null = null;
 
     const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser) => {
+      console.log("Auth state changed:", firebaseUser?.email || "No user");
       if (unsubscribeDoc) {
         unsubscribeDoc();
         unsubscribeDoc = null;
@@ -171,6 +173,7 @@ export default function App() {
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
     const initApp = () => {
+      console.log("Initializing app...");
       // Verificar retorno do Stripe
       const urlParams = new URLSearchParams(window.location.search);
       const paymentStatus = urlParams.get('payment');
@@ -229,6 +232,7 @@ export default function App() {
       }
       
       setIsReady(true);
+      console.log("App ready.");
     };
     initApp();
 

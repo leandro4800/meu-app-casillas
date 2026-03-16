@@ -87,6 +87,7 @@ const HailtoolsVoice: React.FC<HailtoolsVoiceProps> = ({ navigate, t, user }) =>
       model: 'gemini-2.5-flash-native-audio-preview-09-2025',
       callbacks: {
         onopen: () => {
+          sessionPromiseRef.current = sessionPromise;
           sessionPromise.then(s => { sessionRef.current = s; });
           setIsActive(true);
           setStatus('Consultor Hailtools Ativo');

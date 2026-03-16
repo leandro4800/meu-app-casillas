@@ -146,20 +146,28 @@ async function startServer() {
 
   app.post("/api/send-catalog", async (req, res) => {
     const { email } = req.body;
+    console.log(`[API] Request to send catalog to: ${email}`);
+    console.log(`[API] RESEND_API_KEY present: ${!!process.env.RESEND_API_KEY}`);
+    
     if (!email) return res.status(400).json({ error: "Email required" });
     
     try {
       const { catalogPath, eafuPath } = await ensureDocumentsExist();
+      console.log(`[API] Documents paths: ${catalogPath}, ${eafuPath}`);
       
       // Try Resend first if API key is present
       if (process.env.RESEND_API_KEY) {
+        console.log(`[RESEND] API Key found. Attempting send to: ${email}`);
         const resend = new Resend(process.env.RESEND_API_KEY);
         
         const catalogBuffer = await fs.promises.readFile(catalogPath);
         const eafuBuffer = await fs.promises.readFile(eafuPath);
 
-        await resend.emails.send({
-          from: process.env.SMTP_FROM || "onboarding@resend.dev",
+        const fromAddress = process.env.SMTP_FROM || "onboarding@resend.dev";
+        console.log(`[RESEND] Using 'from' address: ${fromAddress}`);
+
+        const { data, error } = await resend.emails.send({
+          from: fromAddress,
           to: email,
           subject: "Hailtools - Catálogo de Ferramentas e Apostila EAFU",
           text: "Olá,\n\nConforme solicitado, seguem em anexo o Catálogo de Ferramentas Hailtools e a Apostila de Treinamento EAFU em formato PDF.\n\nAtenciosamente,\nEquipe Hailtools",
@@ -175,11 +183,17 @@ async function startServer() {
           ]
         });
 
-        console.log(`Email sent successfully via Resend to: ${email}`);
+        if (error) {
+          console.error("[RESEND] API Error:", error);
+          throw new Error(`Resend Error: ${error.message}`);
+        }
+
+        console.log(`[RESEND] Email sent successfully. ID: ${data?.id}`);
         return res.json({ success: true, message: `Catálogo e Apostila EAFU enviados com sucesso para ${email} (via Resend)` });
       }
 
       // Fallback to SMTP
+      console.log("[SMTP] Falling back to SMTP or Simulation...");
       const smtpConfig = {
         host: process.env.SMTP_HOST,
         port: parseInt(process.env.SMTP_PORT || "587"),

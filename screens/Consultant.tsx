@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { CASILLAS_CONSULTANT_IMAGE, HAILTOOLS_CATALOG, MATERIALS } from '../constants';
-import { Screen } from '../types';
+import { Screen, User } from '../types';
 import { GoogleGenAI, Type, FunctionDeclaration } from "@google/genai";
 import { auth, db } from '../firebase';
 import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
@@ -12,7 +12,7 @@ interface ChatMessage {
   isStreaming?: boolean;
 }
 
-const Consultant: React.FC<{ navigate: (s: Screen) => void; t: any }> = ({ navigate, t }) => {
+const Consultant: React.FC<{ navigate: (s: Screen) => void; t: any; user: User | null }> = ({ navigate, t, user }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([
     { 
       role: 'casillas', 
@@ -60,18 +60,12 @@ const Consultant: React.FC<{ navigate: (s: Screen) => void; t: any }> = ({ navig
       return;
     }
 
-    let userName = "Usuário";
-    let userEmail = "";
-    let sentDocs: string[] = [];
-    if (auth.currentUser) {
-      const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
+    let userName = user?.displayName || "Usuário";
+    let userEmail = user?.email || "";
+    let sentDocs: string[] = (user as any)?.sentDocuments || [];
+
+    if (!userEmail && auth.currentUser) {
       userEmail = auth.currentUser.email || "";
-      if (userDoc.exists()) {
-        const data = userDoc.data();
-        userName = data.displayName || "Usuário";
-        sentDocs = data.sentDocuments || [];
-        if (!userEmail && data.email) userEmail = data.email;
-      }
     }
 
     const ai = new GoogleGenAI({ apiKey });
@@ -150,25 +144,30 @@ const Consultant: React.FC<{ navigate: (s: Screen) => void; t: any }> = ({ navig
         for (const fc of response.functionCalls) {
           if (fc.name === 'enviar_catalogo_email') {
             const { email } = fc.args as any;
-            try {
-              const res = await fetch('/api/send-catalog', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email })
-              });
-              const data = await res.json();
-
-              // Update Firestore
-              if (auth.currentUser) {
-                await updateDoc(doc(db, 'users', auth.currentUser.uid), {
-                  sentDocuments: arrayUnion('catalog', 'eafu')
+              try {
+                const res = await fetch('/api/send-catalog', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ email })
                 });
-              }
+                const data = await res.json();
 
-              setMessages(prev => [...prev, { role: 'casillas', text: `[SISTEMA]: ${data.message || "Catálogo e Apostila EAFU enviados com sucesso."}` }]);
-            } catch (err) {
-              console.error("Erro ao enviar catálogo:", err);
-            }
+                if (!res.ok) {
+                  throw new Error(data.error || "Erro desconhecido no servidor");
+                }
+
+                // Update Firestore
+                if (auth.currentUser) {
+                  await updateDoc(doc(db, 'users', auth.currentUser.uid), {
+                    sentDocuments: arrayUnion('catalog', 'eafu')
+                  });
+                }
+
+                setMessages(prev => [...prev, { role: 'casillas', text: `[SISTEMA]: ${data.message || "Catálogo e Apostila EAFU enviados com sucesso."}` }]);
+              } catch (err: any) {
+                console.error("Erro ao enviar catálogo:", err);
+                setMessages(prev => [...prev, { role: 'casillas', text: `[ERRO]: Não foi possível enviar o e-mail. Detalhes: ${err.message}` }]);
+              }
           }
         }
       }

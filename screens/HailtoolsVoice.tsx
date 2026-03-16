@@ -1,16 +1,17 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenAI, Modality, Type, FunctionDeclaration } from '@google/genai';
-import { Screen } from '../types';
+import { Screen, User } from '../types';
 import { auth, db } from '../firebase';
 import { doc, getDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 
 interface HailtoolsVoiceProps {
   navigate: (s: Screen) => void;
   t: any;
+  user: User | null;
 }
 
-const HailtoolsVoice: React.FC<HailtoolsVoiceProps> = ({ navigate, t }) => {
+const HailtoolsVoice: React.FC<HailtoolsVoiceProps> = ({ navigate, t, user }) => {
   const [isActive, setIsActive] = useState(false);
   const [status, setStatus] = useState(t.ai_hailtools_title || 'Consultor Hailtools');
   const sessionPromiseRef = useRef<Promise<any> | null>(null);
@@ -68,18 +69,12 @@ const HailtoolsVoice: React.FC<HailtoolsVoiceProps> = ({ navigate, t }) => {
       return;
     }
 
-    let userName = "Usuário";
-    let userEmail = "";
-    let sentDocs: string[] = [];
-    if (auth.currentUser) {
-      const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
+    let userName = user?.displayName || "Usuário";
+    let userEmail = user?.email || "";
+    let sentDocs: string[] = (user as any)?.sentDocuments || [];
+
+    if (!userEmail && auth.currentUser) {
       userEmail = auth.currentUser.email || "";
-      if (userDoc.exists()) {
-        const data = userDoc.data();
-        userName = data.displayName || "Usuário";
-        sentDocs = data.sentDocuments || [];
-        if (!userEmail && data.email) userEmail = data.email;
-      }
     }
 
     const ai = new GoogleGenAI({ apiKey });
@@ -126,11 +121,14 @@ const HailtoolsVoice: React.FC<HailtoolsVoiceProps> = ({ navigate, t }) => {
           processor.connect(inputCtx.destination);
         },
         onmessage: async (message) => {
+          console.log("Live API Message:", message);
           // Handle tool calls
           if (message.toolCall) {
+            console.log("Tool call received:", message.toolCall);
             for (const call of message.toolCall.functionCalls) {
               if (call.name === 'enviar_catalogo_email') {
                 const { email } = call.args as any;
+                console.log(`Executing tool 'enviar_catalogo_email' for: ${email}`);
                 try {
                   const res = await fetch('/api/send-catalog', {
                     method: 'POST',
@@ -138,7 +136,12 @@ const HailtoolsVoice: React.FC<HailtoolsVoiceProps> = ({ navigate, t }) => {
                     body: JSON.stringify({ email })
                   });
                   const data = await res.json();
+                  console.log("API Response:", data);
                   
+                  if (!res.ok) {
+                    throw new Error(data.error || "Erro no servidor");
+                  }
+
                   // Update Firestore
                   if (auth.currentUser) {
                     await updateDoc(doc(db, 'users', auth.currentUser.uid), {
@@ -147,6 +150,7 @@ const HailtoolsVoice: React.FC<HailtoolsVoiceProps> = ({ navigate, t }) => {
                   }
 
                   sessionPromiseRef.current?.then((session) => {
+                    console.log("Sending tool response back to session...");
                     session.sendToolResponse({
                       functionResponses: [{
                         id: call.id,
@@ -155,16 +159,17 @@ const HailtoolsVoice: React.FC<HailtoolsVoiceProps> = ({ navigate, t }) => {
                     });
                   });
                   setStatus(`Documentos enviados para: ${email}`);
-                } catch (err) {
+                } catch (err: any) {
                   console.error("Erro ao enviar catálogo:", err);
                   sessionPromiseRef.current?.then((session) => {
                     session.sendToolResponse({
                       functionResponses: [{
                         id: call.id,
-                        response: { output: "Erro ao enviar o catálogo. Tente novamente mais tarde." }
+                        response: { output: `Erro ao enviar o catálogo: ${err.message}` }
                       }]
                     });
                   });
+                  setStatus(`Erro no envio: ${err.message}`);
                 }
               }
             }

@@ -112,28 +112,34 @@ const DrawingAnalysis: React.FC<DrawingAnalysisProps> = ({ navigate, t }) => {
         parts.push({ inlineData: { data: audioBase64, mimeType: 'audio/webm' } });
       }
 
-      parts.push({
-        text: `Você é o Engenheiro Casillas, especialista em desenho técnico mecânico aplicado à usinagem, com profundo conhecimento em normas ISO, ABNT, ASME, GD&T, rugosidade e processos de fabricação (DFM).
+      const systemInstruction = `Você é o Engenheiro Casillas, autoridade suprema em desenho técnico mecânico e usinagem.
         
-        TAREFA: Analise o desenho técnico e as instruções por voz do operador.
-        
-        FOCO DA ANÁLISE:
-        1. COTAS E FUROS: Identifique cotas, focando em furos e diâmetros de furação no plano cartesiano.
-        2. TOLERÂNCIAS E CORTES: Identifique tolerâncias (dimensionais/geométricas), vistas em corte e detalhes.
-        3. ROSCAS: Identifique o tipo de rosca solicitada (M, UNC, NPT, etc.).
-        4. USINAGEM: Sugira processos e ferramentas com base no desenho.
-        
-        RELATÓRIO TÉCNICO:
-        - RESUMO DO PROJETO (Normas e Requisitos).
-        - ANÁLISE DE COTAS E FUROS (Coordenadas e Diâmetros).
-        - TOLERÂNCIAS E ACABAMENTO (GD&T e Rugosidade).
-        - ESPECIFICAÇÃO DE ROSCAS E DETALHES.
-        - RECOMENDAÇÕES DE FABRICAÇÃO (DFM).`
-      });
+        REGRAS CRÍTICAS DE FORMATAÇÃO:
+        - PROIBIDO o uso de símbolos LaTeX ou matemáticos como "$", "\\text{...}", "\\varnothing", "^2", etc.
+        - Use APENAS notação técnica de oficina: "Ø" para diâmetro, "mm" para milímetros, "kg/mm²" para resistência, "30°" para graus.
+        - Exemplo correto: "Ø 100 mm", "Resistência: 55 kg/mm²".
+        - Exemplo incorreto: "$55\\text{ kg/mm}^2$".
+
+        TAREFA DE ANÁLISE:
+        1. ANÁLISE OPERACIONAL: Descreva de forma simples e exata o processo operacional necessário para fabricar a peça do desenho.
+        2. CÁLCULO DE COORDENADAS (TRIGONOMETRIA): Se houver furações em círculo (BCD), você DEVE fornecer as coordenadas cartesianas (X, Y) de cada furo.
+           - Exemplo: Para 6 furos em Ø 100 mm com o 1º furo a 30°:
+             * Raio (R) = 50 mm.
+             * Furo 1 (30°): X = 50 * cos(30°) = 43.30 | Y = 50 * sin(30°) = 25.00
+             * Furo 2 (90°): X = 0.00 | Y = 50.00
+             * ... e assim por diante para todos os furos.
+        3. TOLERÂNCIAS E ROSCAS: Identifique tolerâncias e tipos de rosca (M, UNC, NPT) com clareza.
+
+        ESTRUTURA DO RELATÓRIO:
+        - RESUMO OPERACIONAL (O que deve ser feito).
+        - TABELA DE COORDENADAS X/Y (Para furações circulares).
+        - ESPECIFICAÇÕES TÉCNICAS (Ø, Roscas, Tolerâncias).
+        - RECOMENDAÇÕES DE FERRAMENTAL (Hailtools).`;
 
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
-        contents: { parts }
+        contents: { parts },
+        config: { systemInstruction }
       });
 
       setMessages([{ role: 'casillas', text: response.text }]);
@@ -184,10 +190,18 @@ const DrawingAnalysis: React.FC<DrawingAnalysisProps> = ({ navigate, t }) => {
           parts: [{ text: m.text }]
         }))
       ];
+      const systemInstruction = `Você é o Engenheiro Casillas, autoridade suprema em desenho técnico mecânico e usinagem.
+        
+        REGRAS CRÍTICAS DE FORMATAÇÃO:
+        - PROIBIDO o uso de símbolos LaTeX ou matemáticos como "$", "\\text{...}", "\\varnothing", "^2", etc.
+        - Use APENAS notação técnica de oficina: "Ø" para diâmetro, "mm" para milímetros, "kg/mm²" para resistência, "30°" para graus.
+        
+        TAREFA: Continue a consultoria técnica focando em caldeiraria pesada e usinagem de precisão. Se solicitado cálculos de furação, forneça as coordenadas X/Y exatas.`;
+
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: contents as any,
-        config: { systemInstruction: "Você é o Eng. Casillas, especialista em desenho técnico mecânico e usinagem (ISO, ABNT, ASME, GD&T)." }
+        config: { systemInstruction }
       });
       setMessages([...newMessages, { role: 'casillas', text: response.text }]);
     } catch (e) {

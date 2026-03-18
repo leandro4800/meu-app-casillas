@@ -186,6 +186,12 @@ const VoiceConsultant: React.FC<VoiceConsultantProps> = ({ navigate, t }) => {
           2. 206 - Tecn Mecanica vol.2.pdf
           3. Livro Manual Prático do Mecânico.pdf
 
+          LÓGICA DE FURAÇÃO (MEMÓRIA TÉCNICA):
+          - PONTO ZERO: Horizontal à direita (3 horas).
+          - ÂNGULOS ACUMULATIVOS: Somar ângulos sucessivamente a partir do zero.
+          - REGRA: NÃO gere coordenadas para o ponto zero (0°) se não houver um furo ou operação real nele.
+          - X = R * cos(Σ ang), Y = R * sin(Σ ang).
+
           DOMÍNIO DE MATERIAIS (CONHECIMENTO EXCLUSIVO):
           Você absorveu e domina completamente a ficha técnica de materiais da Hailtools. Use este conhecimento para sugerir melhorias e orientar processos:
           ${materialContext}

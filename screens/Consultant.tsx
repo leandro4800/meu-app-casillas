@@ -105,6 +105,12 @@ const Consultant: React.FC<{ navigate: (s: Screen) => void; t: any; user: User |
           1. Manual da Tecnologia Metal Mecânica.pdf
           2. 206 - Tecn Mecanica vol.2.pdf
           3. Livro Manual Prático do Mecânico.pdf
+
+          LÓGICA DE FURAÇÃO (MEMÓRIA TÉCNICA):
+          - PONTO ZERO: Horizontal à direita (3 horas).
+          - ÂNGULOS ACUMULATIVOS: Somar ângulos sucessivamente a partir do zero.
+          - REGRA: NÃO gere coordenadas para o ponto zero (0°) se não houver um furo ou operação real nele. Comece a tabela apenas a partir do primeiro furo identificado.
+          - X = R * cos(Σ ang), Y = R * sin(Σ ang).
           
           DOMÍNIO DE MATERIAIS:
           Você absorveu e domina a ficha técnica de materiais da Hailtools (uso exclusivo para melhorias no app e suporte técnico geral):

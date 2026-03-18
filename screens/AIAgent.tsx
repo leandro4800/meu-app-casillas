@@ -92,11 +92,23 @@ const AIAgent: React.FC<AIAgentProps> = ({ t }) => {
          2. 206 - Tecn Mecanica vol.2.pdf
          3. Livro Manual Prático do Mecânico.pdf
 
+         LÓGICA DE FURAÇÃO (MEMÓRIA TÉCNICA):
+         - PONTO ZERO: Horizontal à direita (3 horas).
+         - ÂNGULOS ACUMULATIVOS: Somar ângulos sucessivamente a partir do zero.
+         - REGRA: NÃO gere coordenadas para o ponto zero (0°) se não houver um furo ou operação real nele.
+         - X = R * cos(Σ ang), Y = R * sin(Σ ang).
+
          Você domina a ficha técnica de materiais da Hailtools:
          ${materialContext}
          
          Sua missão: Organizar a produção. Use seu conhecimento de materiais para sugerir melhorias nos processos. Se o usuário mencionar novas ferramentas ou processos, use as ferramentas disponíveis para registrá-las ou documentá-las.`
       : `Você é o "Estrategista de Negócios Casillas". Você domina o conteúdo técnico dos manuais de Metal Mecânica e o Manual Prático do Mecânico.
+         
+         LÓGICA DE FURAÇÃO (MEMÓRIA TÉCNICA):
+         - PONTO ZERO: Horizontal à direita (3 horas).
+         - ÂNGULOS ACUMULATIVOS: Somar ângulos sucessivamente a partir do zero.
+         - REGRA: NÃO gere coordenadas para o ponto zero (0°) se não houver um furo ou operação real nele.
+         
          Você domina a ficha técnica de materiais da Hailtools:
          ${materialContext}
          

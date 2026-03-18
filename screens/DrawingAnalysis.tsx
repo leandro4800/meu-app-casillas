@@ -117,24 +117,24 @@ const DrawingAnalysis: React.FC<DrawingAnalysisProps> = ({ navigate, t }) => {
         REGRAS CRÍTICAS DE FORMATAÇÃO:
         - PROIBIDO o uso de símbolos LaTeX ou matemáticos como "$", "\\text{...}", "\\varnothing", "^2", etc.
         - Use APENAS notação técnica de oficina: "Ø" para diâmetro, "mm" para milímetros, "kg/mm²" para resistência, "30°" para graus.
-        - Exemplo correto: "Ø 100 mm", "Resistência: 55 kg/mm²".
-        - Exemplo incorreto: "$55\\text{ kg/mm}^2$".
 
+        LÓGICA DE CÁLCULO DE COORDENADAS (TRIGONOMETRIA):
+        - PONTO ZERO: O referencial 0° (Zero Graus) é SEMPRE a linha horizontal à direita (posição de 3 horas no relógio).
+        - ÂNGULOS ACUMULATIVOS: As coordenadas X e Y devem ser calculadas somando os ângulos sucessivamente a partir do ponto zero.
+        - REGRA DE EXIBIÇÃO: NÃO gere coordenadas para o ponto zero (0°) se não houver um furo ou operação real nele. Comece a tabela apenas a partir do primeiro furo identificado.
+        - FÓRMULAS: 
+          * X = Raio * cos(Soma dos Ângulos)
+          * Y = Raio * sin(Soma dos Ângulos)
+        - EXEMPLO DE CÁLCULO (Conforme imagem do usuário):
+          * Furo 1: Ângulo = 16.88° | X = R * cos(16.88°) | Y = R * sin(16.88°)
+          * Furo 2: Ângulo = 16.88° + 11.25° = 28.13° | X = R * cos(28.13°) | Y = R * sin(28.13°)
+          * Furo 3: Ângulo = 28.13° + 22.50° = 50.63° | X = R * cos(50.63°) | Y = R * sin(50.63°)
+        
         TAREFA DE ANÁLISE:
-        1. ANÁLISE OPERACIONAL: Descreva de forma simples e exata o processo operacional necessário para fabricar a peça do desenho.
-        2. CÁLCULO DE COORDENADAS (TRIGONOMETRIA): Se houver furações em círculo (BCD), você DEVE fornecer as coordenadas cartesianas (X, Y) de cada furo.
-           - Exemplo: Para 6 furos em Ø 100 mm com o 1º furo a 30°:
-             * Raio (R) = 50 mm.
-             * Furo 1 (30°): X = 50 * cos(30°) = 43.30 | Y = 50 * sin(30°) = 25.00
-             * Furo 2 (90°): X = 0.00 | Y = 50.00
-             * ... e assim por diante para todos os furos.
-        3. TOLERÂNCIAS E ROSCAS: Identifique tolerâncias e tipos de rosca (M, UNC, NPT) com clareza.
-
-        ESTRUTURA DO RELATÓRIO:
-        - RESUMO OPERACIONAL (O que deve ser feito).
-        - TABELA DE COORDENADAS X/Y (Para furações circulares).
-        - ESPECIFICAÇÕES TÉCNICAS (Ø, Roscas, Tolerâncias).
-        - RECOMENDAÇÕES DE FERRAMENTAL (Hailtools).`;
+        1. ANÁLISE OPERACIONAL: Descreva de forma simples e exata o processo operacional necessário.
+        2. TABELA DE COORDENADAS X/Y: Forneça uma tabela clara com: N° do Furo | Ângulo Acumulado | Coordenada X | Coordenada Y.
+        3. ESPECIFICAÇÕES TÉCNICAS: Identifique Ø, Roscas (M, UNC, NPT) e Tolerâncias.
+        4. RECOMENDAÇÕES DE FERRAMENTAL: Sugira ferramentas Hailtools adequadas.`;
 
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
@@ -196,7 +196,13 @@ const DrawingAnalysis: React.FC<DrawingAnalysisProps> = ({ navigate, t }) => {
         - PROIBIDO o uso de símbolos LaTeX ou matemáticos como "$", "\\text{...}", "\\varnothing", "^2", etc.
         - Use APENAS notação técnica de oficina: "Ø" para diâmetro, "mm" para milímetros, "kg/mm²" para resistência, "30°" para graus.
         
-        TAREFA: Continue a consultoria técnica focando em caldeiraria pesada e usinagem de precisão. Se solicitado cálculos de furação, forneça as coordenadas X/Y exatas.`;
+        LÓGICA DE CÁLCULO:
+        - PONTO ZERO: Horizontal à direita (3 horas).
+        - ÂNGULOS ACUMULATIVOS: Somar ângulos a partir do zero.
+        - REGRA: Somente gerar cotas onde houver furações ou operações reais. Se o ponto zero (0°) estiver vazio, não o inclua na tabela.
+        - X = R * cos(Σ ang), Y = R * sin(Σ ang).
+        
+        TAREFA: Continue a consultoria técnica. Se solicitado cálculos de furação, forneça as coordenadas X/Y exatas usando a lógica de ângulos acumulados.`;
 
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',

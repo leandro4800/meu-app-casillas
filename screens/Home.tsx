@@ -76,6 +76,12 @@ const Home: React.FC<HomeProps> = ({ user, navigate, t, language, setLanguage })
       </div>
 
       <div className="relative z-20 flex flex-col items-center pt-12 px-6">
+        <img 
+          src="/logo_casillas.png" 
+          className="size-24 object-contain mb-4 drop-shadow-[0_0_20px_rgba(234,179,8,0.2)]"
+          alt="Casillas Logo"
+          referrerPolicy="no-referrer"
+        />
         <h1 className="text-[#eab308] text-6xl font-black tracking-tighter uppercase italic leading-none mb-1">Casillas</h1>
         <h2 className="text-[#eab308] text-base font-black tracking-[0.2em] uppercase opacity-90 mb-8">{t.app_subtitle}</h2>
 

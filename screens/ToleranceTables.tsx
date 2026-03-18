@@ -20,7 +20,7 @@ const ToleranceTables: React.FC<ToleranceTablesProps> = ({ onBack }) => {
         <button onClick={onBack} className="size-10 flex items-center justify-center text-[#eab308]">
           <span className="material-symbols-outlined">arrow_back</span>
         </button>
-        <h1 className="text-white font-black text-sm uppercase tracking-widest">Tabelas ISO/ABNT</h1>
+        <h1 className="text-white font-black text-sm uppercase tracking-widest">Tolerâncias ISO</h1>
       </header>
 
       <div className="flex-1 overflow-y-auto p-6 pb-24">

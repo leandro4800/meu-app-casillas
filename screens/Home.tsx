@@ -9,10 +9,10 @@ interface HomeProps {
 
 const Home: React.FC<HomeProps> = ({ navigate }) => {
   const mainActions = [
+    { id: 'tolerance_tables', icon: 'reorder', title: 'Tolerâncias ISO', desc: 'Tabelas ABNT Eixo/Furo' },
+    { id: 'verifier', icon: 'check_circle', title: 'Verificador ISO', desc: 'Cálculo de ajustes e limites' },
     { id: 'machining_params', icon: 'precision_manufacturing', title: 'Cálculos de Usinagem', desc: 'RPM, Avanço e Potência' },
     { id: 'ai_agent', icon: 'psychology', title: 'Consultor IA', desc: 'Especialista em usinagem' },
-    { id: 'tolerance_tables', icon: 'reorder', title: 'Tabelas ISO/ABNT', desc: 'Tolerâncias Eixo/Furo' },
-    { id: 'verifier', icon: 'check_circle', title: 'Verificador ISO', desc: 'Verifique ajustes e limites' },
     { id: 'materials', icon: 'inventory_2', title: 'Materiais', desc: 'Propriedades e usinabilidade' },
     { id: 'thread_tables', icon: 'reorder', title: 'Tabelas de Roscas', desc: 'Métrica, UNC, UNF, BSP, NPT' }
   ];

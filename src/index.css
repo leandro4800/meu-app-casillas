@@ -1,65 +1,61 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Global Styles */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+@import "tailwindcss";
 
-:root {
-  --bg: #0a0908;
-  --surface: #1c1e22;
-  --accent: #eab308;
-  --accent-hover: #facc15;
-  --text-main: #f3f4f6;
-  --text-muted: #9ca3af;
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
-* {
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
-}
+@layer base {
+  html {
+    font-size: 18px;
+    @media (max-width: 640px) {
+      font-size: 16px;
+    }
+  }
 
-body {
-  background-color: var(--bg);
-  color: var(--text-main);
-  font-family: var(--font-sans);
-  overflow: hidden;
-  height: 100vh;
-  width: 100vw;
-}
+  body {
+    @apply font-sans font-medium text-white bg-[#0a0908];
+    line-height: 1.6;
+    letter-spacing: 0.3px;
+  }
 
-#root {
-  height: 100%;
-  width: 100%;
-}
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-black uppercase italic tracking-tighter;
+    line-height: 1.2;
+  }
 
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
-}
+  h1 { font-size: 2.5rem; } /* ~45px */
+  h2 { font-size: 1.75rem; } /* ~31.5px */
+  h3 { font-size: 1.375rem; } /* ~24.75px */
 
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
+  p, span, div {
+    @apply font-medium;
+  }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(234, 179, 8, 0.2);
-  border-radius: 10px;
-}
+  button, input, select, textarea {
+    @apply font-medium;
+    min-height: 3.5rem; /* ~56px for easy touch */
+  }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(234, 179, 8, 0.4);
-}
+  input[type="text"], input[type="number"], select {
+    @apply bg-[#1c1816] border border-white/10 rounded-2xl px-6 text-white outline-none focus:border-[#eab308]/50 transition-all;
+    font-size: 1.125rem; /* 18px */
+  }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
+  button {
+    @apply active:scale-95 transition-all;
+  }
 
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  /* Custom Scrollbar for better visibility */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(234, 179, 8, 0.2);
+    border-radius: 10px;
+  }
 }

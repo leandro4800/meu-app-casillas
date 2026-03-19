@@ -1,108 +1,112 @@
-
-import React, { useState, useMemo } from 'react';
-import { Screen, Language, User } from '../types';
+import React from 'react';
+import { Screen, User } from '../src/types';
+import { motion } from 'motion/react';
 
 interface HomeProps {
   user: User | null;
   navigate: (screen: Screen) => void;
-  t: any;
-  language: Language;
-  setLanguage: (lang: Language) => void;
 }
 
-const Home: React.FC<HomeProps> = ({ user, navigate, t, language, setLanguage }) => {
-  const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
-
-  const expirationNotice = useMemo(() => {
-    if (!user || user.email === '48mineiro@gmail.com' || !user.expiryDate) return null;
-    const now = new Date();
-    const expiry = new Date(user.expiryDate);
-    const diffTime = expiry.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    if (diffDays <= 5 && diffDays > 0) return { days: diffDays, urgent: diffDays <= 2 };
-    return null;
-  }, [user]);
-
+const Home: React.FC<HomeProps> = ({ navigate }) => {
   const mainActions = [
-    { id: 'machining_params', icon: 'calculate', title: t.home_calc_title, desc: t.home_calc_desc },
-    { id: 'hailtools_voice', icon: 'record_voice_over', title: t.ai_hailtools_title || "Consultor Hailtools", desc: t.ai_hailtools_desc || "Especialista em ferramentas Sandvik e processos Hailtools" },
-    { id: 'verifier', icon: 'table_rows', title: t.home_iso_title, desc: t.home_iso_desc },
-    { id: 'table_conversion', icon: 'swap_horiz', title: t.home_conv_title, desc: t.home_conv_desc }
+    { id: 'tolerance_tables', icon: 'reorder', title: 'Tolerâncias ISO', desc: 'Tabelas ABNT Eixo/Furo' },
+    { id: 'verifier', icon: 'check_circle', title: 'Verificador ISO', desc: 'Cálculo de ajustes e limites' },
+    { id: 'machining_params', icon: 'precision_manufacturing', title: 'Cálculos de Usinagem', desc: 'RPM, Avanço e Potência' },
+    { id: 'ai_agent', icon: 'psychology', title: 'Consultor IA', desc: 'Especialista em usinagem' },
+    { id: 'materials', icon: 'inventory_2', title: 'Materiais', desc: 'Propriedades e usinabilidade' },
+    { id: 'thread_tables', icon: 'reorder', title: 'Tabelas de Roscas', desc: 'Métrica, UNC, UNF, BSP, NPT' }
   ];
-
-  const languages = [
-    { id: 'pt_BR', flag: '🇧🇷', label: 'Brasil' },
-    { id: 'en_US', flag: '🇺🇸', label: 'English' },
-    { id: 'fr_QC', flag: '🇨🇦', label: 'Québec' },
-    { id: 'pt_PT', flag: '🇵🇹', label: 'Portugal' }
-  ];
-
-  const currentLang = languages.find(l => l.id === language);
 
   return (
-    <div className="flex flex-col min-h-full bg-[#0a0908] relative overflow-y-auto custom-scrollbar">
-      {/* Banner de Expiração */}
-      {expirationNotice && (
-        <div className={`w-full py-4 px-6 flex items-center justify-between border-b ${expirationNotice.urgent ? 'bg-red-600 border-red-500' : 'bg-[#eab308] border-[#eab308]'}`}>
-           <div className="flex items-center gap-3">
-              <span className="material-symbols-outlined text-black font-black text-2xl">warning</span>
-              <p className="text-black font-black text-[10px] uppercase tracking-widest">
-                {t.expires_in || 'Expira em'} {expirationNotice.days} {t.days || 'dias'}
-              </p>
-           </div>
-           <button onClick={() => navigate('checkout')} className="bg-black text-white text-[8px] font-black px-6 py-2.5 rounded-full uppercase tracking-widest shadow-xl">
-             {t.renew || 'Renovar'}
-           </button>
-        </div>
-      )}
-
-      {/* Seletor de Idioma */}
-      <div className="absolute top-4 right-6 z-50">
-        <button onClick={() => setIsLangMenuOpen(!isLangMenuOpen)} className="size-12 rounded-2xl bg-[#1c1e22]/80 backdrop-blur-md border border-[#eab308]/30 flex items-center justify-center shadow-xl">
-          <span className="text-2xl">{currentLang?.flag}</span>
+    <div className="h-full w-full bg-[#0a0908] flex flex-col relative overflow-hidden">
+      {/* Header */}
+      <header className="w-full h-16 px-6 flex items-center justify-between border-b border-white/5 z-20">
+        <button className="size-10 flex items-center justify-center text-[#eab308]">
+          <span className="material-symbols-outlined text-3xl">menu</span>
         </button>
-        {isLangMenuOpen && (
-          <div className="absolute top-14 right-0 w-48 bg-[#1c1e22] border border-white/10 rounded-3xl shadow-2xl overflow-hidden z-[60]">
-               {languages.map(l => (
-                 <button key={l.id} onClick={() => { setLanguage(l.id as Language); setIsLangMenuOpen(false); }} className={`w-full flex items-center gap-4 px-5 py-4 hover:bg-white/5 transition-all ${language === l.id ? 'bg-[#eab308]/10' : ''}`}>
-                    <span className="text-xl">{l.flag}</span>
-                    <span className={`text-[11px] font-black uppercase tracking-wider ${language === l.id ? 'text-[#eab308]' : 'text-gray-400'}`}>
-                      {l.label}
-                    </span>
-                 </button>
-               ))}
-          </div>
-        )}
-      </div>
+        <div className="size-10 rounded-full bg-[#1c1e22] border border-[#eab308]/30 flex items-center justify-center text-[10px] font-black text-[#eab308]">
+          BR
+        </div>
+      </header>
 
-      <div className="relative z-20 flex flex-col items-center pt-12 px-6">
-        <img 
-          src="/logo_casillas.png" 
-          className="size-24 object-contain mb-4 drop-shadow-[0_0_20px_rgba(234,179,8,0.2)]"
-          alt="Casillas Logo"
-          referrerPolicy="no-referrer"
-        />
-        <h1 className="text-[#eab308] text-6xl font-black tracking-tighter uppercase italic leading-none mb-1">Casillas</h1>
-        <h2 className="text-[#eab308] text-base font-black tracking-[0.2em] uppercase opacity-90 mb-8">{t.app_subtitle}</h2>
+      {/* Hero Section */}
+      <div className="flex-1 overflow-y-auto custom-scrollbar px-6 pt-8 pb-24">
+        <div className="flex flex-col items-center text-center mb-12">
+          {/* Logo Frame - Correcting the error reported by the user */}
+          <motion.div 
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="size-48 rounded-[3rem] bg-[#1c1e22] border-4 border-[#eab308] flex items-center justify-center relative shadow-[0_0_50px_rgba(234,179,8,0.2)] mb-8"
+          >
+            <img 
+              src="/logo_casillas.png" 
+              alt="Casillas Logo" 
+              className="size-32 object-contain"
+              referrerPolicy="no-referrer"
+              onError={(e) => {
+                console.error("Logo failed to load");
+                // Fallback if logo fails to load
+                e.currentTarget.src = "https://picsum.photos/seed/casillas/200/200";
+              }}
+            />
+            <div className="absolute inset-0 rounded-[3rem] bg-gradient-to-tr from-[#eab308]/10 to-transparent pointer-events-none"></div>
+          </motion.div>
 
-        <p className="text-gray-300 text-[11px] leading-relaxed max-w-[320px] mx-auto text-center mb-10 font-black uppercase tracking-widest opacity-80">
-          {t.app_desc}
-        </p>
+          <h1 className="text-[#eab308] text-6xl font-black tracking-tighter uppercase italic leading-none mb-2 drop-shadow-2xl">
+            CASILLAS
+          </h1>
+          <h2 className="text-[#eab308] text-sm font-black tracking-[0.2em] uppercase opacity-80 mb-6">
+            FORMULÁRIO TÉCNICO DIGITAL
+          </h2>
+          
+          <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest leading-relaxed max-w-[280px]">
+            ELIMINE CÁLCULOS MANUAIS. OBTENHA PRECISÃO ABSOLUTA E DADOS TÉCNICOS EM SEGUNDOS.
+          </p>
+        </div>
 
-        <div className="w-full space-y-6 mb-16">
-          {mainActions.map((action) => (
-            <button key={action.id} onClick={() => navigate(action.id as Screen)} className="w-full bg-[#1c1e22] border border-white/10 rounded-[2rem] p-6 flex items-center gap-6 text-left active:scale-[0.98] transition-all shadow-2xl hover:border-[#eab308]/40 group">
+        {/* Actions Grid */}
+        <div className="grid grid-cols-1 gap-4">
+          {mainActions.map((action, idx) => (
+            <motion.button
+              key={action.id}
+              initial={{ x: -20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: idx * 0.1 }}
+              onClick={() => navigate(action.id as Screen)}
+              className="w-full bg-[#1c1e22] border border-white/5 rounded-[2rem] p-6 flex items-center gap-6 text-left active:scale-[0.98] transition-all shadow-xl hover:border-[#eab308]/30 group"
+            >
               <div className="size-16 rounded-2xl bg-[#252930] flex items-center justify-center text-[#eab308] shrink-0 border border-white/10 group-hover:bg-[#eab308]/20 transition-colors">
                 <span className="material-symbols-outlined text-4xl">{action.icon}</span>
               </div>
               <div className="flex-1">
-                <p className="text-white font-black text-base tracking-tight leading-none">{action.title}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-white font-black text-base tracking-tight leading-none">{action.title}</p>
+                  {(action.id === 'tolerance_tables' || action.id === 'verifier') && (
+                    <span className="bg-[#eab308] text-black text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-tighter">NOVO</span>
+                  )}
+                </div>
                 <p className="text-gray-400 text-[10px] uppercase font-black tracking-widest mt-2">{action.desc}</p>
               </div>
-            </button>
+            </motion.button>
           ))}
         </div>
       </div>
+
+      {/* Bottom Nav */}
+      <nav className="absolute bottom-0 left-0 right-0 h-20 bg-[#0a0908]/80 backdrop-blur-xl border-t border-white/5 px-8 flex items-center justify-between z-30">
+        <button className="flex flex-col items-center gap-1 text-[#eab308]">
+          <span className="material-symbols-outlined text-2xl">home</span>
+          <span className="text-[8px] font-black uppercase tracking-widest">Início</span>
+        </button>
+        <button className="flex flex-col items-center gap-1 text-gray-500">
+          <span className="material-symbols-outlined text-2xl">search</span>
+          <span className="text-[8px] font-black uppercase tracking-widest">Busca</span>
+        </button>
+        <button className="flex flex-col items-center gap-1 text-gray-500">
+          <span className="material-symbols-outlined text-2xl">person</span>
+          <span className="text-[8px] font-black uppercase tracking-widest">Perfil</span>
+        </button>
+      </nav>
     </div>
   );
 };

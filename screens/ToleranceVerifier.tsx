@@ -18,7 +18,7 @@ const ToleranceVerifier: React.FC<ToleranceVerifierProps> = ({ onBack }) => {
     const ranges = ISO_TOLERANCES[type];
     const range = ranges.find(r => d > r.min && d <= r.max);
 
-    if (!range) return { error: 'Diâmetro fora das faixas suportadas (1-250mm)' };
+    if (!range) return { error: 'Diâmetro fora das faixas suportadas (1-1000mm)' };
 
     const tolerance = range.values[toleranceClass];
     if (!tolerance) return { error: `Classe ${toleranceClass} não encontrada para esta faixa.` };
@@ -39,8 +39,8 @@ const ToleranceVerifier: React.FC<ToleranceVerifierProps> = ({ onBack }) => {
   }, [diameter, toleranceClass, type]);
 
   const commonClasses = type === 'holes' 
-    ? ['H6', 'H7', 'H8', 'H9', 'G6', 'G7', 'F7', 'F8', 'E7', 'D8', 'D9', 'J6', 'K6', 'M6']
-    : ['h6', 'h7', 'h8', 'h9', 'g6', 'f7', 'e7', 'd8', 'd9', 'j6', 'k6', 'm6', 'p6'];
+    ? ['H6', 'H7', 'H8', 'H9', 'H10', 'H11', 'G6', 'G7', 'F7', 'F8', 'F9', 'E7', 'E8', 'E9', 'D8', 'D9', 'D10', 'D11', 'JS6', 'JS7', 'J6', 'J7', 'J8', 'J9', 'K6', 'K7', 'M6', 'M7', 'N6', 'P6']
+    : ['h5', 'h6', 'h7', 'h8', 'h9', 'h10', 'h11', 'g6', 'f6', 'f7', 'f8', 'e6', 'e7', 'e8', 'e9', 'd8', 'd9', 'd10', 'js6', 'js7', 'j5', 'j6', 'j7', 'j8', 'k5', 'k6', 'm6', 'm7', 'n6', 'n7', 'p6', 'p7', 'r6', 's6', 's7'];
 
   return (
     <div className="h-full w-full bg-[#0a0908] flex flex-col relative overflow-hidden">
@@ -96,7 +96,7 @@ const ToleranceVerifier: React.FC<ToleranceVerifierProps> = ({ onBack }) => {
 
         <div className="mb-8">
           <label className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-3 block">Sugestões Comuns</label>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-nowrap gap-2 overflow-x-auto pb-4 no-scrollbar">
             {commonClasses.map((cls) => (
               <button
                 key={cls}

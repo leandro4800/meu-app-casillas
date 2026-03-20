@@ -1,154 +1,99 @@
-
 import React, { useState } from 'react';
-import { MATERIALS } from '../constants';
-import { MaterialData } from '../types';
+import { motion } from 'motion/react';
+import { ChevronLeft, Search, Info } from 'lucide-react';
+import { Screen } from '../types';
+import BottomNav from '../components/BottomNav';
+import { materials } from '../data/materials';
 
-interface MaterialsScreenProps {
-  t: any;
+interface MaterialsProps {
+  onBack: () => void;
+  navigate: (screen: Screen) => void;
+  currentScreen: Screen;
 }
 
-const MaterialsScreen: React.FC<MaterialsScreenProps> = ({ t }) => {
-  const [selectedMaterial, setSelectedMaterial] = useState<MaterialData | null>(null);
+const Materials: React.FC<MaterialsProps> = ({ onBack, navigate, currentScreen }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredMaterials = materials.filter(m => 
+    m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    m.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div className="p-5 flex flex-col gap-6 relative">
-      <div className="space-y-1">
-        <h3 className="text-[#eab308] text-2xl font-bold tracking-tight uppercase">{t.materials_hardness || 'Materiais e Dureza'}</h3>
-        <p className="text-gray-500 text-sm">{t.materials_guide || 'Guia técnico para seleção de ferramentas.'}</p>
-      </div>
+    <div className="h-full w-full bg-[#0a0908] flex flex-col relative overflow-hidden">
+      <header className="w-full h-16 px-6 flex items-center gap-4 border-b border-white/5 bg-[#0a0908]/80 backdrop-blur-xl z-20">
+        <button 
+          onClick={onBack} 
+          className="size-10 flex items-center justify-center text-[#eab308] hover:bg-white/5 rounded-xl transition-colors"
+        >
+          <ChevronLeft size={24} />
+        </button>
+        <h1 className="text-white font-black text-xs uppercase tracking-[0.2em]">Materiais</h1>
+      </header>
 
-      <div className="bg-gradient-to-r from-[#eab308]/20 to-transparent border-l-4 border-[#eab308] p-4 rounded-r-xl">
-        <p className="text-[#eab308] text-xs font-bold uppercase mb-1 tracking-wider">{t.technical_tip || 'Dica Técnica'}</p>
-        <p className="text-sm text-gray-400">{t.hardness_desc || 'Durezas indicadas para o estado de fornecimento padrão (recozido).'}</p>
-      </div>
-
-      <div className="space-y-4">
-        {MATERIALS.map(mat => (
-          <div key={mat.name} className="bg-[#252930] rounded-2xl border border-white/5 overflow-hidden shadow-lg group">
-            <div className="p-4 flex items-center justify-between border-b border-white/5 group-hover:bg-white/5 transition-colors">
-              <div>
-                <span className="text-[10px] font-bold text-[#eab308] uppercase tracking-widest">{mat.category}</span>
-                <h4 className="text-xl font-bold text-white mt-0.5">{mat.name}</h4>
-              </div>
-              <div className="text-right">
-                <span className="text-xl font-bold text-white font-mono">{mat.hardnessHb.split(' ')[0]}</span>
-                <span className="text-[10px] text-gray-500 block uppercase font-bold">HB</span>
-              </div>
-            </div>
-            
-            <div className="p-4 grid grid-cols-2 gap-4 bg-[#121214]/40">
-              <div className="space-y-3">
-                <div>
-                   <p className="text-[10px] text-gray-500 uppercase font-bold tracking-tighter">{t.machinability || 'Usinabilidade'}</p>
-                   <div className="flex items-center gap-2 mt-1">
-                      <div className="h-1.5 flex-1 bg-gray-700 rounded-full overflow-hidden">
-                        <div className="h-full bg-green-500" style={{ width: `${mat.usinability}%` }}></div>
-                      </div>
-                      <span className="text-xs font-bold text-gray-400">{mat.usinability}%</span>
-                   </div>
-                </div>
-                <div>
-                   <p className="text-[10px] text-gray-500 uppercase font-bold tracking-tighter">{t.tensile_strength || 'Resistência Tração'}</p>
-                   <p className="text-sm text-white font-bold">{mat.strength} <span className="text-[10px] text-gray-600 font-medium">kg/mm²</span></p>
-                </div>
-              </div>
-              
-              <div className="flex flex-col justify-end">
-                 <button 
-                  onClick={() => setSelectedMaterial(mat)}
-                  className="w-full py-2.5 rounded-lg border border-[#eab308]/30 text-[#eab308] text-xs font-bold uppercase hover:bg-[#eab308] hover:text-black transition-all"
-                 >
-                    {t.view_details || 'Ver Detalhes'}
-                 </button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Details Modal */}
-      {selectedMaterial && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-[#1c1e22] w-full max-w-lg rounded-3xl border border-white/10 overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-white/5 flex items-center justify-between bg-gradient-to-r from-[#eab308]/10 to-transparent">
-              <div>
-                <span className="text-[10px] font-bold text-[#eab308] uppercase tracking-widest">{selectedMaterial.category}</span>
-                <h4 className="text-2xl font-bold text-white">{selectedMaterial.name}</h4>
-              </div>
-              <button 
-                onClick={() => setSelectedMaterial(null)}
-                className="size-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-white/10 transition-all"
-              >
-                <span className="material-symbols-outlined">close</span>
-              </button>
-            </div>
-
-            <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
-                  <p className="text-[10px] text-gray-500 uppercase font-bold mb-1">{t.hardness || 'Dureza'}</p>
-                  <p className="text-xl font-bold text-white font-mono">{selectedMaterial.hardnessHb}</p>
-                </div>
-                <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
-                  <p className="text-[10px] text-gray-500 uppercase font-bold mb-1">{t.resistance || 'Resistência'}</p>
-                  <p className="text-xl font-bold text-white font-mono">{selectedMaterial.tensileStrength} <span className="text-xs text-gray-500">MPa</span></p>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                {selectedMaterial.chemicalComposition && (
-                  <div className="space-y-1">
-                    <p className="text-[10px] text-[#eab308] uppercase font-bold tracking-widest">{t.chemical_composition || 'Composição Química'}</p>
-                    <p className="text-sm text-gray-300 leading-relaxed">{selectedMaterial.chemicalComposition}</p>
-                  </div>
-                )}
-                
-                {selectedMaterial.typicalApps && (
-                  <div className="space-y-1">
-                    <p className="text-[10px] text-[#eab308] uppercase font-bold tracking-widest">{t.typical_apps || 'Aplicações Típicas'}</p>
-                    <p className="text-sm text-gray-300 leading-relaxed">{selectedMaterial.typicalApps}</p>
-                  </div>
-                )}
-
-                {selectedMaterial.thermalTreatment && (
-                  <div className="space-y-1">
-                    <p className="text-[10px] text-[#eab308] uppercase font-bold tracking-widest">{t.thermal_treatment || 'Tratamento Térmico'}</p>
-                    <p className="text-sm text-gray-300 leading-relaxed">{selectedMaterial.thermalTreatment}</p>
-                  </div>
-                )}
-
-                {selectedMaterial.weldingInfo && (
-                  <div className="space-y-1">
-                    <p className="text-[10px] text-[#eab308] uppercase font-bold tracking-widest">{t.welding_info || 'Informações de Soldagem'}</p>
-                    <p className="text-sm text-gray-300 leading-relaxed">{selectedMaterial.weldingInfo}</p>
-                  </div>
-                )}
-              </div>
-
-              <div className="bg-[#eab308]/5 border border-[#eab308]/20 p-4 rounded-2xl">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-[10px] text-[#eab308] uppercase font-bold tracking-widest">{t.machinability || 'Usinabilidade'}</p>
-                  <span className="text-xs font-bold text-[#eab308]">{selectedMaterial.usinability}%</span>
-                </div>
-                <div className="h-2 bg-black/40 rounded-full overflow-hidden">
-                  <div className="h-full bg-[#eab308]" style={{ width: `${selectedMaterial.usinability}%` }}></div>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-6 bg-[#121214] border-t border-white/5">
-              <button 
-                onClick={() => setSelectedMaterial(null)}
-                className="w-full py-4 rounded-xl bg-[#eab308] text-black font-bold uppercase tracking-widest hover:bg-[#facc15] transition-all active:scale-95"
-              >
-                {t.close_details || 'Fechar Detalhes'}
-              </button>
-            </div>
-          </div>
+      <div className="flex-1 overflow-y-auto p-6 pb-32 custom-scrollbar">
+        <div className="relative mb-6">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
+          <input
+            type="text"
+            placeholder="BUSCAR MATERIAL..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full bg-[#141414] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-white text-xs font-bold focus:border-[#eab308]/50 outline-none transition-all placeholder:text-gray-700 uppercase tracking-widest"
+          />
         </div>
-      )}
+
+        <div className="grid grid-cols-1 gap-4">
+          {filteredMaterials.map((material, idx) => (
+            <motion.div 
+              key={material.name}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: idx * 0.05 }}
+              className="bg-[#141414] rounded-[2rem] border border-white/5 p-6 relative overflow-hidden group"
+            >
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <p className="text-[8px] text-[#eab308] font-black uppercase tracking-widest mb-1">{material.category}</p>
+                  <h3 className="text-white font-black italic text-lg tracking-tight">{material.name}</h3>
+                </div>
+                <div className="size-10 rounded-xl bg-white/[0.03] flex items-center justify-center">
+                  <Info size={18} className="text-gray-600" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div className="flex flex-col">
+                  <span className="text-[7px] font-black text-gray-500 uppercase tracking-widest mb-1">Dureza</span>
+                  <span className="text-[10px] font-bold text-white uppercase">{material.hardness}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[7px] font-black text-gray-500 uppercase tracking-widest mb-1">Usinab.</span>
+                  <span className="text-[10px] font-black text-[#eab308]">{material.machinability}%</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[7px] font-black text-gray-500 uppercase tracking-widest mb-1">Densidade</span>
+                  <span className="text-[10px] font-bold text-white">{material.density} g/cm³</span>
+                </div>
+              </div>
+
+              <div className="mt-4 h-1 w-full bg-white/[0.03] rounded-full overflow-hidden">
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: `${material.machinability}%` }}
+                  className="h-full bg-[#eab308]/30"
+                />
+              </div>
+
+              <div className="absolute -bottom-4 -right-4 size-20 bg-[#eab308]/5 blur-2xl rounded-full group-hover:bg-[#eab308]/10 transition-all" />
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      <BottomNav currentScreen={currentScreen} navigate={navigate} />
     </div>
   );
 };
 
-export default MaterialsScreen;
+export default Materials;

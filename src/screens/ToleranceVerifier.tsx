@@ -1,116 +1,190 @@
-
 import React, { useState, useMemo } from 'react';
+import { motion } from 'motion/react';
+import { ISO_TOLERANCES } from '../data/tolerances';
+import BottomNav from '../components/BottomNav';
+import { Screen } from '../types';
 
-const ISO_TABLE: Record<string, { ranges: number[], values: number[], type: 'hole' | 'shaft' }> = {
-  'H7': { ranges: [0, 3, 6, 10, 18, 30, 50, 80, 120, 180, 250, 315, 400, 500], values: [0, 10, 12, 15, 18, 21, 25, 30, 35, 40, 46, 52, 57, 63], type: 'hole' },
-  'H8': { ranges: [0, 3, 6, 10, 18, 30, 50, 80, 120, 180, 250, 315, 400, 500], values: [0, 14, 18, 22, 27, 33, 39, 46, 54, 63, 72, 81, 89, 97], type: 'hole' },
-  'h6': { ranges: [0, 3, 6, 10, 18, 30, 50, 80, 120, 180, 250, 315, 400, 500], values: [0, 6, 8, 9, 11, 13, 16, 19, 22, 25, 29, 32, 36, 40], type: 'shaft' },
-  'g6': { ranges: [0, 3, 6, 10, 18, 30, 50, 80, 120, 180, 250, 315, 400, 500], values: [2, 4, 5, 6, 7, 9, 10, 12, 14, 15, 17, 18, 20, 22], type: 'shaft' }
-};
-
-interface VerifierProps {
-  t: any;
+interface ToleranceVerifierProps {
+  onBack: () => void;
+  navigate: (screen: Screen) => void;
 }
 
-const Verifier: React.FC<VerifierProps> = ({ t }) => {
-  const [nominalStr, setNominalStr] = useState('50');
-  const [measuredValue, setMeasuredValue] = useState(50);
-  const [isoClass, setIsoClass] = useState('H7');
+const ToleranceVerifier: React.FC<ToleranceVerifierProps> = ({ onBack, navigate }) => {
+  const [diameter, setDiameter] = useState('');
+  const [toleranceClass, setToleranceClass] = useState('');
+  const [type, setType] = useState<'shafts' | 'holes'>('holes');
 
-  const handleNominalChange = (val: string) => {
-    setNominalStr(val);
-    const num = parseFloat(val);
-    if (!isNaN(num)) {
-      setMeasuredValue(num);
-    }
-  };
+  const result = useMemo(() => {
+    const d = parseFloat(diameter);
+    if (isNaN(d) || !toleranceClass) return null;
 
-  const toleranceLimits = useMemo(() => {
-    const nominal = parseFloat(nominalStr);
-    if (isNaN(nominal) || nominal <= 0) return { max: 0, min: 0, devUpper: 0, devLower: 0 };
-    const config = ISO_TABLE[isoClass];
-    let itValue = 0;
-    for (let i = 0; i < config.ranges.length - 1; i++) {
-      if (nominal > config.ranges[i] && nominal <= config.ranges[i+1]) {
-        itValue = config.values[i+1];
-        break;
-      }
-    }
-    const itMm = itValue / 1000;
-    if (config.type === 'hole') return { max: nominal + itMm, min: nominal, devUpper: itMm, devLower: 0 };
-    else {
-      if (isoClass === 'g6') {
-        const fundamental = 0.010; 
-        return { max: nominal - fundamental, min: nominal - fundamental - itMm, devUpper: -fundamental, devLower: -(fundamental + itMm) };
-      }
-      return { max: nominal, min: nominal - itMm, devUpper: 0, devLower: -itMm };
-    }
-  }, [nominalStr, isoClass]);
+    const ranges = ISO_TOLERANCES[type];
+    const range = ranges.find(r => d > r.min && d <= r.max);
 
-  const { max, min, devUpper, devLower } = toleranceLimits;
-  const status = useMemo(() => {
-    if (measuredValue >= (min - 0.0001) && measuredValue <= (max + 0.0001)) return { label: t.approved, color: 'text-green-500', bg: 'bg-green-500/10' };
-    return { label: t.rejected, color: 'text-red-500', bg: 'bg-red-500/10' };
-  }, [measuredValue, min, max, t]);
+    if (!range) return { error: 'Diâmetro fora das faixas suportadas (1-1000mm)' };
 
-  const adjustValue = (stepMm: number) => setMeasuredValue(prev => parseFloat((prev + stepMm).toFixed(3)));
+    const tolerance = range.values[toleranceClass];
+    if (!tolerance) return { error: `Classe ${toleranceClass} não encontrada para esta faixa.` };
+
+    const upperLimit = d + tolerance.upper;
+    const lowerLimit = d + tolerance.lower;
+    const toleranceValue = tolerance.upper - tolerance.lower;
+
+    return {
+      error: null,
+      upper: tolerance.upper,
+      lower: tolerance.lower,
+      upperLimit,
+      lowerLimit,
+      toleranceValue: Math.abs(toleranceValue),
+      range: `${range.min} - ${range.max} mm`
+    };
+  }, [diameter, toleranceClass, type]);
+
+  const commonClasses = type === 'holes' 
+    ? ['H6', 'H7', 'H8', 'H9', 'H10', 'H11', 'G6', 'G7', 'F7', 'F8', 'F9', 'E7', 'E8', 'E9', 'D8', 'D9', 'D10', 'D11', 'JS6', 'JS7', 'J6', 'J7', 'J8', 'J9', 'K6', 'K7', 'M6', 'M7', 'N6', 'P6']
+    : ['h5', 'h6', 'h7', 'h8', 'h9', 'h10', 'h11', 'g6', 'f6', 'f7', 'f8', 'e6', 'e7', 'e8', 'e9', 'd8', 'd9', 'd10', 'js6', 'js7', 'j5', 'j6', 'j7', 'j8', 'k5', 'k6', 'm6', 'm7', 'n6', 'n7', 'p6', 'p7', 'r6', 's6', 's7'];
 
   return (
-    <div className="p-5 flex flex-col gap-6 h-full overflow-y-auto custom-scrollbar pb-32">
-      <div className="space-y-1">
-        <h3 className="text-[#eab308] text-2xl font-bold tracking-tight uppercase">{t.iso_verifier || 'Verificador ISO'}</h3>
-        <p className="text-gray-500 text-xs font-bold uppercase tracking-widest">{t.control || 'Controle'} ({t.unit})</p>
+    <div className="h-full w-full bg-[#0a0908] flex flex-col relative overflow-hidden">
+      <header className="w-full h-16 px-6 flex items-center gap-4 border-b border-white/5 bg-[#0a0908]/80 backdrop-blur-xl z-20">
+        <button onClick={onBack} className="size-10 flex items-center justify-center text-[#eab308] active:scale-90 transition-transform">
+          <span className="material-symbols-outlined">arrow_back</span>
+        </button>
+        <div className="flex flex-col">
+          <h1 className="text-white font-black text-sm uppercase tracking-widest italic">Verificador ISO</h1>
+          <p className="text-[#eab308] text-[8px] font-black uppercase tracking-[0.2em]">Cálculo de Ajustes</p>
+        </div>
+      </header>
+
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-6 pb-32">
+        <div className="flex gap-2 mb-8">
+          <button
+            onClick={() => { setType('holes'); setToleranceClass(''); }}
+            className={`flex-1 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all italic ${
+              type === 'holes' ? 'bg-[#eab308] text-black shadow-lg shadow-[#eab308]/20' : 'bg-white/5 text-gray-500'
+            }`}
+          >
+            Furo (MAI)
+          </button>
+          <button
+            onClick={() => { setType('shafts'); setToleranceClass(''); }}
+            className={`flex-1 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all italic ${
+              type === 'shafts' ? 'bg-[#eab308] text-black shadow-lg shadow-[#eab308]/20' : 'bg-white/5 text-gray-500'
+            }`}
+          >
+            Eixo (min)
+          </button>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <div className="flex flex-col gap-3">
+            <label className="text-[10px] uppercase tracking-[0.3em] text-gray-500 font-black italic ml-2">Diâmetro (mm)</label>
+            <input
+              type="number"
+              value={diameter}
+              onChange={(e) => setDiameter(e.target.value)}
+              placeholder="Ex: 20"
+              className="w-full h-16 bg-[#1c1e22] border border-white/10 rounded-[1.5rem] px-6 text-white font-black italic text-lg focus:border-[#eab308]/50 outline-none transition-all shadow-xl"
+            />
+          </div>
+          <div className="flex flex-col gap-3">
+            <label className="text-[10px] uppercase tracking-[0.3em] text-gray-500 font-black italic ml-2">Classe</label>
+            <input
+              type="text"
+              value={toleranceClass}
+              onChange={(e) => setToleranceClass(e.target.value)}
+              placeholder={type === 'holes' ? 'Ex: H7' : 'Ex: h7'}
+              className="w-full h-16 bg-[#1c1e22] border border-white/10 rounded-[1.5rem] px-6 text-white font-black italic text-lg focus:border-[#eab308]/50 outline-none transition-all shadow-xl"
+            />
+          </div>
+        </div>
+
+        <div className="mb-10">
+          <label className="text-[10px] uppercase tracking-[0.3em] text-gray-500 font-black mb-4 block italic ml-2">Sugestões Comuns</label>
+          <div className="flex flex-nowrap gap-2 overflow-x-auto pb-4 custom-scrollbar">
+            {commonClasses.map((cls) => (
+              <button
+                key={cls}
+                onClick={() => setToleranceClass(cls)}
+                className={`px-5 py-3 rounded-xl text-[10px] font-black italic transition-all border shrink-0 ${
+                  toleranceClass === cls
+                    ? 'bg-[#eab308] border-[#eab308] text-black shadow-lg shadow-[#eab308]/20'
+                    : 'bg-[#1c1e22] border-white/5 text-gray-500'
+                }`}
+              >
+                {cls}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {result && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="space-y-4"
+          >
+            {result.error ? (
+              <div className="p-6 bg-rose-500/10 border border-rose-500/20 rounded-[2rem] text-rose-400 text-[10px] text-center font-black uppercase tracking-widest">
+                {result.error}
+              </div>
+            ) : (
+              <div className="bg-[#1c1e22] rounded-[2.5rem] border border-white/5 p-8 relative overflow-hidden shadow-2xl">
+                <div className="absolute top-0 right-0 w-40 h-40 bg-[#eab308]/5 rounded-full -mr-20 -mt-20 blur-3xl" />
+                
+                <div className="flex justify-between items-start mb-8">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-[0.3em] text-gray-500 font-black mb-2 italic">Resultado</p>
+                    <h2 className="text-4xl font-black italic text-white tracking-tighter">
+                      Ø{diameter} <span className="text-[#eab308]">{toleranceClass}</span>
+                    </h2>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[10px] uppercase tracking-[0.3em] text-gray-500 font-black mb-2 italic">Campo</p>
+                    <p className="text-white font-black text-xs italic">{result.range}</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="p-5 bg-white/5 rounded-2xl border border-white/5">
+                    <p className="text-[9px] uppercase tracking-widest text-gray-500 font-black mb-2 italic">Afast. Superior</p>
+                    <p className={`text-2xl font-black italic ${result.upper! >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                      {result.upper! > 0 ? '+' : ''}{result.upper!.toFixed(3)}
+                    </p>
+                  </div>
+                  <div className="p-5 bg-white/5 rounded-2xl border border-white/5">
+                    <p className="text-[9px] uppercase tracking-widest text-gray-500 font-black mb-2 italic">Afast. Inferior</p>
+                    <p className={`text-2xl font-black italic ${result.lower! >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                      {result.lower! > 0 ? '+' : ''}{result.lower!.toFixed(3)}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="p-6 bg-[#eab308] rounded-2xl text-black">
+                  <div className="flex justify-between items-center mb-3">
+                    <p className="text-[10px] uppercase tracking-widest font-black italic opacity-60">Limite Máximo</p>
+                    <p className="text-lg font-black italic">Ø{result.upperLimit!.toFixed(3)} mm</p>
+                  </div>
+                  <div className="flex justify-between items-center mb-3">
+                    <p className="text-[10px] uppercase tracking-widest font-black italic opacity-60">Limite Mínimo</p>
+                    <p className="text-lg font-black italic">Ø{result.lowerLimit!.toFixed(3)} mm</p>
+                  </div>
+                  <div className="h-px bg-black/10 my-3" />
+                  <div className="flex justify-between items-center">
+                    <p className="text-[10px] uppercase tracking-widest font-black italic opacity-60">Tolerância Total</p>
+                    <p className="text-lg font-black italic">{result.toleranceValue!.toFixed(3)} mm</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </motion.div>
+        )}
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="flex flex-col gap-1">
-          <label className="text-[10px] font-black text-gray-500 uppercase ml-1">{t.nominal} (mm)</label>
-          <input type="number" value={nominalStr} onChange={(e) => handleNominalChange(e.target.value)} className="w-full bg-[#252930] rounded-xl h-14 px-4 text-white font-mono font-black text-lg outline-none" />
-          <p className="text-[9px] text-[#eab308] font-bold mt-1">{(parseFloat(nominalStr) * t.unit_mult).toFixed(t.unit_precision)} {t.unit}</p>
-        </div>
-        <div className="flex flex-col gap-1">
-          <label className="text-[10px] font-black text-gray-500 uppercase ml-1">{t.class}</label>
-          <select value={isoClass} onChange={(e) => setIsoClass(e.target.value)} className="w-full bg-[#252930] rounded-xl h-14 px-4 text-[#eab308] font-black text-lg outline-none">
-            <option value="H7">H7</option><option value="H8">H8</option><option value="h6">h6</option><option value="g6">g6</option>
-          </select>
-        </div>
-      </div>
-
-      <div className="bg-[#1c1e22] p-6 rounded-[32px] border border-white/5 space-y-4 shadow-2xl">
-        <div className="flex justify-between items-center px-1">
-          <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{t.measured} ({t.unit})</label>
-        </div>
-        <div className="flex items-center gap-3">
-           <button onClick={() => adjustValue(-0.001)} className="size-14 bg-[#252930] rounded-2xl flex items-center justify-center text-red-500 active:scale-90 transition-all shadow-lg"><span className="material-symbols-outlined">remove</span></button>
-           <div className="flex-1 flex flex-col items-center">
-              <span className={`text-4xl font-black tabular-nums leading-none ${status.label === t.approved ? 'text-green-500' : 'text-red-500'}`}>
-                {(measuredValue * t.unit_mult).toFixed(t.unit_precision)}
-              </span>
-           </div>
-           <button onClick={() => adjustValue(0.001)} className="size-14 bg-[#252930] rounded-2xl flex items-center justify-center text-green-500 active:scale-90 transition-all shadow-lg"><span className="material-symbols-outlined">add</span></button>
-        </div>
-      </div>
-
-      <div className={`${status.bg} border border-white/5 rounded-[32px] p-6 flex flex-col items-center justify-center shadow-xl`}>
-        <h4 className={`${status.color} text-4xl font-black uppercase tracking-tighter italic`}>{status.label}</h4>
-        
-        <div className="w-full grid grid-cols-3 text-[10px] font-mono mt-8 gap-4 px-2">
-          <div className="flex flex-col items-start bg-black/20 p-3 rounded-2xl border border-white/5">
-            <span className="text-gray-600 font-black uppercase text-[8px] mb-1">MIN</span>
-            <span className="text-red-500 font-black text-[10px]">{(min * t.unit_mult).toFixed(t.unit_precision)}</span>
-          </div>
-          <div className="flex flex-col items-center justify-center">
-            <span className="text-gray-600 font-black uppercase text-[8px] mb-1">NOM</span>
-            <span className="text-white font-black text-[10px]">{(parseFloat(nominalStr) * t.unit_mult).toFixed(t.unit_precision)}</span>
-          </div>
-          <div className="flex flex-col items-end bg-black/20 p-3 rounded-2xl border border-white/5">
-            <span className="text-gray-600 font-black uppercase text-[8px] mb-1">MAX</span>
-            <span className="text-green-500 font-black text-[10px]">{(max * t.unit_mult).toFixed(t.unit_precision)}</span>
-          </div>
-        </div>
-      </div>
+      <BottomNav currentScreen="home" navigate={navigate} />
     </div>
   );
 };
 
-export default Verifier;
+export default ToleranceVerifier;

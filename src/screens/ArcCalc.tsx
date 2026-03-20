@@ -1,244 +1,106 @@
-
-import React, { useState, useMemo } from 'react';
-
-type InputMode = 'raio_corda' | 'arco_raio' | 'corda_flecha';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { ChevronLeft, CircleDot } from 'lucide-react';
+import { Screen } from '../types';
+import BottomNav from '../components/BottomNav';
 
 interface ArcCalcProps {
-  t: any;
+  onBack: () => void;
+  navigate: (screen: Screen) => void;
+  currentScreen: Screen;
 }
 
-const ArcCalc: React.FC<ArcCalcProps> = ({ t }) => {
-  const [activeTab, setActiveTab] = useState<'calc' | 'table'>('calc');
-  const [mode, setMode] = useState<InputMode>('raio_corda');
-  const [val1, setVal1] = useState('100');
-  const [val2, setVal2] = useState('50');
-  const [showToast, setShowToast] = useState(false);
+const ArcCalc: React.FC<ArcCalcProps> = ({ onBack, navigate, currentScreen }) => {
+  const [radius, setRadius] = useState('');
+  const [angle, setAngle] = useState('');
 
-  const results = useMemo(() => {
-    const v1 = parseFloat(val1);
-    const v2 = parseFloat(val2);
-    if (isNaN(v1) || isNaN(v2) || v1 <= 0 || v2 <= 0) return null;
+  const calculate = () => {
+    const r = parseFloat(radius);
+    const a = parseFloat(angle);
+    if (isNaN(r) || isNaN(a)) return null;
 
-    let r = 0, c = 0, f = 0, l = 0, ang = 0;
-
-    if (mode === 'raio_corda') {
-      r = v1; c = v2;
-      if (c > 2 * r) return null;
-      const halfAng = Math.asin(c / (2 * r));
-      ang = (halfAng * 2 * 180) / Math.PI;
-      f = r * (1 - Math.cos(halfAng));
-      l = r * (halfAng * 2);
-    } else if (mode === 'arco_raio') {
-      l = v1; r = v2;
-      const angleRad = l / r;
-      ang = (angleRad * 180) / Math.PI;
-      c = 2 * r * Math.sin(angleRad / 2);
-      f = r * (1 - Math.cos(angleRad / 2));
-    } else if (mode === 'corda_flecha') {
-      c = v1; f = v2;
-      r = (Math.pow(c / 2, 2) + Math.pow(f, 2)) / (2 * f);
-      const halfAng = Math.asin(c / (2 * r));
-      ang = (halfAng * 2 * 180) / Math.PI;
-      l = r * (halfAng * 2);
-    }
-
-    return { r, c, f, l, ang };
-  }, [mode, val1, val2]);
-
-  const formatReport = () => {
-    if (!results) return '';
-    return `*CASILLAS - ${t.arc_arrow_cord || 'ARCO, FLECHA E CORDA'}*\n\n` +
-           `*${t.mode || 'Modo'}:* ${mode.replace('_', ' & ').toUpperCase()}\n` +
-           `*${t.radius || 'Raio'} (r):* ${results.r.toFixed(2)} mm\n` +
-           `*${t.arc || 'Arco'} (l):* ${results.l.toFixed(2)} mm\n` +
-           `*${t.arrow || 'Flecha'} (f):* ${results.f.toFixed(2)} mm\n` +
-           `*${t.cord || 'Corda'} (c):* ${results.c.toFixed(2)} mm\n\n` +
-           `_Gerado via Casillas Digital_`;
+    const angleRad = (a * Math.PI) / 180;
+    return {
+      arcLength: angleRad * r,
+      chordLength: 2 * r * Math.sin(angleRad / 2),
+      area: (angleRad / 2) * r * r
+    };
   };
 
-  const shareWhatsApp = () => window.open(`https://wa.me/?text=${encodeURIComponent(formatReport())}`, '_blank');
-  const handleSave = () => {
-    const history = JSON.parse(localStorage.getItem('casillas_history') || '[]');
-    history.unshift({ date: new Date().toISOString(), type: 'Arco e Flecha', report: formatReport() });
-    localStorage.setItem('casillas_history', JSON.stringify(history.slice(0, 50)));
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 2000);
-  };
+  const result = calculate();
 
   return (
-    <div className="flex flex-col h-full bg-[#161412] text-white relative">
-      {showToast && (
-        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] bg-[#eab308] text-black px-6 py-3 rounded-2xl font-black text-[10px] uppercase shadow-2xl animate-in fade-in slide-in-from-top-4 duration-300">
-           {t.result_saved || 'Resultado Salvo no Histórico'}
+    <div className="h-full w-full bg-[#0a0908] flex flex-col relative overflow-hidden">
+      <header className="w-full h-16 px-6 flex items-center gap-4 border-b border-white/5 bg-[#0a0908]/80 backdrop-blur-xl z-20">
+        <button 
+          onClick={onBack} 
+          className="size-10 flex items-center justify-center text-[#eab308] hover:bg-white/5 rounded-xl transition-colors"
+        >
+          <ChevronLeft size={24} />
+        </button>
+        <h1 className="text-white font-black text-xs uppercase tracking-[0.2em]">Cálculo de Arcos</h1>
+      </header>
+
+      <div className="flex-1 overflow-y-auto p-6 pb-32 custom-scrollbar">
+        <div className="bg-[#141414] rounded-[2.5rem] border border-white/5 p-8 mb-8">
+          <div className="space-y-6">
+            <div>
+              <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-3 block italic">Raio (R) em mm</label>
+              <input
+                type="number"
+                value={radius}
+                onChange={(e) => setRadius(e.target.value)}
+                className="w-full bg-black/20 border border-white/5 rounded-2xl py-4 px-4 text-white text-xs font-bold outline-none focus:border-[#eab308]/50 transition-all"
+                placeholder="Ex: 50"
+              />
+            </div>
+            <div>
+              <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-3 block italic">Ângulo (º)</label>
+              <input
+                type="number"
+                value={angle}
+                onChange={(e) => setAngle(e.target.value)}
+                className="w-full bg-black/20 border border-white/5 rounded-2xl py-4 px-4 text-white text-xs font-bold outline-none focus:border-[#eab308]/50 transition-all"
+                placeholder="Ex: 45"
+              />
+            </div>
+          </div>
         </div>
-      )}
 
-      {/* Sub-Header Tabs */}
-      <div className="px-6 pt-4 shrink-0">
-        <div className="bg-[#1c1e22] p-1.5 rounded-2xl flex gap-1 border border-white/5 shadow-inner">
-          <button 
-            onClick={() => setActiveTab('calc')} 
-            className={`flex-1 py-3 text-[10px] font-black rounded-xl transition-all uppercase tracking-widest ${activeTab === 'calc' ? 'bg-[#eab308] text-black shadow-lg' : 'text-gray-500 hover:text-gray-400'}`}
-          >
-            {t.calculator || 'Calculadora'}
-          </button>
-          <button 
-            onClick={() => setActiveTab('table')} 
-            className={`flex-1 py-3 text-[10px] font-black rounded-xl transition-all uppercase tracking-widest ${activeTab === 'table' ? 'bg-[#eab308] text-black shadow-lg' : 'text-gray-500 hover:text-gray-400'}`}
-          >
-            {t.arrow_table || 'Tabela de Flechas'}
-          </button>
-        </div>
-      </div>
-
-      <div className="flex-1 overflow-y-auto custom-scrollbar px-6 space-y-6 pb-32 pt-6">
-        {activeTab === 'calc' ? (
-          <>
-            {/* Diagrama Blueprint */}
-            <div className="bg-[#12100e] rounded-[32px] h-56 flex flex-col items-center justify-center p-6 relative overflow-hidden shadow-2xl border border-white/5">
-               <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
-                  <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                    <defs><pattern id="arc-blueprint-grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="#eab308" strokeWidth="0.5"/></pattern></defs>
-                    <rect width="100%" height="100%" fill="url(#arc-blueprint-grid)" />
-                  </svg>
-               </div>
-               
-               <svg viewBox="0 0 200 100" className="w-full h-full stroke-[#eab308] fill-none stroke-2 drop-shadow-[0_0_12px_rgba(234,179,8,0.35)]">
-                  {/* O Arco */}
-                  <path d="M 40 85 Q 100 15 160 85" strokeWidth="3" strokeLinecap="round" />
-                  {/* A Corda */}
-                  <line x1="40" y1="85" x2="160" y2="85" strokeOpacity="0.3" strokeDasharray="4 2" />
-                  {/* A Flecha */}
-                  <line x1="100" y1="50" x2="100" y2="85" strokeOpacity="0.5" strokeDasharray="3" />
-                  <path d="M 97 50 L 100 45 L 103 50" strokeOpacity="0.8" />
-               </svg>
-               
-               <div className="absolute bottom-4 left-6 flex items-center gap-2">
-                  <div className="size-1.5 rounded-full bg-[#eab308] animate-pulse"></div>
-                  <span className="text-[8px] font-black text-gray-700 uppercase tracking-[0.3em]">{t.trigonometric_calc || 'Cálculo Trigonométrico'}</span>
-               </div>
-            </div>
-
-            {/* Seletor de Modo de Entrada */}
-            <div className="space-y-3">
-              <p className="text-[#eab308]/60 text-[9px] font-black uppercase tracking-[0.2em] ml-1">{t.input_variables || 'Variáveis de Entrada'}</p>
-              <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-                {(['raio_corda', 'arco_raio', 'corda_flecha'] as InputMode[]).map(m => (
-                  <button 
-                    key={m} 
-                    onClick={() => setMode(m)} 
-                    className={`whitespace-nowrap px-5 py-3 rounded-2xl border transition-all font-black text-[10px] uppercase tracking-widest ${mode === m ? 'bg-[#eab308] text-black border-[#eab308] shadow-lg shadow-[#eab308]/10' : 'bg-[#221e1b] text-gray-500 border-white/5'}`}
-                  >
-                    {m === 'raio_corda' ? `${t.radius} & ${t.cord}` : m === 'arco_raio' ? `${t.arc} & ${t.radius}` : `${t.cord} & ${t.arrow}`}
-                  </button>
-                ))}
+        <AnimatePresence>
+          {result && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="grid grid-cols-1 gap-4"
+            >
+              <div className="bg-[#eab308] rounded-[2rem] p-6 text-black shadow-2xl shadow-[#eab308]/20">
+                <p className="text-black/60 text-[8px] font-black uppercase tracking-widest mb-1">Comprimento do Arco</p>
+                <h3 className="text-3xl font-black italic tracking-tighter">{result.arcLength.toFixed(3)}mm</h3>
               </div>
-            </div>
-
-            {/* Inputs de Dados */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-[9px] font-black text-gray-600 uppercase tracking-widest ml-1">
-                  {mode === 'raio_corda' ? `${t.radius} (R)` : mode === 'arco_raio' ? `${t.arc} (l)` : `${t.cord} (c)`}
-                </label>
-                <div className="relative">
-                  <input 
-                    type="number" 
-                    value={val1} 
-                    onChange={e => setVal1(e.target.value)} 
-                    className="w-full bg-[#1c1e22] border border-white/10 rounded-2xl h-16 px-5 font-mono text-xl text-white outline-none focus:border-[#eab308]/40 transition-all shadow-inner" 
-                  />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] font-black text-gray-700">MM</span>
-                </div>
+              
+              <div className="bg-[#141414] rounded-2xl border border-white/5 p-4 flex justify-between items-center">
+                <span className="text-gray-500 text-[9px] font-black uppercase tracking-widest">Corda</span>
+                <span className="text-white text-xs font-black italic">{result.chordLength.toFixed(3)}mm</span>
               </div>
-              <div className="space-y-2">
-                <label className="text-[9px] font-black text-gray-600 uppercase tracking-widest ml-1">
-                  {mode === 'raio_corda' ? `${t.cord} (c)` : mode === 'arco_raio' ? `${t.radius} (R)` : `${t.arrow} (f)`}
-                </label>
-                <div className="relative">
-                  <input 
-                    type="number" 
-                    value={val2} 
-                    onChange={e => setVal2(e.target.value)} 
-                    className="w-full bg-[#1c1e22] border border-white/10 rounded-2xl h-16 px-5 font-mono text-xl text-white outline-none focus:border-[#eab308]/40 transition-all shadow-inner" 
-                  />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] font-black text-gray-700">MM</span>
-                </div>
+              
+              <div className="bg-[#141414] rounded-2xl border border-white/5 p-4 flex justify-between items-center">
+                <span className="text-gray-500 text-[9px] font-black uppercase tracking-widest">Área do Setor</span>
+                <span className="text-white text-xs font-black italic">{result.area.toFixed(2)}mm²</span>
               </div>
-            </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-            {/* Resultados em Cards Industriais */}
-            <div className="space-y-4">
-               <div className="bg-[#221e1b] rounded-[32px] p-6 border-l-4 border-[#eab308] shadow-2xl group transition-all hover:bg-[#252930]">
-                  <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest mb-2">{t.calculated_arrow || 'Flecha Calculada'} (f)</p>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-5xl font-black text-white tabular-nums tracking-tighter">{results ? results.f.toFixed(3) : '--'}</span>
-                    <span className="text-xl font-black text-gray-700 italic">mm</span>
-                  </div>
-               </div>
-               
-               <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-[#221e1b] p-5 rounded-3xl border border-white/5 shadow-xl">
-                     <p className="text-[9px] font-black text-gray-600 uppercase tracking-tighter">{t.arc_length || 'Comprimento do Arco'}</p>
-                     <p className="text-xl font-black text-[#eab308] mt-1 tabular-nums">{results ? results.l.toFixed(2) : '--'} mm</p>
-                  </div>
-                  <div className="bg-[#221e1b] p-5 rounded-3xl border border-white/5 shadow-xl">
-                     <p className="text-[9px] font-black text-gray-600 uppercase tracking-tighter">{t.calculated_radius || 'Raio Calculado'}</p>
-                     <p className="text-xl font-black text-white mt-1 tabular-nums">{results ? results.r.toFixed(2) : '--'} mm</p>
-                  </div>
-               </div>
-            </div>
-          </>
-        ) : (
-          /* Tabela Técnica Refinada */
-          <div className="bg-[#1c1e22] rounded-[32px] border border-white/5 shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
-             <div className="p-5 border-b border-white/5 bg-[#252930]/50 flex justify-between items-center">
-                <h4 className="text-[#eab308] font-black text-[10px] uppercase tracking-[0.2em]">{t.technical_reference || 'Referência Técnica'} (R=100)</h4>
-                <span className="material-symbols-outlined text-[#eab308] text-xl opacity-30">table_chart</span>
-             </div>
-             <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                   <thead>
-                      <tr className="bg-[#121214]/80 text-[9px] font-black text-gray-600 uppercase tracking-widest">
-                         <th className="p-5 border-b border-white/5">{t.angle || 'Ângulo'} α</th>
-                         <th className="p-5 text-center border-b border-white/5">{t.cord || 'Corda'} (c)</th>
-                         <th className="p-5 text-right border-b border-white/5">{t.arrow || 'Flecha'} (f)</th>
-                      </tr>
-                   </thead>
-                   <tbody className="divide-y divide-white/5">
-                      {[15, 30, 45, 60, 90, 120, 180].map(ang => {
-                        const r = 100;
-                        const rad = (ang * Math.PI) / 180;
-                        const c = 2 * r * Math.sin(rad / 2);
-                        const f = r * (1 - Math.cos(rad / 2));
-                        return (
-                          <tr key={ang} className="hover:bg-white/5 transition-colors group">
-                            <td className="p-5 text-white font-black text-sm">{ang}°</td>
-                            <td className="p-5 text-center text-gray-500 font-mono text-xs">{c.toFixed(3)}</td>
-                            <td className="p-5 text-right text-[#eab308] font-black font-mono text-xs">{f.toFixed(3)}</td>
-                          </tr>
-                        );
-                      })}
-                   </tbody>
-                </table>
-             </div>
-             <div className="p-4 bg-[#121214]/40 text-center">
-                <p className="text-[8px] font-black text-gray-700 uppercase tracking-widest">{t.proportional_values || 'Valores proporcionais ao raio selecionado'}</p>
-             </div>
+        {!result && (
+          <div className="mt-12 text-center opacity-20">
+            <CircleDot size={48} className="mx-auto text-gray-700 mb-4" />
+            <p className="text-gray-600 text-[10px] font-black uppercase tracking-widest">Insira os valores para calcular</p>
           </div>
         )}
       </div>
 
-      {/* Action Bar Flutuante */}
-      <div className="absolute bottom-6 left-6 right-6 flex gap-3 z-40 bg-[#161412]/90 backdrop-blur-xl p-2.5 rounded-[28px] border border-white/5 shadow-2xl">
-         <button onClick={shareWhatsApp} className="size-14 bg-green-500/10 text-green-500 border border-green-500/20 rounded-2xl flex items-center justify-center shadow-lg active:scale-95 transition-all shrink-0">
-            <span className="material-symbols-outlined text-2xl">chat</span>
-         </button>
-         <button onClick={handleSave} className="flex-1 bg-[#eab308] text-black font-black py-4 rounded-2xl shadow-xl flex items-center justify-center gap-3 active:scale-95 transition-all uppercase text-xs tracking-widest">
-            <span className="material-symbols-outlined text-xl font-black">save</span> 
-            {t.save_result || 'Salvar Resultado'}
-         </button>
-      </div>
+      <BottomNav currentScreen={currentScreen} navigate={navigate} />
     </div>
   );
 };

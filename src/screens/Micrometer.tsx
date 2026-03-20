@@ -1,119 +1,102 @@
-
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
+import { ChevronLeft, Ruler } from 'lucide-react';
+import { Screen } from '../types';
+import BottomNav from '../components/BottomNav';
 
 interface MicrometerProps {
-  t: any;
+  onBack: () => void;
+  navigate: (screen: Screen) => void;
+  currentScreen: Screen;
 }
 
-const Micrometer: React.FC<MicrometerProps> = ({ t }) => {
-  const [sleeve, setSleeve] = useState(5.5);
-  const [thimble, setThimble] = useState(21);
-  const [vernier, setVernier] = useState(2);
-  const [showToast, setShowToast] = useState(false);
+const Micrometer: React.FC<MicrometerProps> = ({ onBack, navigate, currentScreen }) => {
+  const [reading, setReading] = useState({ main: '0', thimble: '0', vernier: '0' });
 
-  const finalValue = sleeve + (thimble * 0.01) + (vernier * 0.001);
-
-  const reset = () => {
-    setSleeve(0);
-    setThimble(0);
-    setVernier(0);
-  };
-
-  const sleeveOptions = Array.from({ length: 51 }, (_, i) => i * 0.5); 
-  const thimbleOptions = Array.from({ length: 50 }, (_, i) => i);
-  const vernierOptions = Array.from({ length: 10 }, (_, i) => i);
-
-  const handleSave = () => {
-    const report = `*CASILLAS - LEITURA MICRÔMETRO*\n\n` +
-                   `*Bainha:* ${sleeve.toFixed(3)} mm\n` +
-                   `*Tambor:* ${(thimble * 0.01).toFixed(3)} mm\n` +
-                   `*Nônio:* ${(vernier * 0.001).toFixed(3)} mm\n\n` +
-                   `*RESULTADO FINAL:* ${finalValue.toFixed(3)} mm\n\n` +
-                   `_Simulação Prática Casillas_`;
-    
-    const history = JSON.parse(localStorage.getItem('casillas_history') || '[]');
-    history.unshift({ date: new Date().toISOString(), type: 'Metrologia', report });
-    localStorage.setItem('casillas_history', JSON.stringify(history.slice(0, 50)));
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 2000);
+  const calculateTotal = () => {
+    const main = parseFloat(reading.main) || 0;
+    const thimble = (parseFloat(reading.thimble) || 0) * 0.01;
+    const vernier = (parseFloat(reading.vernier) || 0) * 0.001;
+    return (main + thimble + vernier).toFixed(3);
   };
 
   return (
-    <div className="flex flex-col h-full bg-[#161412] text-white relative">
-      {showToast && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[100] bg-[#eab308] text-black px-6 py-3 rounded-2xl font-black text-xs uppercase shadow-2xl animate-bounce">
-           {t.reading_saved || 'Leitura Salva!'}
-        </div>
-      )}
+    <div className="h-full w-full bg-[#0a0908] flex flex-col relative overflow-hidden">
+      <header className="w-full h-16 px-6 flex items-center gap-4 border-b border-white/5 bg-[#0a0908]/80 backdrop-blur-xl z-20">
+        <button 
+          onClick={onBack} 
+          className="size-10 flex items-center justify-center text-[#eab308] hover:bg-white/5 rounded-xl transition-colors"
+        >
+          <ChevronLeft size={24} />
+        </button>
+        <h1 className="text-white font-black text-xs uppercase tracking-[0.2em]">Simulador de Micrômetro</h1>
+      </header>
 
-      <div className="p-6 bg-[#221e1b]/50 border-b border-white/5 flex flex-col items-center">
-         <div className="w-full flex justify-between items-center mb-4">
-            <div className="flex flex-col">
-               <h2 className="text-white text-xl font-black uppercase tracking-tight">{t.micrometer_reading || 'Leitura de Micrômetro'}</h2>
-               <span className="text-[#eab308] text-[9px] font-black uppercase tracking-widest bg-[#eab308]/10 px-2 py-0.5 rounded border border-[#eab308]/10">{t.practical_mode || 'MODO PRÁTICO'}</span>
-            </div>
-         </div>
-         <div className="w-full h-48 bg-[#161412] rounded-3xl border border-white/5 relative flex items-center justify-center overflow-hidden">
-            <div className="relative flex items-center scale-125">
-               <div className="w-24 h-12 bg-gradient-to-b from-[#2d2622] to-[#221e1b] border border-white/10 rounded-l-md flex items-center relative">
-                  <div className="w-full h-[1px] bg-[#eab308]/40 absolute top-1/2 -translate-y-1/2"></div>
-               </div>
-               <div className="w-16 h-20 bg-gradient-to-b from-[#3a322e] via-[#2d2622] to-[#3a322e] border border-white/10 rounded-md shadow-2xl relative flex items-center justify-center">
-                  <div className="absolute left-0 h-full w-[2px] bg-[#eab308]"></div>
-                  <div className="flex flex-col gap-2 items-center opacity-50">
-                     <span className="text-[10px] text-[#eab308] font-black">{thimble}</span>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
-
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6 pb-40">
-          <div className="bg-[#221e1b] rounded-[32px] p-1 grid grid-cols-3 gap-1 border border-white/5 shadow-2xl relative overflow-hidden">
-            <div className="flex flex-col items-center py-4 rounded-2xl bg-[#161412]/50 relative">
-               <span className="text-[9px] font-black text-[#eab308] uppercase mb-4 tracking-tighter opacity-60">{t.sleeve || 'Bainha'}</span>
-               <div className="h-40 w-full overflow-y-auto no-scrollbar snap-y snap-mandatory flex flex-col items-center">
-                  {sleeveOptions.map(v => (
-                     <button key={v} onClick={() => setSleeve(v)} className={`h-12 shrink-0 flex items-center justify-center text-base font-black transition-all snap-center ${sleeve === v ? 'text-[#eab308] scale-125' : 'text-gray-700 opacity-20'}`}>
-                        {v.toFixed(1)}
-                     </button>
-                  ))}
-               </div>
-            </div>
-            <div className="flex flex-col items-center py-4 rounded-2xl bg-[#161412]/50 relative">
-               <span className="text-[9px] font-black text-[#eab308] uppercase mb-4 tracking-tighter opacity-60">{t.thimble || 'Tambor'}</span>
-               <div className="h-40 w-full overflow-y-auto no-scrollbar snap-y snap-mandatory flex flex-col items-center">
-                  {thimbleOptions.map(v => (
-                     <button key={v} onClick={() => setThimble(v)} className={`h-12 shrink-0 flex items-center justify-center text-base font-black transition-all snap-center ${thimble === v ? 'text-[#eab308] scale-125' : 'text-gray-700 opacity-20'}`}>
-                        {v}
-                     </button>
-                  ))}
-               </div>
-            </div>
-            <div className="flex flex-col items-center py-4 rounded-2xl bg-[#161412]/50 relative">
-               <span className="text-[9px] font-black text-[#eab308] uppercase mb-4 tracking-tighter opacity-60">{t.vernier || 'Nônio'}</span>
-               <div className="h-40 w-full overflow-y-auto no-scrollbar snap-y snap-mandatory flex flex-col items-center">
-                  {vernierOptions.map(v => (
-                     <button key={v} onClick={() => setVernier(v)} className={`h-12 shrink-0 flex items-center justify-center text-base font-black transition-all snap-center ${vernier === v ? 'text-[#eab308] scale-125' : 'text-gray-700 opacity-20'}`}>
-                        {v}
-                     </button>
-                  ))}
-               </div>
+      <div className="flex-1 overflow-y-auto p-6 pb-32 custom-scrollbar">
+        <div className="bg-[#141414] rounded-[2.5rem] border border-white/5 p-8 mb-8">
+          <div className="flex justify-center mb-10">
+            <div className="relative w-full max-w-[280px] h-32 bg-[#1c1e22] rounded-2xl border border-white/5 flex items-center justify-center overflow-hidden">
+              <div className="absolute left-0 w-1/2 h-1 bg-gray-800" />
+              <div className="absolute right-0 w-1/3 h-8 bg-[#252930] border-l-2 border-[#eab308]" />
+              <div className="z-10 text-center">
+                <p className="text-[8px] font-black text-gray-600 uppercase tracking-[0.3em] mb-2">Leitura Atual</p>
+                <h2 className="text-[#eab308] text-4xl font-black italic tracking-tighter">{calculateTotal()}mm</h2>
+              </div>
             </div>
           </div>
 
-         <div className="bg-gradient-to-br from-[#161412] to-black rounded-[40px] p-10 border border-[#eab308]/20 shadow-2xl flex flex-col items-center justify-center">
-            <h4 className="text-7xl font-black text-white tracking-tighter tabular-nums leading-none">
-               {finalValue.toFixed(3)}
-            </h4>
-            <span className="text-2xl font-black text-gray-700 uppercase italic">mm</span>
-         </div>
+          <div className="space-y-6">
+            <div>
+              <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-3 block italic">Escala Principal (0.5mm)</label>
+              <input
+                type="number"
+                step="0.5"
+                value={reading.main}
+                onChange={(e) => setReading({ ...reading, main: e.target.value })}
+                className="w-full bg-black/20 border border-white/5 rounded-2xl py-4 px-4 text-white text-xs font-bold outline-none focus:border-[#eab308]/50 transition-all"
+                placeholder="Ex: 12.5"
+              />
+            </div>
+            <div>
+              <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-3 block italic">Tambor (0.01mm)</label>
+              <input
+                type="number"
+                max="50"
+                value={reading.thimble}
+                onChange={(e) => setReading({ ...reading, thimble: e.target.value })}
+                className="w-full bg-black/20 border border-white/5 rounded-2xl py-4 px-4 text-white text-xs font-bold outline-none focus:border-[#eab308]/50 transition-all"
+                placeholder="Ex: 32"
+              />
+            </div>
+            <div>
+              <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-3 block italic">Nônio (0.001mm)</label>
+              <input
+                type="number"
+                max="10"
+                value={reading.vernier}
+                onChange={(e) => setReading({ ...reading, vernier: e.target.value })}
+                className="w-full bg-black/20 border border-white/5 rounded-2xl py-4 px-4 text-white text-xs font-bold outline-none focus:border-[#eab308]/50 transition-all"
+                placeholder="Ex: 4"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6 bg-[#eab308]/5 rounded-3xl border border-[#eab308]/20">
+          <div className="flex items-start gap-4">
+            <div className="size-10 rounded-xl bg-[#eab308] flex items-center justify-center shrink-0">
+              <Ruler size={20} className="text-black" />
+            </div>
+            <div>
+              <h4 className="text-[#eab308] font-black text-[10px] uppercase tracking-widest mb-1">Como ler</h4>
+              <p className="text-gray-400 text-[9px] font-bold leading-relaxed uppercase tracking-wider">
+                Some a escala principal + a marcação do tambor (x0.01) + o nônio (x0.001) para obter a medida final com precisão milesimal.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="absolute bottom-4 left-4 right-4 flex gap-3 z-50 bg-[#161412]/90 backdrop-blur-lg p-2 rounded-3xl border border-white/5 shadow-2xl">
-         <button onClick={reset} className="flex-1 bg-[#2d2622] text-gray-400 font-black py-4 rounded-2xl flex items-center justify-center gap-2 border border-white/5 active:scale-95 transition-all uppercase text-[10px]">{t.restart || 'Reiniciar'}</button>
-         <button onClick={handleSave} className="flex-[1.5] bg-[#eab308] text-black font-black py-4 rounded-2xl shadow-xl flex items-center justify-center gap-2 active:scale-95 transition-all uppercase text-[10px]">{t.save || 'Salvar'}</button>
-      </div>
+      <BottomNav currentScreen={currentScreen} navigate={navigate} />
     </div>
   );
 };

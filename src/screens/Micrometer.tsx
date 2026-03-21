@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { ChevronLeft, Ruler } from 'lucide-react';
+import { ChevronLeft, Ruler, PlayCircle } from 'lucide-react';
 import { Screen } from '../types';
 import BottomNav from '../components/BottomNav';
+import MicrometerVisualSimulator from '../components/MicrometerVisualSimulator';
 
 interface MicrometerProps {
   onBack: () => void;
@@ -11,6 +12,7 @@ interface MicrometerProps {
 
 const Micrometer: React.FC<MicrometerProps> = ({ onBack, navigate, currentScreen }) => {
   const [reading, setReading] = useState({ main: '0', thimble: '0', vernier: '0' });
+  const [showSimulator, setShowSimulator] = useState(false);
 
   const calculateTotal = () => {
     const main = parseFloat(reading.main) || 0;
@@ -21,6 +23,10 @@ const Micrometer: React.FC<MicrometerProps> = ({ onBack, navigate, currentScreen
 
   return (
     <div className="h-full w-full bg-[#0a0908] flex flex-col relative overflow-hidden">
+      {showSimulator && (
+        <MicrometerVisualSimulator onClose={() => setShowSimulator(false)} />
+      )}
+      
       <header className="w-full h-16 px-6 flex items-center gap-4 border-b border-white/5 bg-[#0a0908]/80 backdrop-blur-xl z-20">
         <button 
           onClick={onBack} 
@@ -32,6 +38,20 @@ const Micrometer: React.FC<MicrometerProps> = ({ onBack, navigate, currentScreen
       </header>
 
       <div className="flex-1 overflow-y-auto p-6 pb-32 custom-scrollbar">
+        {/* Interactive Simulator Button */}
+        <button 
+          onClick={() => setShowSimulator(true)}
+          className="w-full bg-[#eab308] hover:bg-[#d9a307] p-8 rounded-[2.5rem] mb-8 flex items-center justify-between group transition-all active:scale-95 shadow-2xl shadow-[#eab308]/20"
+        >
+          <div className="text-left">
+            <h3 className="text-black font-black text-xl italic tracking-tighter mb-2">Micrômetro: Um simulador interativo para leitura</h3>
+            <p className="text-black/60 text-[10px] font-black uppercase tracking-widest leading-relaxed">Simule a catraca de forma que facilite a leitura na tela para o usuário.</p>
+          </div>
+          <div className="size-16 rounded-full bg-black flex items-center justify-center group-hover:scale-110 transition-transform">
+            <PlayCircle size={32} className="text-[#eab308]" />
+          </div>
+        </button>
+
         <div className="bg-[#141414] rounded-[2.5rem] border border-white/5 p-8 mb-8">
           <div className="flex justify-center mb-10">
             <div className="relative w-full max-w-[280px] h-32 bg-[#1c1e22] rounded-2xl border border-white/5 flex items-center justify-center overflow-hidden">

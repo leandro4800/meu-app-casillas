@@ -1,30 +1,45 @@
 {
-  "name": "casillas-oficial",
+  "name": "casillas-oficial-formulario-tecnico",
   "private": true,
-  "version": "1.0.0",
+  "version": "0.0.0",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leandro4800/meu-app-casillas.git"
+  },
   "scripts": {
-    "dev": "vite",
+    "dev": "tsx server.ts",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "tsc --noEmit"
   },
   "dependencies": {
     "@google/genai": "^1.46.0",
-    "framer-motion": "^11.0.0",
+    "@tailwindcss/vite": "^4.2.1",
+    "express": "^4.21.2",
+    "firebase": "^12.10.0",
     "lucide-react": "^0.454.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-markdown": "^9.0.1"
+    "motion": "^11.11.11",
+    "nodemailer": "^8.0.2",
+    "pdfkit": "^0.18.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "react-markdown": "^9.0.1",
+    "resend": "^6.9.3",
+    "stripe": "^20.4.1",
+    "tailwindcss": "^4.2.1",
+    "vite-plugin-pwa": "^1.2.0"
   },
   "devDependencies": {
-    "@types/react": "^18.3.1",
-    "@types/react-dom": "^18.3.1",
-    "@vitejs/plugin-react": "^4.3.3",
-    "autoprefixer": "^10.4.20",
-    "postcss": "^8.4.47",
-    "tailwindcss": "^3.4.14",
-    "typescript": "^5.6.3",
-    "vite": "^5.4.10",
-    "vite-plugin-pwa": "^0.20.5"
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.14.0",
+    "@types/nodemailer": "^7.0.11",
+    "@types/pdfkit": "^0.17.5",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
   }
 }

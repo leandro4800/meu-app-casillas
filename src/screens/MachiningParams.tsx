@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import BottomNav from '../components/BottomNav';
 import { Screen } from '../types';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 
 const MachiningParams: React.FC<{ onBack: () => void, navigate: (screen: Screen) => void }> = ({ onBack, navigate }) => {
   const [vc, setVc] = useState('');

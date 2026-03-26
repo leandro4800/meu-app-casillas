@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ISO_TOLERANCES } from '../data/tolerances';
 import BottomNav from '../components/BottomNav';
 import { Screen } from '../types';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 
 interface ToleranceTablesProps {
   onBack: () => void;

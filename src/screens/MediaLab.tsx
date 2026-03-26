@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { ChevronLeft, Play, ExternalLink } from 'lucide-react';
 import { Screen } from '../types';
 import BottomNav from '../components/BottomNav';

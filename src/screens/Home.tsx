@@ -1,6 +1,6 @@
 import React from 'react';
 import { Screen, User } from '../types';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import Header from '../components/Header';
 import BottomNav from '../components/BottomNav';
 import ActionCard from '../components/ActionCard';
@@ -17,7 +17,17 @@ const Home: React.FC<HomeProps> = ({ user, navigate }) => {
     { id: 'machining_params', icon: 'precision_manufacturing', title: 'Cálculos Usinagem', desc: 'RPM, Avanço e Potência', isPremium: true },
     { id: 'ai_agent', icon: 'smart_toy', title: 'Consultor IA', desc: 'Especialista em usinagem', isPremium: true },
     { id: 'materials', icon: 'inventory_2', title: 'Materiais', desc: 'Propriedades e usinabilidade', isPremium: true },
-    { id: 'thread_tables', icon: 'reorder', title: 'Tabelas Roscas', desc: 'Métrica, UNC, UNF, BSP, NPT', isPremium: true }
+    { id: 'thread_tables', icon: 'reorder', title: 'Tabelas Roscas', desc: 'Métrica, UNC, UNF, BSP, NPT', isPremium: true },
+    { id: 'weight_calc', icon: 'weight', title: 'Cálculo de Peso', desc: 'Peso de materiais por formato', isPremium: true },
+    { id: 'gear_calc', icon: 'settings', title: 'Cálculo Engrenagens', desc: 'Módulo, dentes e diâmetros', isPremium: true },
+    { id: 'divider_calc', icon: 'rotate_right', title: 'Aparelho Divisor', desc: 'Divisão direta e indireta', isPremium: true },
+    { id: 'arc_calc', icon: 'circle', title: 'Cálculo de Arcos', desc: 'Raio, corda e arco', isPremium: true },
+    { id: 'conversion', icon: 'sync_alt', title: 'Conversão Unidades', desc: 'Pol/mm, dureza e mais', isPremium: false },
+    { id: 'trigonometry', icon: 'architecture', title: 'Trigonometria', desc: 'Seno, cosseno e tangente', isPremium: false },
+    { id: 'shackles', icon: 'anchor', title: 'Cálculo de Manilhas', desc: 'Carga e dimensionamento', isPremium: true },
+    { id: 'drawing_analysis', icon: 'upload_file', title: 'Análise de Desenho', desc: 'IA analisa seu desenho', isPremium: true },
+    { id: 'media_lab', icon: 'play_circle', title: 'Media Lab', desc: 'Vídeos e tutoriais técnicos', isPremium: false },
+    { id: 'glossary', icon: 'book', title: 'Glossário Técnico', desc: 'Termos de mecânica industrial', isPremium: false },
   ];
 
   const userInitials = user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'BR';

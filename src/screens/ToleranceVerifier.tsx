@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { ISO_TOLERANCES } from '../data/tolerances';
 import BottomNav from '../components/BottomNav';
 import { Screen } from '../types';

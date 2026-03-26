@@ -1,57 +1,38 @@
+import { Request, Response } from 'express';
 import Stripe from 'stripe';
 
-const getStripe = () => {
-  const key = process.env.STRIPE_SECRET_KEY;
-  if (!key) return null;
-  return new Stripe(key);
-};
-
-export default async function handler(req: any, res: any) {
-  if (req.method === 'POST') {
-    try {
-      const { plan, email } = req.body;
-      const stripe = getStripe();
-
-      if (!stripe) {
-        return res.status(500).json({ 
-          error: "Stripe não configurado no servidor. Verifique a variável STRIPE_SECRET_KEY no Vercel." 
-        });
-      }
-      
-      const priceId = plan === 'annual' 
-        ? process.env.STRIPE_PRICE_ID_ANNUAL 
-        : process.env.STRIPE_PRICE_ID_MONTHLY;
-
-      if (!priceId) {
-        return res.status(400).json({ 
-          error: `ID de preço não configurado para o plano ${plan === 'annual' ? 'Anual' : 'Mensal'}. Verifique as variáveis STRIPE_PRICE_ID_* no Vercel.` 
-        });
-      }
-
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: [
-          {
-            price: priceId,
-            quantity: 1,
-          },
-        ],
-        mode: 'subscription',
-        customer_email: email,
-        metadata: {
-          plan: plan,
-          email: email
-        },
-        success_url: `${process.env.APP_URL || 'https://consultorcasillas.vercel.app'}?session_id={CHECKOUT_SESSION_ID}&payment=success`,
-        cancel_url: `${process.env.APP_URL || 'https://consultorcasillas.vercel.app'}?payment=cancel`,
-      });
-
-      res.status(200).json({ url: session.url });
-    } catch (err: any) {
-      res.status(500).json({ error: err.message });
-    }
-  } else {
-    res.setHeader('Allow', 'POST');
-    res.status(405).end('Method Not Allowed');
+export default async (req: Request, res: Response) => {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
-}
+
+  const { priceId } = req.body;
+  const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+  
+  if (!stripeSecretKey) {
+    return res.status(500).json({ error: "Stripe secret key not configured" });
+  }
+
+  const stripe = new Stripe(stripeSecretKey);
+  const origin = process.env.APP_URL || req.headers.origin || 'http://localhost:3000';
+
+  try {
+    const session = await stripe.checkout.sessions.create({
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1,
+        },
+      ],
+      mode: 'subscription',
+      success_url: `${origin}/?success=true`,
+      cancel_url: `${origin}/?canceled=true`,
+    });
+
+    res.json({ url: session.url });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("Stripe error:", error);
+    res.status(500).json({ error: errorMessage });
+  }
+};

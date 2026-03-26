@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { GoogleGenAI } from "@google/genai";
 import ReactMarkdown from 'react-markdown';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, Send, Bot, User } from 'lucide-react';
 import BottomNav from '../components/BottomNav';
 import { Screen } from '../types';
@@ -11,8 +10,6 @@ const AIAgent: React.FC<{ onBack: () => void, navigate: (screen: Screen) => void
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -29,14 +26,23 @@ const AIAgent: React.FC<{ onBack: () => void, navigate: (screen: Screen) => void
     setIsLoading(true);
 
     try {
-      const response = await ai.models.generateContent({
-        model: "gemini-2.0-flash",
-        contents: userMessage,
-        config: {
+      const response = await fetch('/api/ai', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: userMessage,
           systemInstruction: "Você é o Consultor Técnico Casillas, um especialista em usinagem, mecânica industrial e engenharia. Você tem acesso a todo o conhecimento do Formulário Técnico Casillas. Forneça respostas precisas, técnicas e práticas em português do Brasil. Use tabelas, listas e fórmulas quando apropriado. Seja direto e profissional."
-        }
+        }),
       });
-      const text = response.text;
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch from API');
+      }
+
+      const data = await response.json();
+      const text = data.text;
       setMessages(prev => [...prev, { role: 'model', content: text || "Sem resposta." }]);
     } catch (error) {
       console.error(error);

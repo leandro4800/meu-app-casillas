@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { User as UserType, Screen } from '../types';
 import { ChevronLeft, User, Crown, Settings, LogOut, ShieldCheck, Mail } from 'lucide-react';
 import BottomNav from '../components/BottomNav';

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { X, RotateCcw, Info } from 'lucide-react';
+// Removidas dependências externas para compatibilidade
 
 interface MicrometerVisualSimulatorProps {
   onClose: () => void;
@@ -23,10 +22,7 @@ const MicrometerVisualSimulator: React.FC<MicrometerVisualSimulatorProps> = ({ o
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+    <div 
       className="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center p-6"
     >
       {/* Botão Fechar */}
@@ -34,7 +30,7 @@ const MicrometerVisualSimulator: React.FC<MicrometerVisualSimulatorProps> = ({ o
         onClick={onClose}
         className="absolute top-6 right-6 size-12 bg-[#1c1e22] rounded-full flex items-center justify-center text-white border border-white/10 active:scale-90 transition-all"
       >
-        <X size={24} />
+        <span className="material-symbols-outlined">close</span>
       </button>
 
       {/* Título */}
@@ -79,9 +75,8 @@ const MicrometerVisualSimulator: React.FC<MicrometerVisualSimulatorProps> = ({ o
         </div>
 
         {/* Tambor (Thimble) */}
-        <motion.div 
+        <div 
           className="w-32 h-24 bg-gradient-to-b from-[#252930] via-[#1c1e22] to-[#252930] border-l-4 border-[#eab308] rounded-r-xl relative overflow-hidden cursor-ns-resize"
-          whileTap={{ scale: 0.98 }}
         >
           {/* Recartilhado Visual */}
           <div className="absolute inset-0 opacity-10 pointer-events-none" 
@@ -95,7 +90,7 @@ const MicrometerVisualSimulator: React.FC<MicrometerVisualSimulatorProps> = ({ o
             <div className="w-4 h-[1px] bg-gray-700" />
             <span className="text-[10px] font-black text-gray-600">{thimbleValue - 5}</span>
           </div>
-        </motion.div>
+        </div>
       </div>
 
       {/* Controles de Ajuste Fino */}
@@ -121,18 +116,18 @@ const MicrometerVisualSimulator: React.FC<MicrometerVisualSimulatorProps> = ({ o
         onClick={() => setValue(0)}
         className="mt-12 flex items-center gap-2 text-gray-600 hover:text-[#eab308] transition-colors"
       >
-        <RotateCcw size={14} />
+        <span className="material-symbols-outlined">restart_alt</span>
         <span className="text-[10px] font-black uppercase tracking-widest">Zerar Instrumento</span>
       </button>
 
       {/* Dica Técnica */}
       <div className="mt-auto mb-8 p-4 bg-[#eab308]/5 border border-[#eab308]/10 rounded-2xl flex items-center gap-3 max-w-xs">
-        <Info size={16} className="text-[#eab308] shrink-0" />
+        <span className="material-symbols-outlined text-[#eab308] text-base">info</span>
         <p className="text-[8px] text-gray-500 font-bold uppercase leading-relaxed">
           Lembre-se: No micrômetro real, cada volta completa do tambor equivale a 0,5mm na escala da bainha.
         </p>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

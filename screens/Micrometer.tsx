@@ -1,5 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
+import MicrometerVisualSimulator from '../components/MicrometerVisualSimulator';
 
 interface MicrometerProps {
   t: any;
@@ -10,6 +11,7 @@ const Micrometer: React.FC<MicrometerProps> = ({ t }) => {
   const [thimble, setThimble] = useState(21);
   const [vernier, setVernier] = useState(2);
   const [showToast, setShowToast] = useState(false);
+  const [showSimulator, setShowSimulator] = useState(false);
 
   const finalValue = sleeve + (thimble * 0.01) + (vernier * 0.001);
 
@@ -40,6 +42,11 @@ const Micrometer: React.FC<MicrometerProps> = ({ t }) => {
 
   return (
     <div className="flex flex-col h-full bg-[#161412] text-white relative">
+      {showSimulator && (
+        <div className="fixed inset-0 z-[200] bg-[#161412]">
+          <MicrometerVisualSimulator onClose={() => setShowSimulator(false)} />
+        </div>
+      )}
       {showToast && (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[100] bg-[#eab308] text-black px-6 py-3 rounded-2xl font-black text-xs uppercase shadow-2xl animate-bounce">
            {t.reading_saved || 'Leitura Salva!'}
@@ -50,7 +57,16 @@ const Micrometer: React.FC<MicrometerProps> = ({ t }) => {
          <div className="w-full flex justify-between items-center mb-4">
             <div className="flex flex-col">
                <h2 className="text-white text-xl font-black uppercase tracking-tight">{t.micrometer_reading || 'Leitura de Micrômetro'}</h2>
-               <span className="text-[#eab308] text-[9px] font-black uppercase tracking-widest bg-[#eab308]/10 px-2 py-0.5 rounded border border-[#eab308]/10">{t.practical_mode || 'MODO PRÁTICO'}</span>
+               <div className="flex gap-2">
+                 <span className="text-[#eab308] text-[9px] font-black uppercase tracking-widest bg-[#eab308]/10 px-2 py-0.5 rounded border border-[#eab308]/10">{t.practical_mode || 'MODO PRÁTICO'}</span>
+                 <button 
+                   onClick={() => setShowSimulator(true)}
+                   className="text-white text-[9px] font-black uppercase tracking-widest bg-blue-600/20 px-2 py-0.5 rounded border border-blue-600/20 flex items-center gap-1"
+                 >
+                   <span className="material-symbols-outlined text-[10px]">visibility</span>
+                   VER SIMULADOR
+                 </button>
+               </div>
             </div>
          </div>
          <div className="w-full h-48 bg-[#161412] rounded-3xl border border-white/5 relative flex items-center justify-center overflow-hidden">

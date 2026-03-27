@@ -62,49 +62,26 @@ async function startServer() {
   });
 
   app.post("/api/create-checkout-session", async (req, res) => {
-    const { plan, email } = req.body;
-    const stripeClient = getStripe();
-
-    if (!stripeClient) {
-      console.error("ERRO: STRIPE_SECRET_KEY não encontrada no ambiente.");
-      return res.status(500).json({ 
-        error: "Stripe não configurado no servidor. Verifique se a variável STRIPE_SECRET_KEY está definida nas configurações do projeto." 
-      });
+    const { priceId } = req.body;
+    const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+    
+    if (!stripeSecretKey) {
+      return res.status(500).json({ error: "Stripe secret key not configured" });
     }
 
+    const stripe = new Stripe(stripeSecretKey);
+    const origin = process.env.APP_URL || req.headers.origin || 'http://localhost:3000';
+
     try {
-      const priceId = plan === 'annual' 
-        ? process.env.STRIPE_PRICE_ID_ANNUAL 
-        : process.env.STRIPE_PRICE_ID_MONTHLY;
-
-      if (!priceId) {
-        console.error(`ERRO: ID de preço não configurado para o plano ${plan}.`);
-        return res.status(400).json({ 
-          error: `ID de preço não configurado para o plano ${plan === 'annual' ? 'Anual' : 'Mensal'}. Verifique as variáveis STRIPE_PRICE_ID_ANNUAL e STRIPE_PRICE_ID_MONTHLY nas configurações do projeto.` 
-        });
-      }
-
-      const session = await stripeClient.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: [
-          {
-            price: priceId,
-            quantity: 1,
-          },
-        ],
+      const session = await stripe.checkout.sessions.create({
+        line_items: [{ price: priceId, quantity: 1 }],
         mode: 'subscription',
-        customer_email: email,
-        metadata: {
-          plan: plan,
-          email: email
-        },
-        success_url: `${process.env.APP_URL || 'http://localhost:3000'}?session_id={CHECKOUT_SESSION_ID}&payment=success`,
-        cancel_url: `${process.env.APP_URL || 'http://localhost:3000'}?payment=cancel`,
+        success_url: `${origin}/?success=true`,
+        cancel_url: `${origin}/?canceled=true`,
       });
 
       res.json({ url: session.url });
     } catch (error: any) {
-      console.error("Stripe error:", error);
       res.status(500).json({ error: error.message });
     }
   });

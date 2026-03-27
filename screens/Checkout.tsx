@@ -16,30 +16,23 @@ const Checkout: React.FC<CheckoutProps> = ({ user, onComplete, onLogout, t }) =>
   const monthlyPrice = 19.90;
   const annualPrice = 197.00;
 
-  const handleStripePayment = async () => {
+  const handleCheckout = async () => {
     setLoading(true);
     try {
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          plan,
-          email: user?.email,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          priceId: plan === 'monthly' ? 'price_monthly' : 'price_annual' 
         }),
       });
-
-      const data = await response.json();
-
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error(data.error || 'Erro ao criar sessão de checkout');
+      
+      const session = await response.json();
+      if (session.url) {
+        window.location.href = session.url;
       }
-    } catch (error: any) {
-      console.error('Erro no pagamento:', error);
-      alert(`Erro ao processar pagamento: ${error.message}`);
+    } catch (error) {
+      console.error('Erro ao iniciar checkout:', error);
     } finally {
       setLoading(false);
     }
@@ -109,7 +102,7 @@ const Checkout: React.FC<CheckoutProps> = ({ user, onComplete, onLogout, t }) =>
 
         <div className="space-y-4">
            <button 
-             onClick={handleStripePayment}
+             onClick={handleCheckout}
              disabled={loading}
              className="w-full bg-[#635bff] text-white font-black py-5 rounded-2xl shadow-xl flex items-center justify-center gap-3 uppercase text-sm tracking-widest active:scale-95 transition-all disabled:opacity-50"
            >

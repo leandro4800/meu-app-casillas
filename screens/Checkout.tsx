@@ -23,7 +23,7 @@ const Checkout: React.FC<CheckoutProps> = ({ user, onComplete, onLogout, t }) =>
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          priceId: plan === 'monthly' ? 'price_monthly' : 'price_annual' 
+          priceId: plan === 'monthly' ? 'price_1T9WFt5cCGgymbBEdUtZVIdV' : 'price_1T9vBN5cCGgymbBEd8pD8GPT' 
         }),
       });
       
